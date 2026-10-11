@@ -405,6 +405,42 @@ table.rd th:first-child, table.rd td:first-child { width: 6.4em; }
 .ss-card.foot .ss-row { background: #E4E8EE; } .ss-card.foot .ss-row.alt { background: #DCE1E8; }
 .places-l { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 13px; margin: 0; } .places-l select { width: auto; margin: 0; }
 table.rd td.num, table.rd td:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
+/* ---- v2 polish ---- */
+.dash { display: flex; flex-direction: column; gap: 10px; }
+.dash-ring { display: flex; align-items: center; gap: 14px; cursor: pointer; min-width: 0; }
+.dash-ring > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dash-ring .ring { flex: 0 0 auto; color: #222; }
+.dash-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.dash-t { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 2px; margin: 0; min-height: 64px; border-radius: 10px; background: #F2F4F7; color: #222; border: 1px solid #C9CED6; min-width: 0; width: auto; }
+.dash-t b { font-size: 19px; font-variant-numeric: tabular-nums; } .dash-t span { font-size: 11px; line-height: 1.15; text-align: center; color: #3C4654; white-space: normal; }
+.dash-t.ok { border-left: 4px solid #2E7D32; } .dash-t.warn { border-left: 4px solid #F2A900; background: #FFF6DA; } .dash-t.alarm { border-left: 4px solid #C62828; background: #FDECEC; }
+.dash-flags { display: flex; flex-wrap: wrap; gap: 4px; } .dash-flags span { background: #FFF1C2; border: 1px solid #F2A900; border-radius: 6px; padding: 2px 6px; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
+.trend-wrap { width: 100%; min-width: 0; } #trendCv { display: block; max-width: 100%; }
+.trend-title { font-weight: 700; margin: 8px 0 4px; overflow-wrap: anywhere; } .small-note { font-size: 12px; }
+#trendDays { margin-top: 8px; }
+.rep-img { display: block; width: 100%; height: auto; border: 1px solid #C9CED6; border-radius: 6px; margin: 0 0 10px; background: #fff; }
+.mu[data-mu] { cursor: pointer; } .mhist { background: #F2F4F7; border: 1px solid #C9CED6; border-radius: 8px; padding: 6px 8px; margin: 4px 0; font-size: 13px; }
+.cl-item input[data-field][inputmode=decimal] { min-height: 48px; font-size: 19px; }
+body.in-round #tabBar, body.in-round header, body.in-round .app-header { display: none !important; }
+#round { padding-bottom: 110px; }
+.round-head { display: flex; align-items: center; gap: 10px; padding: 8px 0; min-width: 0; } .round-head button { width: auto; margin: 0; flex: 0 0 auto; }
+#roundProg { flex: 1 1 auto; min-width: 0; font-size: 13px; color: #3C4654; } #roundProg .progress { margin: 0 0 4px; }
+.round-card { background: #fff; border: 1px solid #C9CED6; border-radius: 14px; padding: 16px; min-width: 0; } .round-card.done { border-left: 6px solid #2E7D32; }
+.round-card h2 { font-size: 26px; margin: 4px 0 12px; overflow-wrap: anywhere; } .round-step { font-size: 13px; font-weight: 700; color: #1F3A5F; text-transform: uppercase; letter-spacing: .04em; }
+.round-f { display: block; font-weight: 700; font-size: 16px; } .round-f input { font-size: 30px; min-height: 64px; text-align: right; font-variant-numeric: tabular-nums; width: 100%; }
+.round-done { min-height: 120px; font-size: 24px; background: #F2F4F7; color: #1F3A5F; border: 3px dashed #1F3A5F; } .round-done.on { background: #2E7D32; color: #fff; border: 3px solid #2E7D32; }
+.round-time { display: flex; align-items: center; gap: 8px; margin-top: 12px; white-space: nowrap; } .round-time input { width: 120px; margin: 0; }
+.round-nav { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #C9CED6; z-index: 50; }
+.round-nav button { margin: 0; min-height: 56px; font-size: 18px; } #round:not(.active) .round-nav { display: none; }
+.round-ring { display: flex; justify-content: center; margin: 8px 0; } .round-ring .ring { color: #222; }
+.round-miss { display: block; color: #C62828; font-weight: 700; text-align: left; } .round-flag { background: #FFF1C2; border-left: 4px solid #F2A900; padding: 4px 8px; margin: 3px 0; font-weight: 700; }
+.badge { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 13px; font-weight: 700; } .badge.ok { background: #E3F1E4; color: #2E7D32; } .badge.wait { background: #FFF1C2; color: #6B4E00; }
+@keyframes pressed { 0% { transform: scale(1); } 40% { transform: scale(.96); } 100% { transform: scale(1); } } button.pressed { animation: pressed .18s ease-out; }
+@keyframes tapok { 0% { box-shadow: 0 0 0 0 rgba(46,125,50,.55); } 100% { box-shadow: 0 0 0 10px rgba(46,125,50,0); } } .tap-ok { animation: tapok .5s ease-out; }
+/* Dark mode: invert the UI (exports are canvases drawn light and never affected); photos/previews counter-inverted */
+html.dark { filter: invert(.9) hue-rotate(180deg); background: #fff; }
+html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { button.pressed, .tap-ok { animation: none; } }
 </style>
 </head>
 <body class="locked">
@@ -431,6 +467,7 @@ table.rd td.num, table.rd td:nth-child(n+2) { text-align: right; font-variant-nu
 <div id="home" class="screen">
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
   <div class="ex-banner save-banner" id="saveReminder"><span>💾 Save a backup file</span><button class="small" onclick="saveFile()">Save</button><button class="small secondary" onclick="dismissSaveReminder()" aria-label="Dismiss">✕</button></div>
+  <div class="card" id="homeDash"></div>
   <div class="card">
     <div class="cal-head"><button class="small secondary" onclick="calMove(-1)" aria-label="Previous month">‹</button><h3 id="calTitle"></h3><button class="small secondary" onclick="calMove(1)" aria-label="Next month">›</button></div>
     <div class="cal-grid" id="calGrid"></div>
@@ -476,7 +513,7 @@ table.rd td.num, table.rd td:nth-child(n+2) { text-align: right; font-variant-nu
 <div id="daily" class="screen">
   <div class="scr-head"><h2>Daily checklist</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('daily','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('daily','sheet')">📊 Spreadsheet</button></div></div>
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
-  <div class="ed-pane"><div id="dailyNav"></div><div class="card" id="dailyBody"></div><div class="card" id="dailyAocs"></div></div>
+  <div class="ed-pane"><div class="btn-row"><button class="small" onclick="startRound(edDay)">▶ Round mode</button><button class="small secondary" onclick="openReport(edDay)">📄 Daily report</button></div><div id="dailyNav"></div><div class="card" id="dailyBody"></div><div class="card" id="dailyAocs"></div></div>
   <div class="ss-pane"></div>
 </div>
 
@@ -619,8 +656,11 @@ table.rd td.num, table.rd td:nth-child(n+2) { text-align: right; font-variant-nu
     <p class="muted">Adds clearly marked example checklists, boiler log entries, meter readings and AOCs so you can try the app. Remove removes only examples.</p>
     <div class="row2"><button class="olive" onclick="loadExamples()">Load example data</button><button class="secondary" onclick="removeExamples()">Remove examples</button></div>
   </div>
+  <div class="card"><h3>Display</h3><div class="seg mini" id="themeSeg"><button data-m="auto" onclick="setTheme('auto')">Auto</button><button data-m="light" onclick="setTheme('light')">☀️ Light</button><button data-m="dark" onclick="setTheme('dark')">🌙 Dark</button></div><p class="muted">Auto follows the phone's dark mode. Exports are always printed light.</p>
+    <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily report</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
-  <p class="muted" style="text-align:center">NWH Log v1 · all data stays on this device</p>
+  <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.0 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -638,6 +678,35 @@ table.rd td.num, table.rd td:nth-child(n+2) { text-align: right; font-variant-nu
   <button onclick="showScreen('more')" class="secondary">Back</button>
 </div>
 
+<!-- Trends -->
+<div id="trends" class="screen">
+  <div class="scr-head"><h2>📈 Trends</h2></div>
+  <div class="card">
+    <select id="trendSel" aria-label="What to chart" onchange="trendKey=this.value;renderTrends()"></select>
+    <div class="seg mini" id="trendDays"><button data-d="7" onclick="trendDays=7;renderTrends()">7 days</button><button data-d="30" onclick="trendDays=30;renderTrends()">30 days</button><button data-d="90" onclick="trendDays=90;renderTrends()">90 days</button></div>
+    <p class="trend-title" id="trendTitle"></p>
+    <div class="trend-wrap"><canvas id="trendCv" aria-label="Trend chart"></canvas></div>
+    <p class="muted" id="trendStats"></p>
+    <p class="muted small-note">Bars: daily Used / Ran between readings (red ! = negative). Lines: test values with the normal range shaded green (amber ! = out of range).</p>
+    <div class="btn-row"><button class="small" onclick="exportTrend('png')">🖼️ PNG</button><button class="small" onclick="exportTrend('pdf')">📄 PDF</button></div>
+  </div>
+</div>
+<!-- Daily report -->
+<div id="report" class="screen">
+  <div class="scr-head"><h2>📄 Daily report</h2></div>
+  <div class="card">
+    <label>Day <input type="date" id="reportDate" onchange="if(this.value){reportDay=this.value;renderReport()}"></label>
+    <p class="muted">Shift handoff sheet: checklist with times, meters with used/ran, water tests with flags, chemical additions, PM and AOCs. Landscape letter.</p>
+    <div class="btn-row"><button class="small" onclick="exportReport('png')">🖼️ PNG</button><button class="small" onclick="exportReport('pdf')">📄 PDF</button></div>
+  </div>
+  <div id="reportPrev"></div>
+</div>
+<!-- Round mode -->
+<div id="round" class="screen">
+  <div class="round-head"><button class="small secondary" onclick="roundExit()" aria-label="Exit round">✕ Exit</button><div id="roundProg"></div></div>
+  <div id="roundBody"></div>
+  <div class="round-nav"><button class="secondary" onclick="roundBack()">‹ Back</button><button class="secondary" onclick="roundNext()">Skip</button><button onclick="roundNext()">Next ›</button></div>
+</div>
 <nav id="tabBar">
   <button data-tab="home" onclick="calFocus=new Date();showScreen('home')"><span>📅</span><b>Home</b></button>
   <button data-tab="daily" onclick="edDay=ymd(new Date());showScreen('daily')"><span>✅</span><b>Checklist</b></button>
@@ -2398,6 +2467,293 @@ async function exportSheet(scr, kind) {
   if (how !== 'cancelled') toast(`${kind.toUpperCase()} ${how}${files.length > 1 ? ` (${files.length} pages)` : ''}`);
   return files.map(f => f.name);
 }
+
+/* ===================== Polish & power features (v2) =====================
+   Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
+const APP_VER = '2.0';
+const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
+const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
+const wsItem = () => getChecklist().find(i => i.sections);
+
+/* ---------- 1. Trends ---------- */
+let trendKey = null, trendDays = 30;
+function trendOptions() {
+  const o = getChecklist().filter(isMeter).map(it => ({ key: 'm:' + it.id, label: it.label + (isHourMeter(it) ? ' (ran, hrs)' : ' (used)') }));
+  const ws = wsItem();
+  if (ws) ws.sections.forEach(sec => ws.fields.filter(f => f.sec === sec.id).forEach(f => o.push({ key: 'w:' + f.key, label: `${sec.label} — ${f.label}${f.unit ? ' (' + f.unit + ')' : ''}` })));
+  return o;
+}
+function trendSeries(key, from, to) {
+  const W = getWork(), days = Object.keys(W).filter(k => k >= from && k <= to).sort();
+  if (key.startsWith('m:')) {
+    const id = key.slice(2), it = getChecklist().find(i => i.id === id) || meterDefById(id); if (!it) return null;
+    const hr = isHourMeter(it), pts = [];
+    days.forEach(k => { const inf = meterInfo(id, k, W, meterKey(it)); if (inf.usage != null) pts.push({ day: k, v: inf.usage, flag: inf.usage < 0, gap: inf.days > 1 ? inf.days : 0 }); });
+    return { kind: 'bar', label: it.label, unit: hr ? 'hrs ran' : 'used', places: meterPlaces(it), pts, from, to };
+  }
+  const ws = wsItem(); if (!ws) return null;
+  const f = ws.fields.find(x => x.key === key.slice(2)); if (!f) return null;
+  const sec = ws.sections.find(s => s.id === f.sec) || { label: '' }, pts = [];
+  days.forEach(k => { const v = (((W[k].checklist || {})[ws.id] || {}).values || {})[f.key]; if (v != null && v !== '' && !isNaN(v)) pts.push({ day: k, v: Number(v), flag: outOfRange(f, Number(v)) }); });
+  return { kind: 'line', label: `${sec.label} — ${f.label}`, unit: f.unit || '', min: f.min, max: f.max, pts, from, to, places: null };
+}
+const tNum = (v, p) => p == null ? Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 }) : fmtNum(v, p);
+// Draws one chart into ctx at (x,y,w,h); k scales fonts/lines (1 on phone, ~3 on export pages). Prints in B&W: flags carry '!'.
+function drawChart(ctx, s, x, y, w, h, k, dark) {
+  const ink = dark ? '#E6EAF0' : '#222', grid = dark ? '#3A4556' : '#C9CED6', bar = dark ? '#7FA3D1' : '#1F3A5F';
+  const F = (n, b) => `${b ? '700 ' : ''}${Math.round(n * k)}px system-ui, -apple-system, Arial, sans-serif`;
+  const padL = 64 * k, padB = 34 * k, padT = 14 * k, padR = 10 * k, cx = x + padL, cy = y + padT, cw = w - padL - padR, chh = h - padT - padB;
+  ctx.save(); ctx.textBaseline = 'middle';
+  if (!s || !s.pts.length) { ctx.fillStyle = ink; ctx.font = F(14); ctx.textAlign = 'center'; ctx.fillText('No data in this range', x + w / 2, y + h / 2); ctx.restore(); return; }
+  const vals = s.pts.map(p => p.v).concat(s.kind === 'line' ? [s.min, s.max].filter(v => v != null && v !== '').map(Number) : [0]);
+  let lo = Math.min(...vals), hi = Math.max(...vals); if (lo === hi) { hi += 1; lo -= s.kind === 'bar' ? 0 : 1; }
+  const pad = (hi - lo) * 0.08; if (s.kind === 'line') lo -= pad; hi += pad;
+  const Y = v => cy + chh - (v - lo) / (hi - lo) * chh;
+  const nDays = Math.max(1, daysBetween(s.from, s.to)), X = d => cx + (daysBetween(s.from, d) + 0.5) / (nDays + 1) * cw;
+  // normal-range band
+  if (s.kind === 'line' && (s.min != null || s.max != null)) {
+    const top = s.max != null && s.max !== '' ? Y(Number(s.max)) : cy, bot = s.min != null && s.min !== '' ? Y(Number(s.min)) : cy + chh;
+    ctx.fillStyle = dark ? 'rgba(46,125,50,.25)' : 'rgba(46,125,50,.12)'; ctx.fillRect(cx, top, cw, bot - top);
+    ctx.setLineDash([6 * k, 4 * k]); ctx.strokeStyle = '#2E7D32'; ctx.lineWidth = 1.5 * k; [top, bot].forEach(yy => { ctx.beginPath(); ctx.moveTo(cx, yy); ctx.lineTo(cx + cw, yy); ctx.stroke(); }); ctx.setLineDash([]);
+  }
+  // grid + y labels
+  ctx.font = F(11); ctx.fillStyle = ink; ctx.strokeStyle = grid; ctx.lineWidth = 1 * k; ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) { const v = lo + (hi - lo) * i / 4, yy = Y(v); ctx.beginPath(); ctx.moveTo(cx, yy); ctx.lineTo(cx + cw, yy); ctx.stroke(); ctx.fillText(tNum(v, s.places == null ? (hi - lo < 10 ? 1 : 0) : Math.min(s.places, hi - lo < 10 ? 2 : 0)), cx - 6 * k, yy); }
+  // x labels (≈6)
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const step = Math.max(1, Math.ceil((nDays + 1) / 6));
+  for (let i = 0; i <= nDays; i += step) { const d = addDayKey(s.from, i); ctx.fillText(d.slice(5).replace('-', '/'), X(d), cy + chh + 8 * k); }
+  ctx.textBaseline = 'middle';
+  if (s.kind === 'bar') {
+    const bw = Math.max(2 * k, Math.min(28 * k, cw / (nDays + 1) * 0.7)), y0 = Y(Math.max(lo, 0));
+    s.pts.forEach(p => { const yy = Y(p.v); ctx.fillStyle = p.flag ? '#C62828' : bar; ctx.fillRect(X(p.day) - bw / 2, Math.min(yy, y0), bw, Math.abs(y0 - yy) || 1 * k); if (p.flag) { ctx.fillStyle = ink; ctx.font = F(12, true); ctx.textAlign = 'center'; ctx.fillText('!', X(p.day), Math.min(yy, y0) - 8 * k); } });
+  } else {
+    ctx.strokeStyle = bar; ctx.lineWidth = 2.5 * k; ctx.beginPath(); s.pts.forEach((p, i) => i ? ctx.lineTo(X(p.day), Y(p.v)) : ctx.moveTo(X(p.day), Y(p.v))); ctx.stroke();
+    s.pts.forEach(p => { ctx.beginPath(); ctx.arc(X(p.day), Y(p.v), (p.flag ? 5 : 3.5) * k, 0, 7); ctx.fillStyle = p.flag ? '#F2A900' : bar; ctx.fill(); if (p.flag) { ctx.strokeStyle = ink; ctx.lineWidth = 1.5 * k; ctx.stroke(); ctx.fillStyle = ink; ctx.font = F(12, true); ctx.textAlign = 'center'; ctx.fillText('!', X(p.day), Y(p.v) - 13 * k); } });
+  }
+  ctx.strokeStyle = ink; ctx.lineWidth = 1.2 * k; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy + chh); ctx.lineTo(cx + cw, cy + chh); ctx.stroke();
+  ctx.restore();
+}
+function trendStats(s) {
+  if (!s || !s.pts.length) return '';
+  const v = s.pts.map(p => p.v), n = v.length, sum = v.reduce((a, b) => a + b, 0), fl = s.pts.filter(p => p.flag).length;
+  return s.kind === 'bar' ? `${n} readings · Total ${s.unit === 'hrs ran' ? 'run ' : 'used '}${tNum(sum, s.places)}${s.unit === 'hrs ran' ? ' hrs' : ''} · High ${tNum(Math.max(...v), s.places)}${fl ? ` · ! ${fl} negative` : ''}`
+    : `${n} readings · Low ${tNum(Math.min(...v))} · High ${tNum(Math.max(...v))} · Last ${tNum(v[n - 1])}${s.min != null || s.max != null ? ` · Normal ${s.min != null ? s.min : ''}–${s.max != null ? s.max : ''}` : ''}${fl ? ` · ! ${fl} out of range` : ''}`;
+}
+function trendRange() { const to = ymd(new Date()); return { from: addDayKey(to, -(trendDays - 1)), to }; }
+function renderTrends() {
+  const opts = trendOptions(); if (!trendKey || !opts.some(o => o.key === trendKey)) trendKey = opts[0] && opts[0].key;
+  const sel = document.getElementById('trendSel'); sel.innerHTML = opts.map(o => `<option value="${o.key}"${o.key === trendKey ? ' selected' : ''}>${esc(o.label)}</option>`).join('');
+  document.querySelectorAll('#trendDays button').forEach(b => b.classList.toggle('on', Number(b.dataset.d) === trendDays));
+  const { from, to } = trendRange(), s = trendSeries(trendKey, from, to);
+  const cv = document.getElementById('trendCv'), wrap = cv.parentElement, dpr = window.devicePixelRatio || 1, w = Math.max(200, wrap.clientWidth), h = Math.round(Math.min(320, w * 0.68));
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+  drawChart(ctx, s, 0, 0, w, h, 1, false); // dark mode inverts the whole UI, so draw light
+  cv.dataset.points = s ? s.pts.length : 0;
+  document.getElementById('trendTitle').textContent = s ? `${s.label} · ${mdy(from)} – ${mdy(to)}` : '';
+  document.getElementById('trendStats').textContent = trendStats(s);
+}
+function exportPage(title, from, to, drawBody) {
+  const cv = document.createElement('canvas'); cv.width = PAGE_W; cv.height = PAGE_H; const ctx = cv.getContext('2d'), S = getSettings(), L = MARGIN, R = PAGE_W - MARGIN;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, PAGE_W, PAGE_H);
+  ctx.fillStyle = NAVY; ctx.fillRect(L, MARGIN, R - L, 250);
+  const T = (s, x, y, f, c, a) => { ctx.font = f; ctx.fillStyle = c; ctx.textAlign = a || 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(s, x, y); };
+  T(`${S.abbr || 'NWH'} — ${S.employer}`, L + 40, MARGIN + 80, FONT(58, true), '#fff'); T(title, L + 40, MARGIN + 150, FONT(48), '#fff'); T(`${S.title} log`, L + 40, MARGIN + 210, FONT(34), '#D5DDE8');
+  T(from === to ? `Date: ${sDate(from, true)}` : `Date range: ${sDate(from, true)} – ${sDate(to, true)}`, R - 40, MARGIN + 75, FONT(36, true), '#fff', 'right');
+  T(`Operator: ${S.operator || '____________________'}`, R - 40, MARGIN + 165, FONT(36), '#fff', 'right');
+  const pages = drawBody ? 1 : 1; drawBody(ctx, L, MARGIN + 290, R - L, PAGE_H - MARGIN * 2 - 360);
+  T('Operator initials: ________     Reviewed by: ________', L, PAGE_H - MARGIN + 10, FONT(32), INK);
+  T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · NWH Log', PAGE_W / 2, PAGE_H - MARGIN + 10, FONT(26), '#555', 'center');
+  return cv;
+}
+function trendCanvas() {
+  const { from, to } = trendRange(), s = trendSeries(trendKey, from, to);
+  const cv = exportPage('Trend — ' + (s ? s.label : ''), from, to, (ctx, x, y, w, h) => {
+    ctx.font = FONT(40, true); ctx.fillStyle = INK; ctx.textAlign = 'left'; ctx.fillText(s ? `${s.label}${s.unit ? ' (' + s.unit + ')' : ''}` : '', x, y + 30);
+    ctx.font = FONT(32); ctx.fillText(trendStats(s), x, y + 85); drawChart(ctx, s, x, y + 130, w, h - 140, 3, false);
+  });
+  const ctx = cv.getContext('2d'); ctx.font = FONT(34, true); ctx.fillStyle = INK; ctx.textAlign = 'right'; ctx.fillText('Page 1 of 1', PAGE_W - MARGIN, PAGE_H - MARGIN + 10);
+  return cv;
+}
+async function shareCanvases(cvs, base, kind) {
+  let files;
+  if (kind === 'png') files = await Promise.all(cvs.map((cv, i) => new Promise(res => cv.toBlob(b => res(new File([b], base + (cvs.length > 1 ? `-p${i + 1}` : '') + '.png', { type: 'image/png' }))))));
+  else files = [new File([makePdf(cvs.map(cv => ({ bytes: dataUrlBytes(cv.toDataURL('image/jpeg', 0.9)), w: cv.width, h: cv.height })))], base + '.pdf', { type: 'application/pdf' })];
+  const how = await shareOrDownload(files); if (how !== 'cancelled') toast(`${kind.toUpperCase()} ${how}`); return files.map(f => f.name);
+}
+function exportTrend(kind) { const { from, to } = trendRange(); return shareCanvases([trendCanvas()], `NWH-Trend-${(trendKey || '').replace(/[^a-z0-9]+/gi, '-')}-${from}_to_${to}`, kind); }
+
+/* ---------- 2. Daily report (shift handoff) ---------- */
+let reportDay = null;
+function reportData(day) {
+  const W = getWork(), w = W[day] || {}, cl = w.checklist || {}, items = getChecklist(), out = [];
+  const p = checklistProgress(day, W);
+  out.push({ h: `Checklist  ${p.done}/${p.total}` });
+  items.forEach((it, n) => { const r = cl[it.id] || {}; out.push({ t: `${r.done ? '✓' : '✗'} ${n + 1}. ${it.label}`, r: taskTime(r) ? fmtTime(taskTime(r)) : '', miss: !r.done, note: r.note }); });
+  const meters = items.filter(isMeter);
+  if (meters.length) { out.push({ h: 'Meters' }); meters.forEach(it => { const inf = meterInfo(it.id, day, W, meterKey(it)); if (inf.today == null) { out.push({ t: `${it.label}: —`, miss: true }); return; }
+    const hs = isHourMeter(it) && inf.usage != null && inf.usage >= 0 ? hourSanity(it.id, day, W, meterKey(it)) : null;
+    out.push({ t: `${it.label}: ${fmtM(it, inf.today)}`, r: inf.usage == null ? '' : (inf.usage < 0 ? '! ' : '') + meterDiffText(it, inf.usage, inf.days, inf.prevDay) + (hs && hs.flag ? ' !' : ''), flag: inf.usage < 0 || (hs && hs.flag) }); }); }
+  const ws = wsItem();
+  if (ws) { const r = cl[ws.id] || {}, v = r.values || {}, sx = r.sec || {}; const rows = [];
+    ws.sections.forEach(sec => { const fs = ws.fields.filter(f => f.sec === sec.id && v[f.key] != null); if (!fs.length) return;
+      rows.push({ t: `${sec.label}${(sx[sec.id] || {}).time ? ' @ ' + fmtTime(sx[sec.id].time) : ''}: ` + fs.map(f => `${f.label} ${tNum(v[f.key])}${f.unit ? ' ' + f.unit : ''}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · '), flag: fs.some(f => outOfRange(f, v[f.key])), note: (sx[sec.id] || {}).note }); });
+    if (rows.length) out.push({ h: 'Water tests' }, ...rows); }
+  if ((w.chem || []).length) { out.push({ h: 'Chemical additions' }); w.chem.forEach(e => out.push({ t: chemEntryText(day, e) })); }
+  const pm = pmActive().map(t => ({ t, st: pmStatus(t, day, W), r: (w.pm || {})[t.id] })).filter(x => (x.r && x.r.done) || !x.st.done);
+  if (pm.length) { out.push({ h: 'Scheduled tasks / PM' }); pm.forEach(({ t, st, r }) => out.push({ t: `${r && r.done ? '✓' : st.overdue ? '!' : '○'} ${t.name}${r && r.value != null ? ' — ' + r.value : ''}`, r: r && r.done ? (r.time ? fmtTime(r.time) : 'Done') : st.overdue ? `Overdue ${st.overdue}d` : 'Due', flag: !(r && r.done) && st.overdue, note: r && r.note })); }
+  const aocs = aocsByDay()[day] || [];
+  if (aocs.length) { out.push({ h: `AOCs (${aocs.length})` }); aocs.forEach(a => out.push({ t: `${a.severity === 'High' && a.status !== 'Resolved' ? '! ' : ''}${a.title || 'AOC'} — ${a.equip || ''}`, r: `${a.severity || ''} · ${a.status || ''}`, flag: a.severity === 'High' && a.status !== 'Resolved', note: [a.probable && 'Probable: ' + a.probable, a.actual && 'Actual: ' + a.actual].filter(Boolean).join('  ') })); }
+  const b = w.boiler || {}, bl = [['Pressure', b.pressure], ['Water level', b.water], ['Fuel', b.fuel], ['Incidents/maint.', b.incidents]].filter(x => x[1] && String(x[1]).trim());
+  if (bl.length || (w.notes || '').trim()) { out.push({ h: 'Boiler log & notes' }); bl.forEach(x => out.push({ t: `${x[0]}: ${x[1]}` })); if ((w.notes || '').trim()) out.push({ t: w.notes.trim() }); }
+  return out;
+}
+// Lays out the report in two columns over as many landscape pages as needed
+function reportCanvases(day) {
+  const data = reportData(day), probe = document.createElement('canvas').getContext('2d');
+  const colGap = 80, LH = 46, HH = 70, fs = 32;
+  const wrap = (s, w, f) => { probe.font = f; const words = String(s).split(/\s+/), lines = []; let cur = ''; words.forEach(x => { const t = cur ? cur + ' ' + x : x; if (probe.measureText(t).width > w && cur) { lines.push(cur); cur = x; } else cur = t; }); if (cur) lines.push(cur); return lines; };
+  const colW = (PAGE_W - MARGIN * 2 - colGap) / 2, bodyH = PAGE_H - MARGIN * 2 - 380;
+  const blocks = data.map(d => { if (d.h) return { d, h: HH }; probe.font = FONT(fs, true); const rw = d.r ? probe.measureText(d.r).width + 30 : 0;
+    const main = wrap(d.t, colW - rw - 10, FONT(fs)), note = d.note ? wrap('↳ ' + d.note, colW - 30, FONT(fs - 6)) : []; return { d, main, note, h: main.length * LH + note.length * (LH - 8) + 6 }; });
+  const pages = [[[], []]]; let col = 0, used = 0;
+  blocks.forEach(b => { if (used + b.h > bodyH) { col++; used = 0; if (col > 1) { pages.push([[], []]); col = 0; } } pages[pages.length - 1][col].push(b); used += b.h; });
+  return pages.map((pg, pi) => { const cv = exportPage('Daily report', day, day, (ctx, x, y) => {
+    pg.forEach((colB, ci) => { let yy = y + 10; const cx = x + ci * (colW + colGap);
+      colB.forEach(b => { ctx.textBaseline = 'alphabetic';
+        if (b.d.h) { ctx.fillStyle = '#E4E8EE'; ctx.fillRect(cx, yy, colW, HH - 14); ctx.fillStyle = NAVY; ctx.fillRect(cx, yy, 8, HH - 14); ctx.font = FONT(fs + 2, true); ctx.fillStyle = INK; ctx.textAlign = 'left'; ctx.fillText(b.d.h, cx + 24, yy + HH - 30); yy += HH; return; }
+        if (b.d.flag) { ctx.fillStyle = AMBER_BG; ctx.fillRect(cx, yy - 4, colW, b.h - 2); }
+        ctx.font = FONT(fs); ctx.fillStyle = b.d.miss ? '#555' : INK; ctx.textAlign = 'left'; b.main.forEach((l, i) => ctx.fillText(l, cx + 8, yy + LH * (i + 1) - 12));
+        if (b.d.r) { ctx.font = FONT(fs, true); ctx.fillStyle = INK; ctx.textAlign = 'right'; ctx.fillText(b.d.r, cx + colW - 8, yy + LH - 12); }
+        ctx.font = FONT(fs - 6); ctx.fillStyle = '#444'; ctx.textAlign = 'left'; b.note.forEach((l, i) => ctx.fillText(l, cx + 30, yy + b.main.length * LH + (LH - 8) * (i + 1) - 12));
+        yy += b.h; ctx.fillStyle = GRID; ctx.fillRect(cx, yy - 4, colW, 2); });
+    }); });
+    const ctx = cv.getContext('2d'); ctx.font = FONT(34, true); ctx.fillStyle = INK; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(`Page ${pi + 1} of ${pages.length}`, PAGE_W - MARGIN, PAGE_H - MARGIN + 10); return cv; });
+}
+function openReport(day) { reportDay = day || edDay || ymd(new Date()); showScreen('report'); }
+function renderReport() {
+  document.getElementById('reportDate').value = reportDay;
+  const box = document.getElementById('reportPrev'); box.innerHTML = '';
+  reportCanvases(reportDay).forEach(cv => { const img = new Image(); img.src = cv.toDataURL('image/jpeg', 0.7); img.alt = 'Daily report page'; img.className = 'rep-img'; box.appendChild(img); });
+}
+const exportReport = kind => shareCanvases(reportCanvases(reportDay), `NWH-Daily-Report-${reportDay}`, kind);
+
+/* ---------- 3. Smart entry ---------- */
+function meterHistory(id, day, n) { const it = meterDefById(id), key = meterKey(it), W = getWork();
+  return Object.keys(W).filter(k => k < day).sort().reverse().map(k => ({ k, v: ((((W[k].checklist || {})[id] || {}).values) || {})[key] })).filter(x => x.v != null && x.v !== '').slice(0, n || 5); }
+function toggleMeterHist(box) {
+  const ex = box.parentElement.querySelector('.mhist'); if (ex) { ex.remove(); return; }
+  const id = box.dataset.mu, day = box.closest('[data-cl]') ? box.closest('[data-cl]').dataset.cl : edDay, it = meterDefById(id), h = meterHistory(id, day, 5);
+  box.insertAdjacentHTML('afterend', `<div class="mhist"><b>Last ${h.length || ''} readings</b>${h.length ? h.map(x => `<div class="ss-row"><span class="k">${mdy(x.k)}</span><span class="v">${fmtM(it, x.v)}</span></div>`).join('') : '<p class="muted">No earlier readings</p>'}</div>`);
+}
+document.addEventListener('click', e => { const mu = e.target.closest && e.target.closest('.mu[data-mu]'); if (mu && !e.target.closest('button')) toggleMeterHist(mu); });
+// Enter/Next on a meter jumps to the next meter (in checklist order), then to the water tests
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !e.target.matches || !e.target.matches('.cl input[data-field], #round input[data-field]')) return;
+  const box = e.target.closest('.cl, #round'), all = [...box.querySelectorAll('input[data-field]')].filter(x => x.offsetParent), i = all.indexOf(e.target);
+  e.preventDefault(); e.target.dispatchEvent(new Event('change', { bubbles: true }));
+  if (box.id === 'round') { roundNext(); return; }
+  if (all[i + 1]) { all[i + 1].focus(); all[i + 1].scrollIntoView({ block: 'center', behavior: 'smooth' }); } else e.target.blur();
+});
+// Lower-than-previous guard (rollover or typo): confirm before saving
+const _clSet = clSet;
+clSet = function (el, day, id, what, key) {
+  if (what === 'value') { const it = allItemDefs().find(i => i.id === id) || { fields: [] }, f = it.fields.find(x => x.key === key) || {};
+    if (f.type === 'meter' && el.value !== '' && !isNaN(Number(el.value))) { const inf = meterInfo(id, day, null, key);
+      if (inf.prev != null && Number(el.value) < inf.prev && !confirm(`${it.label}: ${fmtM(it, Number(el.value))} is LOWER than the previous reading (${mdy(inf.prevDay)}: ${fmtM(it, inf.prev)}).\n\nSave anyway? (Meter rollover or replacement)`)) {
+        const r = (((getWork()[day] || {}).checklist || {})[id] || {}).values || {}; el.value = r[key] != null ? r[key] : ''; return; } } }
+  _clSet(el, day, id, what, key);
+  if (what === 'done' || what === 'value') haptic(el.closest ? el.closest('.cl-item, .round-card') : null);
+};
+function enhanceMeterInputs(root) { (root || document).querySelectorAll('.cl-item input[data-field][inputmode=decimal], #round input[data-field]').forEach(i => i.setAttribute('enterkeyhint', 'next')); }
+
+/* ---------- 4. Home dashboard ---------- */
+function ringSvg(done, total, size) { const r = 26, c = 2 * Math.PI * r, f = total ? done / total : 0;
+  return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 64 64" role="img" aria-label="${done} of ${total} done"><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--ring-bg,#E4E8EE)" stroke-width="8"/><circle cx="32" cy="32" r="${r}" fill="none" stroke="${f >= 1 ? '#2E7D32' : '#1F3A5F'}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c * f} ${c}" transform="rotate(-90 32 32)"/><text x="32" y="37" text-anchor="middle" font-size="15" font-weight="800" fill="currentColor">${done}/${total}</text></svg>`; }
+function todayFlags(day) {
+  const W = getWork(), cl = ((W[day] || {}).checklist) || {}, out = [];
+  getChecklist().forEach(it => { const v = (cl[it.id] || {}).values || {}; it.fields.forEach(f => { if (v[f.key] != null && outOfRange(f, v[f.key])) out.push(`${it.sections ? ((it.sections.find(s => s.id === f.sec) || {}).label || '') + ' ' : it.label + ' '}${f.label} ${tNum(v[f.key])}`); });
+    if (isMeter(it)) { const inf = meterInfo(it.id, day, W, meterKey(it)); if (inf.usage != null && inf.usage < 0) out.push(`${it.label}: lower than previous`); else if (inf.usage != null && isHourMeter(it)) { const hs = hourSanity(it.id, day, W, meterKey(it)); if (hs && hs.flag) out.push(`${it.label}: check reading`); } } });
+  return out;
+}
+function homeDashHtml() {
+  const day = ymd(new Date()), p = checklistProgress(day), fl = todayFlags(day), W = getWork();
+  const over = pmActive().map(t => ({ t, st: pmStatus(t, day, W), r: ((W[day] || {}).pm || {})[t.id] })).filter(x => !(x.r && x.r.done) && !x.st.done);
+  const od = over.filter(x => x.st.overdue), open = getAocs().filter(a => a.status !== 'Resolved'), hiOpen = open.filter(a => a.severity === 'High');
+  const last = localStorage.getItem('nwhLastFileSave'), age = last ? Math.floor((Date.now() - new Date(last)) / 86400000) : null;
+  const tile = (cls, big, lbl, on) => `<button class="dash-t ${cls}" onclick="${on}"><b>${big}</b><span>${lbl}</span></button>`;
+  return `<div class="dash"><div class="dash-ring" onclick="edDay='${day}';showScreen('daily')">${ringSvg(p.done, p.total, 76)}<div><b>Today</b><span class="muted">${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span><button class="small" onclick="event.stopPropagation();startRound()">▶ Start round</button></div></div>
+    <div class="dash-tiles">${tile(fl.length ? 'warn' : 'ok', (fl.length ? '! ' : '✓ ') + fl.length, 'flags today', `edDay='${day}';showScreen('daily')`)}${tile(od.length ? 'alarm' : over.length ? 'warn' : 'ok', (od.length ? '! ' : '') + over.length, od.length ? `PM due (${od.length} overdue)` : 'PM due', "showScreen('pm')")}${tile(hiOpen.length ? 'alarm' : open.length ? 'warn' : 'ok', (hiOpen.length ? '! ' : '') + open.length, 'open AOCs', "showScreen('aocs')")}${tile(age == null || age >= 3 ? 'warn' : 'ok', age == null ? '!' : age + 'd', age == null ? 'no backup yet' : 'since backup', 'saveFile()')}</div>
+    ${fl.length ? `<div class="dash-flags">${fl.slice(0, 4).map(f => `<span>! ${esc(f)}</span>`).join('')}</div>` : ''}
+    <div class="btn-row"><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily report</button><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button></div></div>`;
+}
+
+/* ---------- 5. Round mode ---------- */
+let roundI = 0, roundDay = null;
+function startRound(day) { roundDay = day || ymd(new Date()); const cl = ((getWork()[roundDay] || {}).checklist) || {}; const items = getChecklist(); roundI = Math.max(0, items.findIndex(it => !(cl[it.id] && cl[it.id].done))); if (items.every(it => cl[it.id] && cl[it.id].done)) roundI = items.length; showScreen('round'); }
+function renderRound() {
+  const items = getChecklist(), box = document.getElementById('roundBody'), cl = ((getWork()[roundDay] || {}).checklist) || {}, p = checklistProgress(roundDay);
+  document.getElementById('roundProg').innerHTML = `<div class="progress"><i style="width:${Math.round(Math.min(roundI, items.length) / items.length * 100)}%"></i></div><span>${mdy(roundDay)} · ${p.done}/${p.total} done</span>`;
+  if (roundI >= items.length) { // summary
+    const W = getWork(), fl = todayFlags(roundDay), miss = items.filter(it => !(cl[it.id] && cl[it.id].done));
+    box.innerHTML = `<div class="round-card"><h2>${miss.length ? 'Round finished' : '✓ Round complete'}</h2><div class="round-ring">${ringSvg(p.done, p.total, 120)}</div>
+      ${miss.length ? `<h3>Not done (${miss.length})</h3>${miss.map(it => `<button class="link-btn round-miss" onclick="roundI=${items.indexOf(it)};renderRound()">✗ ${esc(it.label)}</button>`).join('')}` : ''}
+      ${fl.length ? `<h3>Flags</h3>${fl.map(f => `<div class="round-flag">! ${esc(f)}</div>`).join('')}` : '<p class="muted">No flags.</p>'}
+      <div class="btn-row"><button onclick="openReport(roundDay)">📄 Daily report</button><button class="secondary" onclick="edDay=roundDay;showScreen('daily')">Open checklist</button></div></div>`;
+    return;
+  }
+  const it = items[roundI], r = cl[it.id] || {}, vals = r.values || {};
+  let body = '';
+  if (it.sections) body = `<div class="round-ws" data-item="${it.id}">${wsSectionsHtml(it, r, roundDay)}</div>`;
+  else if (it.fields.length) body = it.fields.map(f => `<label class="round-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}<input ${f.type === 'meter' ? `type="text" inputmode="decimal" autocomplete="off" oninput="meterInput(this,${!!f.dec})"` : 'type="number" step="any" inputmode="decimal"'} enterkeyhint="next" data-field="${f.key}" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" onchange="clSet(this,roundDay,'${it.id}','value','${f.key}');renderRoundMu()"></label>`).join('')
+    + (isMeter(it) ? `<div class="mu" data-mu="${it.id}" id="roundMu">${meterUsageHtml(it.id, roundDay, meterKey(it))}</div>` : '');
+  else body = `<button class="round-done${r.done ? ' on' : ''}" onclick="roundCheck('${it.id}')">${r.done ? '✓ Done' : 'Tap when done'}</button>`;
+  box.innerHTML = `<div class="round-card${r.done ? ' done' : ''}"><div class="round-step">Step ${roundI + 1} of ${items.length}</div><h2>${esc(it.label)}</h2>${it.info && !it.sections ? `<p class="muted">${esc(it.info)}</p>` : ''}${body}
+    <label class="round-time">🕒 Time <input type="time" value="${taskTime(r)}" onchange="clSet(this,roundDay,'${it.id}','time')"></label></div>`;
+  const first = box.querySelector('input[data-field]'); if (first && !it.sections) setTimeout(() => { try { first.focus({ preventScroll: true }); } catch (e) {} }, 60);
+  enhanceMeterInputs(box);
+}
+function renderRoundMu() { const m = document.getElementById('roundMu'); if (m) m.innerHTML = meterUsageHtml(m.dataset.mu, roundDay, meterKey(meterDefById(m.dataset.mu))); }
+function roundCheck(id) { const r = ((getWork()[roundDay] || {}).checklist || {})[id] || {}; clSet({ checked: !r.done, value: '', classList: { toggle() {} } }, roundDay, id, 'done'); if (!r.done) setTimeout(roundNext, 250); else renderRound(); }
+function roundNext() { const a = document.activeElement; if (a && a.matches && a.matches('#round input')) a.blur(); const items = getChecklist(), it = items[roundI];
+  if (it && it.sections) { const r = ((getWork()[roundDay] || {}).checklist || {})[it.id] || {}; if (r.values && !r.done) clSet({ checked: true, value: '', classList: { toggle() {} } }, roundDay, it.id, 'done'); }
+  roundI = Math.min(items.length, roundI + 1); renderRound(); window.scrollTo(0, 0); }
+function roundBack() { roundI = Math.max(0, roundI - 1); renderRound(); }
+function roundExit() { edDay = roundDay; showScreen('daily'); }
+
+/* ---------- 6. Dark mode (UI only; exports always light) ---------- */
+function applyTheme() { const m = localStorage.getItem('nwhTheme') || 'auto', dark = m === 'dark' || (m === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.classList.toggle('dark', dark); const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.content = dark ? '#0E1A2B' : '#1F3A5F';
+  document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.m === m)); }
+function setTheme(m) { localStorage.setItem('nwhTheme', m); applyTheme(); if (document.getElementById('trends').classList.contains('active')) renderTrends(); }
+if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); (mq.addEventListener ? mq.addEventListener('change', applyTheme) : mq.addListener(applyTheme)); }
+
+/* ---------- 7. Feedback, offline badge, version ---------- */
+async function updateOfflineBadge() {
+  const el = document.getElementById('offlineBadge'); if (!el) return;
+  let ready = false; try { ready = !!(navigator.serviceWorker && navigator.serviceWorker.controller) || (window.caches && (await caches.keys()).some(k => k.startsWith('nwh-log'))); } catch (e) {}
+  el.textContent = ready ? '✓ Offline ready' : '… Not cached yet'; el.className = 'badge ' + (ready ? 'ok' : 'wait');
+  const v = document.getElementById('appVer'); if (v) { let c = ''; try { c = window.caches ? ((await caches.keys()).find(k => k.startsWith('nwh-log')) || '') : ''; } catch (e) {} v.textContent = `NWH Log v${APP_VER}${c ? ' · ' + c : ''} · all data stays on this device`; }
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('button'); if (b) { b.classList.remove('pressed'); void b.offsetWidth; b.classList.add('pressed'); } });
+
+/* ---------- Hooks into existing screens ---------- */
+const _renderScreen = renderScreen;
+renderScreen = function (id) {
+  _renderScreen(id);
+  if (id === 'home') { const d = document.getElementById('homeDash'); if (d) d.innerHTML = homeDashHtml(); }
+  if (id === 'trends') renderTrends();
+  if (id === 'report') renderReport();
+  if (id === 'round') renderRound();
+  if (id === 'more') { applyTheme(); updateOfflineBadge(); }
+  if (id === 'daily' || id === 'home') enhanceMeterInputs();
+  document.body.classList.toggle('in-round', id === 'round');
+};
+const _renderDailyEditor = renderDailyEditor;
+renderDailyEditor = function () { _renderDailyEditor(); enhanceMeterInputs(); };
+applyTheme();
+window.addEventListener('resize', () => { if (document.getElementById('trends').classList.contains('active')) renderTrends(); });
 
 /* ---------- Startup ---------- */
 migrateData();

@@ -39,3 +39,12 @@ Hour-meter check (data is never changed): when both readings have a Time, the ru
 Spreadsheet Cards: each card groups its values into mini blocks (e.g. one per meter, with the meter name as a small bold heading and Reading / Used or Ran (hrs) rows). Every label/value row has a thin divider and alternating shading; heavier lines separate the blocks.
 
 Number format: all displayed numbers use thousands separators (8,965,770), in the app and PNG/PDF; CSV stays raw (no commas). Each meter has a Decimals setting in More → Checklist (defaults: Boiler 2 hour 2, Boiler 1 hour and Scrubber hour 1, other meters 0); readings and Ran/Used show exactly that many decimals. Stored values are unchanged, and inputs still accept up to 2 decimals.
+
+v2.0 polish and power features
+- Home dashboard: a progress ring for today's checklist, plus tiles for today's flags, PM due/overdue, open AOCs and days since the last backup file.
+- Trends (Home, More): charts of meter Used/Ran per reading over 7/30/90 days, and water-test lines with the normal range shaded. Flags carry a '!' so they print in B&W. Export as landscape PNG/PDF.
+- Daily report: a one-tap shift handoff sheet for any day (checklist with times, meters with Used/Ran, water tests with flags, chemical additions, PM, AOCs, boiler log and notes). Landscape letter PNG/PDF, multi-page when needed.
+- Smart entry: Next/Enter moves to the next meter, and tapping a meter's readings shows its last 5. You're asked to confirm before saving a reading lower than the previous one. Meter inputs have larger tap targets.
+- Round mode: a full-screen walk through the checklist, one item per screen with big inputs. It advances on Done/Enter and ends with a summary of missed items and flags.
+- Dark mode: Auto (follows the phone), Light or Dark in More → Display. Exports always print light.
+- Button press feedback, an offline-ready badge and the app version in More.
