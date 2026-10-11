@@ -301,6 +301,32 @@ table.ss tfoot td, table.ss tfoot .dc { background: #E4E8EE; border-top: 3px sol
 .dot.ck { background: #F5B041; } .dot.ck.full { background: var(--olive); }
 #tabBar button span { font-size: 20px; }
 table.ss .ctr { text-align: center; }
+/* Vertical scrolling only, 320–430px */
+html, body { overflow-x: hidden; max-width: 100vw; }
+*, *::before, *::after { box-sizing: border-box; min-width: 0; }
+.row2 > *, .btn-row > *, .clock-row > *, .datenav > *, .cal-head > *, .cl-top > *, .kv > *, .scr-head > *, .stats-row > * { min-width: 0; }
+input, select, textarea { max-width: 100%; }
+.card, .muted, label, .kv, .note-item, .aoc-card, dd, dt, .mu, .ss-card { overflow-wrap: anywhere; word-break: normal; }
+.row2 { flex-wrap: wrap; } .row2 > * { flex: 1 1 120px; }
+.datenav input { flex: 1 1 auto; width: auto; }
+.btn-row button { flex: 1 1 auto; }
+.cl-ed-field { grid-template-columns: 1fr 1fr 1fr; }
+.cal-day { min-width: 0; overflow: hidden; }
+.legend span { white-space: nowrap; }
+#appHeader { max-width: 100vw; }
+#appHeader button { padding: 8px 8px; font-size: 14px; }
+#appTitle { flex: 1; font-size: 18px; margin: 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ss-fit { width: 100%; overflow: hidden; position: relative; border: 1px solid var(--grid); border-radius: 8px; background: #fff; }
+.ss-scale { transform-origin: top left; width: max-content; }
+.ss-scale table.ss thead th, .ss-scale table.ss .dc, .ss-scale table.ss tfoot td { position: static; }
+.ss-card { padding: 10px 12px; margin: 8px 0; cursor: pointer; }
+.ss-card.foot { background: #E4E8EE; cursor: default; }
+.ss-card-h { font-weight: 800; color: var(--orange); margin-bottom: 4px; }
+.ss-card dl { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 2px 10px; margin: 0; font-size: 14px; }
+.ss-card dt { color: #5A6472; } .ss-card dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; border-radius: 4px; padding: 0 3px; }
+.ss-card dd.k-wrap, .ss-card dd.k-text { text-align: left; }
+.ssLayout { margin: 6px 0; }
+
 table.ss td.k-wrap { white-space: normal; min-width: 180px; max-width: 320px; text-align: left; }
 table.ss td.k-text, table.ss th.k-text { text-align: left; }
 .screen.wide { max-width: 980px; }
@@ -1586,7 +1612,7 @@ const SHEETS = {
   shifts: { title: 'NWH Shifts & Hours', slug: 'Shifts' }
 };
 const ssState = {};
-const ssSt = scr => ssState[scr] || (ssState[scr] = { range: 'last7', from: '', to: '', desc: true });
+const ssSt = scr => ssState[scr] || (ssState[scr] = { range: 'last7', from: '', to: '', desc: true, layout: 'cards' });
 function rangeDates(st) {
   const today = ymd(new Date()), S = getSettings(), back = n => ymd(addDays(parseYmd(today), -n));
   const k = st.range;
@@ -1723,7 +1749,7 @@ function sheetTableHtml(sp) {
   const cell = (c, col, tag) => `<${tag} class="${col.key ? 'dc ' : ''}k-${col.kind}${col.align === 'center' ? ' ctr' : ''}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</${tag}>`;
   const body = sp.rows.map(r => `<tr ${r.id ? `onclick="openAoc('${r.id}')"` : r.day ? `onclick="openDay('${r.day}')"` : ''}>${r.cells.map((c, i) => cell(c, sp.cols[i], sp.cols[i].key ? 'th' : 'td')).join('')}</tr>`).join('');
   const foot = sp.foot.map(r => `<tr class="tot">${r.cells.map((c, i) => cell(c, sp.cols[i], sp.cols[i].key ? 'th' : 'td')).join('')}</tr>`).join('');
-  return `<div class="ss-wrap"><table class="ss"><thead><tr>${head1}</tr>${groups ? `<tr class="h2">${head2}</tr>` : ''}</thead><tbody>${body}</tbody>${foot ? `<tfoot>${foot}</tfoot>` : ''}</table></div>`;
+  return `<table class="ss"><thead><tr>${head1}</tr>${groups ? `<tr class="h2">${head2}</tr>` : ''}</thead><tbody>${body}</tbody>${foot ? `<tfoot>${foot}</tfoot>` : ''}</table>`;
 }
 function renderSheet(scr) {
   const st = ssSt(scr), box = document.querySelector(`#${scr} .ss-pane`);
@@ -1732,6 +1758,7 @@ function renderSheet(scr) {
         <option value="week">This week</option><option value="last7">Last 7 days</option><option value="last30">Last 30 days</option><option value="month">This month</option><option value="pay">Pay period</option><option value="all">All</option><option value="custom">Custom…</option></select>
         <button class="small secondary ssSort" onclick="ssSt('${scr}').desc=!ssSt('${scr}').desc;renderSheet('${scr}')"></button></div>
       <div class="row2 ssCustom"><label>From <input type="date" class="ssFrom" onchange="ssSt('${scr}').from=this.value;renderSheet('${scr}')"></label><label>To <input type="date" class="ssTo" onchange="ssSt('${scr}').to=this.value;renderSheet('${scr}')"></label></div>
+      <div class="seg mini ssLayout"><button data-l="cards" onclick="ssSt('${scr}').layout='cards';renderSheet('${scr}')">▤ Cards</button><button data-l="fit" onclick="ssSt('${scr}').layout='fit';renderSheet('${scr}')">⊞ Fit table</button></div>
       <p class="muted ssInfo"></p><div class="ssOut"></div>
       <div class="btn-row"><button class="small" onclick="exportSheet('${scr}','png')">🖼️ PNG</button><button class="small" onclick="exportSheet('${scr}','pdf')">📄 PDF</button><button class="small secondary" onclick="exportSheet('${scr}','csv')">CSV</button></div>
       <p class="muted">Exports are landscape US Letter (11 × 8.5 in).</p>`;
@@ -1744,8 +1771,28 @@ function renderSheet(scr) {
   box.querySelector('.ssSort').textContent = st.desc ? '↓ Newest first' : '↑ Oldest first';
   const sp = buildSheet(scr, f, t, st.desc);
   box.querySelector('.ssInfo').textContent = `${sDate(f, true)} – ${sDate(t, true)} · ${sp.rows.length} row${sp.rows.length === 1 ? '' : 's'}`;
-  box.querySelector('.ssOut').innerHTML = sp.rows.length ? sheetTableHtml(sp) : '<p class="muted">Nothing logged in this range.</p>';
+  box.querySelectorAll('.ssLayout button').forEach(b => b.classList.toggle('on', b.dataset.l === st.layout));
+  const out = box.querySelector('.ssOut');
+  out.innerHTML = !sp.rows.length ? '<p class="muted">Nothing logged in this range.</p>' : st.layout === 'fit' ? `<div class="ss-fit"><div class="ss-scale">${sheetTableHtml(sp)}</div></div><p class="muted">Scaled to fit the screen; pinch to zoom. Exports are full-size landscape letter.</p>` : sheetCardsHtml(sp);
+  fitTables();
 }
+// Phone layout: one card per row (label/value pairs). No horizontal scrolling anywhere.
+function sheetCardsHtml(sp) {
+  const lab = c => (c.g ? c.g + ' · ' : '') + c.h;
+  const card = (r, foot) => `<div class="card ss-card${foot ? ' foot' : ''}" ${!foot && r.id ? `onclick="openAoc('${r.id}')"` : !foot && r.day ? `onclick="openDay('${r.day}')"` : ''}>
+    <div class="ss-card-h">${esc(r.cells[0].t)}</div><dl>${r.cells.slice(1).map((c, i) => c.t === '' || c.t === '—' ? '' : `<dt>${esc(lab(sp.cols[i + 1]))}</dt><dd class="k-${sp.cols[i + 1].kind}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</dd>`).join('')}</dl></div>`;
+  return sp.rows.map(r => card(r)).join('') + sp.foot.map(r => card(r, true)).join('');
+}
+function fitTables() {
+  document.querySelectorAll('.ss-fit').forEach(box => {
+    const inner = box.querySelector('.ss-scale'), t = inner.firstElementChild;
+    inner.style.transform = 'none';
+    const s = Math.min(1, box.clientWidth / Math.max(1, t.offsetWidth));
+    inner.style.transform = `scale(${s})`;
+    box.style.height = Math.ceil(t.offsetHeight * s) + 'px';
+  });
+}
+window.addEventListener('resize', fitTables);
 
 /* Canvas pages: landscape US Letter at 300 dpi */
 const PAGE_W = 3300, PAGE_H = 2550, MARGIN = 150, TABLE_TOP = 300, BOX_H = 250, FOOT_H = 90;

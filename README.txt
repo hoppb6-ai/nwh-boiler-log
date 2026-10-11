@@ -12,7 +12,7 @@ Screens
 - Boiler log (pressure, water level checks, fuel, incidents/maintenance, notes) and Shifts & hours (shift, start/end, break, hours, OT flag): from Home or More.
 - Notes: search across notes, boiler log, checklist notes and AOCs.
 
-Editor / Spreadsheet
+Editor / Spreadsheet (on the phone: Cards or a scaled Fit-table preview; the page never scrolls sideways)
 Checklist, Meters, AOCs, Boiler log and Shifts each have an Editor / Spreadsheet toggle. Spreadsheets have range pickers (This week, Last 7, Last 30, This month, Pay period, All, Custom) and newest/oldest sorting. Exports:
 - PNG: landscape US Letter at 300 dpi (3300 x 2550 px), one image per page.
 - PDF: landscape US Letter, multi-page (made on the device, no libraries).
