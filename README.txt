@@ -5,7 +5,8 @@ Offline web app (navy plant-safety theme) for the Northwest Hardwoods boiler ope
 Install: open https://hoppb6-ai.github.io/nwh-boiler-log/ in Safari → Share → Add to Home Screen. PIN: 5295. The app locks itself after 5 minutes in the background.
 
 Screens
-- Home: calendar of work days (worked, OT, PTO/Sick/Holiday, checklist, AOC and note markers), Clock in/out, month and pay-period hours (hours only), today's checklist and open AOCs. Tap a day to edit everything for that day.
+- Home: calendar of work days (worked, OT, PTO/Sick/Holiday, checklist, AOC and note markers), month and pay-period hours (hours only), today's checklist and open AOCs. Tap a day to edit everything for that day.
+- Time of task: every checklist item and the boiler log have an editable Time (HH:MM). It fills in automatically when you check an item or enter a value, and you can change or clear it. AOCs keep their own time. Times appear in the spreadsheet cards, table, PNG/PDF and CSV. There is no clock in/out; shift start/end are entered in the day editor.
 - Checklist: the ordered 12-item daily checklist (Fill Evap Tank, Collect water samples, 7 meters, Boiler 1/2 system checks, Water sample check with optional sulfite/pH/conductivity per boiler). Meter fields take digits only (hour meters allow up to 2 decimals) and show previous / today / usage. Entering a value checks the item. The checklist can be edited in More (order, names, value fields, units, normal ranges).
 - Meters: history per meter with 7-day and 30-day averages.
 - AOCs: Abnormal Operating Conditions (Probable vs Actual, equipment, severity, status, actions, tags), searchable and filterable.

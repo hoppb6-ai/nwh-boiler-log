@@ -185,8 +185,8 @@ body.locked #tabBar { display: none; }
 .sum-label { flex-basis: 100%; font-size: 13px; color: #777; font-weight: 600; margin-top: 4px; }
 .kv { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f2ece4; gap: 8px; }
 .kv:last-child { border-bottom: none; }
-.clock-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.clock-row button { margin: 0; padding: 12px 22px; white-space: nowrap; flex: 0 0 auto; }
+._unused-clock { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+._unused-clock button { margin: 0; padding: 12px 22px; white-space: nowrap; flex: 0 0 auto; }
 .sheet { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 40; display: none; align-items: flex-end; }
 .sheet.show { display: flex; }
 .sheet-body { background: var(--cream); width: 100%; max-width: 480px; margin: 0 auto; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); animation: up .2s ease-out; max-height: 85vh; overflow: auto; }
@@ -242,7 +242,6 @@ table.ss tfoot tr:first-child td, table.ss tfoot tr:first-child .dc { bottom: 29
 .cl-note { padding: 8px; font-size: 14px; margin: 4px 0 0; }
 input.oor, td.oor { color: #C62828 !important; font-weight: 800; border-color: #C62828; background: #FFF1C2; }
 .badge.part { background: #F2A900; }
-#clockChecklist { margin-top: 4px; }
 .cl-ed-field { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr auto; gap: 4px; align-items: center; }
 .cl-ed-field input, .cl-ed-field select { padding: 6px; font-size: 14px; margin: 2px 0; }
 .aoc-card { background: white; border-left: 5px solid #888; border-radius: 10px; padding: 10px 12px; margin: 8px 0; box-shadow: 0 1px 4px rgba(0,0,0,.08); cursor: pointer; }
@@ -302,9 +301,12 @@ table.ss tfoot td, table.ss tfoot .dc { background: #E4E8EE; border-top: 3px sol
 #tabBar button span { font-size: 20px; }
 table.ss .ctr { text-align: center; }
 /* Vertical scrolling only, 320–430px */
-html, body { overflow-x: hidden; max-width: 100vw; }
+html, body { overflow-x: hidden; overflow-x: clip; max-width: 100vw; width: 100%; touch-action: pan-y pinch-zoom; overscroll-behavior-x: none; }
+#app { position: relative; width: 100%; max-width: 100vw; overflow-x: hidden; overflow-x: clip; touch-action: pan-y pinch-zoom; }
+.screen, .card, #tabBar, #appHeader, button { max-width: 100%; touch-action: pan-y pinch-zoom; }
+.card > *, .screen > * { max-width: 100%; box-sizing: border-box; }
 *, *::before, *::after { box-sizing: border-box; min-width: 0; }
-.row2 > *, .btn-row > *, .clock-row > *, .datenav > *, .cal-head > *, .cl-top > *, .kv > *, .scr-head > *, .stats-row > * { min-width: 0; }
+.row2 > *, .btn-row > *, ._unused-clock > *, .datenav > *, .cal-head > *, .cl-top > *, .kv > *, .scr-head > *, .stats-row > * { min-width: 0; }
 input, select, textarea { max-width: 100%; }
 .card, .muted, label, .kv, .note-item, .aoc-card, dd, dt, .mu, .ss-card { overflow-wrap: anywhere; word-break: normal; }
 .row2 { flex-wrap: wrap; } .row2 > * { flex: 1 1 120px; }
@@ -330,9 +332,13 @@ input, select, textarea { max-width: 100%; }
 table.ss td.k-wrap { white-space: normal; min-width: 180px; max-width: 320px; text-align: left; }
 table.ss td.k-text, table.ss th.k-text { text-align: left; }
 .screen.wide { max-width: 980px; }
+.cl-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; }
+.cl-time-l { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #5A6472; margin: 0; font-weight: 600; }
+.cl-time-l input.cl-time { width: 7.2em; padding: 6px 6px; margin: 0; font-size: 15px; }
 </style>
 </head>
 <body class="locked">
+<div id="app">
 <header id="appHeader">
   <h1 id="appTitle">NWH Log</h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
@@ -355,7 +361,6 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
 <div id="home" class="screen">
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
   <div class="ex-banner save-banner" id="saveReminder"><span>💾 Save a backup file</span><button class="small" onclick="saveFile()">Save</button><button class="small secondary" onclick="dismissSaveReminder()" aria-label="Dismiss">✕</button></div>
-  <div class="card" id="clockCard"></div>
   <div class="card">
     <div class="cal-head"><button class="small secondary" onclick="calMove(-1)" aria-label="Previous month">‹</button><h3 id="calTitle"></h3><button class="small secondary" onclick="calMove(1)" aria-label="Next month">›</button></div>
     <div class="cal-grid" id="calGrid"></div>
@@ -394,6 +399,7 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
   <div class="card" id="boilerCard">
     <details class="boiler" id="boilerBox" open>
       <summary>🔥 Boiler log · <span class="dayLabel"></span></summary>
+      <label>Time</label><input id="bTime" type="time" aria-label="Time of boiler log entry">
       <label>Steam pressure (psi)</label><input id="bPressure" inputmode="decimal" placeholder="e.g. 125">
       <label>Water level checks</label><input id="bWater" placeholder="e.g. Gauge glass OK 7am/11am, low-water cutoff tested">
       <label>Fuel / wood fired</label><input id="bFuel" placeholder="e.g. hog fuel, ~18 tons">
@@ -582,6 +588,7 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
   <button data-tab="aocs" onclick="showScreen('aocs')"><span>⚠️</span><b>AOCs</b></button>
   <button data-tab="more" onclick="showScreen('more')"><span>☰</span><b>More</b></button>
 </nav>
+</div>
 <div id="toast" class="toast"></div>
 <script>
 /* ===================== NWH Boiler Log ===================== */
@@ -714,14 +721,6 @@ function workSum(from, to, calc) {
 function renderHome() {
   const S = getSettings(), W = getWork(), calc = workCalc(W), today = ymd(new Date());
   const ctx = { work: W, calc, aocs: aocsByDay() };
-  // clock card
-  const t = W[today] || {}, ct = calc[today] || {};
-  const inNow = t.clockedIn && t.start && !t.end;
-  document.getElementById('clockCard').innerHTML = `<div class="clock-row"><div><b>${S.abbr} · ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</b>
-      <div class="muted">${inNow ? 'On the clock since ' + fmtTime(t.start) : t.start && t.end ? `${fmtTime(t.start)} – ${fmtTime(t.end)} · ${ct.hours || 0} h${ct.ot ? ` · <span class="ot-flag">OT ${ct.ot} h</span>` : ''}` : 'Not clocked in'}</div>
-      <span id="clockChecklist" class="badge"></span></div>
-    <button id="clockBtn" class="${inNow ? 'danger' : 'olive'}" onclick="clockToggle()">${inNow ? 'Clock out' : 'Clock in'}</button></div>`;
-  updateClockProgress();
   // calendar
   const y = calFocus.getFullYear(), m = calFocus.getMonth();
   document.getElementById('calTitle').textContent = new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -745,14 +744,18 @@ function renderHome() {
   document.getElementById('homeChecklist').innerHTML = c.checklist;
   document.getElementById('homeAocs').innerHTML = c.aocs;
 }
-// swipe months
+// swipe months: only when the gesture starts and ends inside the calendar grid and is clearly horizontal; never transforms the page
 (() => {
   let x0 = null, y0 = null;
-  document.addEventListener('touchstart', e => { if (e.target.closest && e.target.closest('#calGrid')) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, { passive: true });
+  const inGrid = t => !!(t && t.closest && t.closest('#calGrid')); // day cells only; cards, header and other buttons never change the month
+  document.addEventListener('touchstart', e => { x0 = null; if (e.touches.length === 1 && inGrid(e.target)) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, { passive: true });
+  document.addEventListener('touchcancel', () => { x0 = null; }, { passive: true });
   document.addEventListener('touchend', e => {
     if (x0 == null) return;
-    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) calMove(dx < 0 ? 1 : -1);
+    const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null;
+    const g = document.getElementById('calGrid').getBoundingClientRect();
+    if (t.clientY < g.top - 40 || t.clientY > g.bottom + 40) return;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > 2 * Math.abs(dy)) calMove(dx < 0 ? 1 : -1);
   }, { passive: true });
 })();
 
@@ -766,7 +769,7 @@ function fillDayForm(key) {
   set('dType', w.dayType || 'Regular'); set('dShift', w.shift || 'Day'); set('dShiftCustom', w.shiftName);
   set('dStart', w.start); set('dEnd', w.end); set('dBreak', w.breakMin); set('dPaidHours', w.paidHours);
   const b = w.boiler || {};
-  [['bPressure', 'pressure'], ['bWater', 'water'], ['bFuel', 'fuel'], ['bIncidents', 'incidents']].forEach(([id, f]) => set(id, b[f]));
+  [['bTime', 'time'], ['bPressure', 'pressure'], ['bWater', 'water'], ['bFuel', 'fuel'], ['bIncidents', 'incidents']].forEach(([id, f]) => set(id, b[f]));
   set('dWorkNotes', w.notes); set('dWorkTags', (w.tags || []).join(', '));
   document.getElementById('dWorkPin').checked = !!w.pinned;
   document.getElementById('dShiftCustom').style.display = w.shift === 'Custom' ? 'block' : 'none';
@@ -792,7 +795,6 @@ function saveDayForm(quiet) {
   const key = editingDay; if (!key) return;
   const W = getWork(), oldW = W[key];
   const w = readWorkForm();
-  if (oldW && oldW.clockedIn && !w.end) w.clockedIn = true;
   if (oldW && oldW.checklist) w.checklist = oldW.checklist;
   if (hasWork(w)) { if (oldW && oldW.isExample && sameData(oldW, w)) w.isExample = true; W[key] = w; } else delete W[key];
   store('nwhWork', W);
@@ -1034,12 +1036,13 @@ function readWorkForm() {
   const w = {
     worked: document.getElementById('dWork').checked, dayType: v('dType'), shift: v('dShift'),
     start: v('dStart'), end: v('dEnd'), notes: v('dWorkNotes'), tags: parseTags(v('dWorkTags')), pinned: document.getElementById('dWorkPin').checked,
-    boiler: { pressure: v('bPressure'), water: v('bWater'), fuel: v('bFuel'), incidents: v('bIncidents') }
+    boiler: { time: v('bTime'), pressure: v('bPressure'), water: v('bWater'), fuel: v('bFuel'), incidents: v('bIncidents') }
   };
   if (w.shift === 'Custom') w.shiftName = v('dShiftCustom').trim();
   if (v('dBreak')) w.breakMin = Number(v('dBreak'));
   if (PAID_TYPES.includes(w.dayType) && v('dPaidHours') !== '') w.paidHours = Number(v('dPaidHours'));
   Object.keys(w.boiler).forEach(k => { if (!String(w.boiler[k]).trim()) delete w.boiler[k]; });
+  if (Object.keys(w.boiler).length === 1 && w.boiler.time) delete w.boiler.time;
   if (!Object.keys(w.boiler).length) delete w.boiler;
   if (!w.tags.length) delete w.tags;
   if (!w.pinned) delete w.pinned;
@@ -1093,25 +1096,6 @@ function renderMeters() {
   out.innerHTML = `<div class="stats-row">${avg(a7, 7)}${avg(a30, 30)}</div>` + (ser.length ? `<div class="table-wrap"><table class="rd"><tr><th>Date</th><th>Reading${unit}</th><th>Usage</th><th>Days</th></tr>
     ${ser.slice().reverse().slice(0, 45).map(x => `<tr onclick="openDay('${x.day}','work')"><td>${parseYmd(x.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}${x.isExample ? ' <span class="badge ex">EX</span>' : ''}</td><td>${x.value}</td><td class="${x.usage < 0 ? 'oor' : ''}">${x.usage == null ? '—' : x.usage}</td><td>${x.days == null ? '' : x.days}</td></tr>`).join('')}
   </table></div><p class="muted">Newest first. Usage = reading minus the previous reading. Red = negative (rollover or typo); negative usage is left out of averages. Tap a row to open that day.</p>` : '<p class="muted">No readings yet for this meter.</p>');
-}
-
-function clockToggle() {
-  const W = getWork(), key = ymd(new Date()), S = getSettings();
-  const e = W[key] || {};
-  if (e.clockedIn && e.start && !e.end) {
-    e.end = nowHM(); e.clockedIn = false;
-    toast('Clocked out at ' + fmtTime(e.end));
-  } else {
-    if (e.start && e.end && !confirm('You already have a shift today. Start a new clock-in (replaces today\'s times)?')) return;
-    const h = new Date().getHours();
-    e.worked = true; e.dayType = e.dayType && !PAID_TYPES.includes(e.dayType) && e.dayType !== 'Off' ? e.dayType : 'Regular';
-    e.shift = h >= 20 || h < 4 ? 'Night' : h >= 12 ? 'Swing' : 'Day';
-    e.start = nowHM(); delete e.end; e.clockedIn = true;
-    toast('Clocked in at ' + fmtTime(e.start));
-  }
-  delete e.isExample;
-  W[key] = e; store('nwhWork', W);
-  renderHome();
 }
 
 const meterItem = (id, label, dec) => ({ id, label, meter: true, fields: [{ key: 'reading', label: 'Reading', unit: dec ? 'hrs' : '', type: 'meter', dec: !!dec }] });
@@ -1189,7 +1173,7 @@ function checklistHtml(day) {
       const r = cl[it.id] || {}, vals = r.values || {};
       return `<div class="cl-item${r.done ? ' done' : ''}" data-item="${it.id}">
         <div class="cl-top"><label class="check"><input type="checkbox" ${r.done ? 'checked' : ''} onchange="clSet(this,'${day}','${it.id}','done')"> <span class="cl-n">${n + 1}.</span> ${esc(it.label)}</label>
-        <span class="muted cl-at">${r.done && r.at ? '✓ ' + new Date(r.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : ''}</span></div>
+        <label class="cl-time-l">Time <input type="time" class="cl-time" value="${taskTime(r)}" aria-label="Time of task" onchange="clSet(this,'${day}','${it.id}','time')"></label></div>
         ${it.fields.length ? `<div class="cl-fields">${it.fields.map(f => `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}
           ${f.type === 'meter' ? `<input type="text" inputmode="decimal" autocomplete="off" pattern="[0-9.]*" oninput="meterInput(this,${!!f.dec})" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${it.id}','value','${f.key}')"></label>` : `<input type="${f.type === 'time' ? 'time' : 'number'}" step="any" inputmode="decimal" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${it.id}','value','${f.key}')"></label>`}`).join('')}</div>` : ''}
         ${isMeter(it) ? `<div class="mu" data-mu="${it.id}">${meterUsageHtml(it.id, day, meterKey(it))}</div>` : ''}
@@ -1210,23 +1194,27 @@ function legacyChecklistHtml(day, items, cl) {
   return rows.length ? `<details class="cl-legacy"><summary class="muted">Earlier checklist items (${rows.length})</summary><ul>${rows.join('')}</ul></details>` : '';
 }
 // Saves one checklist change immediately and updates the UI in place (keeps keyboard focus).
+// Time of task (HH:MM): an explicit, editable time; older entries fall back to when they were checked
+function taskTime(r) { if (!r) return ''; if (r.time != null) return r.time; if (!r.at) return ''; const d = new Date(r.at); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
 function clSet(el, day, id, what, key) {
   const W = getWork(), e = W[day] || {};
   e.checklist = e.checklist || {};
   const r = e.checklist[id] || {};
   const item = allItemDefs().find(i => i.id === id) || { fields: [] };
-  if (what === 'done') { r.done = el.checked; if (el.checked) r.at = new Date().toISOString(); else delete r.at; }
+  if (what === 'done') { r.done = el.checked; if (el.checked) { r.at = new Date().toISOString(); if (!r.time) r.time = nowHM(); } else delete r.at; }
+  if (what === 'time') { r.time = el.value; if (!r.time && !r.done && !r.values && !r.note) delete r.time; }
   if (what === 'value') {
     r.values = r.values || {};
     const f = item.fields.find(x => x.key === key) || {};
     if (f.type === 'meter') { el.value = cleanMeter(el.value, f.dec); if (el.value === '.') el.value = ''; }
     if (el.value === '' || (f.type !== 'time' && isNaN(Number(el.value)))) delete r.values[key]; else r.values[key] = f.type === 'time' ? el.value : Number(el.value);
+    if (r.values[key] != null && !r.time) r.time = nowHM(); // entering a value stamps the time (editable)
     if (r.values[key] != null && !r.done) { r.done = true; r.at = new Date().toISOString(); } // a saved value checks the item
     el.classList.toggle('oor', outOfRange(f, r.values[key]));
     if (!Object.keys(r.values).length) delete r.values;
   }
   if (what === 'note') { if (el.value.trim()) r.note = el.value; else delete r.note; }
-  if (Object.keys(r).length && (r.done || r.values || r.note)) e.checklist[id] = r; else delete e.checklist[id];
+  if (Object.keys(r).length && (r.done || r.values || r.note || r.time)) e.checklist[id] = r; else delete e.checklist[id];
   if (!Object.keys(e.checklist).length) delete e.checklist;
   delete e.isExample;
   if (hasWork(e)) W[day] = e; else delete W[day];
@@ -1236,16 +1224,9 @@ function clSet(el, day, id, what, key) {
     box.querySelector('.cl-prog').textContent = `${p.done}/${p.total}`;
     box.querySelector('.progress i').style.width = (p.total ? Math.round(p.done / p.total * 100) : 0) + '%';
     const it = box.querySelector(`.cl-item[data-item="${id}"]`);
-    if (it) { it.classList.toggle('done', !!r.done); it.querySelector('.cl-at').textContent = r.done && r.at ? '✓ ' + new Date(r.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : ''; it.querySelector('input[type=checkbox]').checked = !!r.done; const mu = it.querySelector('.mu'); if (mu) mu.innerHTML = meterUsageHtml(id, day, meterKey(item)); }
+    if (it) { it.classList.toggle('done', !!r.done); const ti = it.querySelector('.cl-time'); if (ti && document.activeElement !== ti) ti.value = taskTime(r); it.querySelector('input[type=checkbox]').checked = !!r.done; const mu = it.querySelector('.mu'); if (mu) mu.innerHTML = meterUsageHtml(id, day, meterKey(item)); }
   });
-  updateClockProgress();
   refreshDayCell(day);
-}
-function updateClockProgress() {
-  const el = document.getElementById('clockChecklist'); if (!el) return;
-  const p = checklistProgress(ymd(new Date()));
-  el.textContent = `Checklist ${p.done}/${p.total}`;
-  el.className = 'badge ' + (p.done === p.total && p.total ? 'paid' : p.done ? 'part' : 'unpaid');
 }
 
 /* Checklist editor (More) */
@@ -1643,9 +1624,9 @@ function buildSheet(scr, from, to, desc) {
     sp.cols.push(dateCol);
     items.forEach((it, n) => {
       const lab = `${n + 1}. ${it.label}`;
-      if (it.fields.length > 1) it.fields.forEach(f => sp.cols.push({ h: f.label + (f.unit ? ` (${f.unit})` : ''), g: lab, kind: 'num' }));
-      else if (it.fields.length === 1) sp.cols.push({ h: lab + (it.fields[0].unit ? ` (${it.fields[0].unit})` : ''), g: '', kind: 'num' });
-      else sp.cols.push({ h: lab, g: '', kind: 'text', align: 'center' });
+      if (it.fields.length) it.fields.forEach(f => sp.cols.push({ h: it.fields.length > 1 ? f.label + (f.unit ? ` (${f.unit})` : '') : (f.unit ? `Value (${f.unit})` : 'Value'), g: lab, kind: 'num' }));
+      else sp.cols.push({ h: 'Done', g: lab, kind: 'text', align: 'center' });
+      sp.cols.push({ h: 'Time', g: lab, kind: 'text', align: 'center' });
     });
     sp.cols.push({ h: 'Done', g: '', kind: 'text', align: 'center' });
     days.filter(k => W[k].checklist).forEach(k => {
@@ -1655,6 +1636,7 @@ function buildSheet(scr, from, to, desc) {
         const missed = !r.done && !Object.keys(v).length;
         if (it.fields.length) it.fields.forEach((f, fi) => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(v[f.key] + ' !', { bg: AMBER_BG, bold: true }) : C(v[f.key])) : missed && fi === 0 ? C('✗', { color: RED, bold: true }) : C(it.fields.length === 1 && r.done ? '✓' : '', { color: GREEN, bold: true })));
         else cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }));
+        cells.push(C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
       });
       const p = checklistProgress(k, W);
       cells.push(p.done >= p.total ? C(`✓ ${p.done}/${p.total}`, { bold: true, color: GREEN }) : C(`! ${p.done}/${p.total}`, { bold: true, bg: AMBER_BG }));
@@ -1696,11 +1678,11 @@ function buildSheet(scr, from, to, desc) {
       C(a.probable), C(a.actual), C(a.actions), C(a.resolved ? parseYmd(a.resolved).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''), C((a.tags || []).map(t => '#' + t).join(' '))] }));
   }
   if (scr === 'boiler') {
-    sp.cols = [dateCol, { h: 'Steam pressure (psi)', kind: 'num' }, { h: 'Water level checks', kind: 'wrap' }, { h: 'Fuel / wood fired', kind: 'wrap' }, { h: 'Incidents / maintenance', kind: 'wrap' }, { h: 'Notes', kind: 'wrap' }].map(c => Object.assign({ g: '' }, c));
+    sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Steam pressure (psi)', kind: 'num' }, { h: 'Water level checks', kind: 'wrap' }, { h: 'Fuel / wood fired', kind: 'wrap' }, { h: 'Incidents / maintenance', kind: 'wrap' }, { h: 'Notes', kind: 'wrap' }].map(c => Object.assign({ g: '' }, c));
     days.forEach(k => {
       const w = W[k], b = w.boiler || {};
       if (![b.pressure, b.water, b.fuel, b.incidents, w.notes].some(v => v && String(v).trim())) return;
-      sp.rows.push({ day: k, cells: [C(sDate(k)), C(b.pressure), C(b.water), C(b.fuel), C(b.incidents ? '! ' + b.incidents : '', b.incidents ? { bg: AMBER_BG } : {}), C(w.notes)] });
+      sp.rows.push({ day: k, cells: [C(sDate(k)), C(b.time ? fmtTime(b.time) : ''), C(b.pressure), C(b.water), C(b.fuel), C(b.incidents ? '! ' + b.incidents : '', b.incidents ? { bg: AMBER_BG } : {}), C(w.notes)] });
     });
   }
   if (scr === 'shifts') {
@@ -1713,7 +1695,7 @@ function buildSheet(scr, from, to, desc) {
       if (c.worked) t.days++;
       t.hours += c.hours || 0; t.reg += c.reg || 0; t.ot += c.ot || 0; t.paid += c.paid || 0;
       sp.rows.push({ day: k, cells: [C(sDate(k)), C(w.dayType || 'Regular'),
-        C(PAID_TYPES.includes(w.dayType) || w.dayType === 'Off' ? '' : w.shift === 'Custom' ? (w.shiftName || 'Custom') : (w.shift || '')), C(fmtTime(w.start)), C(w.clockedIn && !w.end ? 'on clock' : fmtTime(w.end)), C(w.breakMin || ''),
+        C(PAID_TYPES.includes(w.dayType) || w.dayType === 'Off' ? '' : w.shift === 'Custom' ? (w.shiftName || 'Custom') : (w.shift || '')), C(fmtTime(w.start)), C(fmtTime(w.end)), C(w.breakMin || ''),
         C(c.hours || (c.paid ? '' : 0)), C(c.reg || ''), C(c.ot ? '! ' + c.ot : '', c.ot ? { bg: AMBER_BG, bold: true } : {}), C(c.paid || '')] });
     });
     Object.keys(t).forEach(k => t[k] = round2(t[k]));
@@ -2035,6 +2017,7 @@ checkRecovery();
 metaGet('fileHandle').then(h => { if (h) fileHandle = h; }).catch(() => {});
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 
+document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#boilerBox') && e.target.id !== 'bTime') { const t = document.getElementById('bTime'); if (!t.value && e.target.value.trim()) t.value = nowHM(); } });
 </script>
 </body>
 </html>
