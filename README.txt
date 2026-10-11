@@ -35,3 +35,7 @@ AOC library (AOCs tab): AOCs are a reference library separate from the daily log
 Exports: PNG/PDF pages have the header, the table and the footer (initials / page X of Y); there is no Notes/AOC status box.
 
 Hour-meter check (data is never changed): when both readings have a Time, the run hours are compared with the elapsed time between reads. "Ran 27 hrs (27 hrs between reads)" is fine; more run than elapsed is flagged amber "! Ran 27 hrs in 26.5 hrs elapsed, check reading". Without times, more than 24 hrs over a 1-day gap shows "! Check: >24 hrs between dated reads; add read times to confirm". Flags show in the app, cards, table, PNG/PDF and CSV.
+
+Spreadsheet Cards: each card groups its values into mini blocks (e.g. one per meter, with the meter name as a small bold heading and Reading / Used or Ran (hrs) rows). Every label/value row has a thin divider and alternating shading; heavier lines separate the blocks.
+
+Number format: all displayed numbers use thousands separators (8,965,770), in the app and PNG/PDF; CSV stays raw (no commas). Each meter has a Decimals setting in More → Checklist (defaults: Boiler 2 hour 2, Boiler 1 hour and Scrubber hour 1, other meters 0); readings and Ran/Used show exactly that many decimals. Stored values are unchanged, and inputs still accept up to 2 decimals.

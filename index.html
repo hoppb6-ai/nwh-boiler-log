@@ -392,6 +392,19 @@ table.rd th:first-child, table.rd td:first-child { width: 6.4em; }
 .badge.seen { background: #1F3A5F; } .aoc-dates { font-variant-numeric: tabular-nums; } .aoc-rel { margin-top: 4px; font-size: 13px; } .aoc-acts { margin-top: 6px; }
 .aoc-group { margin: 14px 0 4px; border-bottom: 2px solid #1F3A5F; } .chip { background: #EEF2F7; border-radius: 8px; padding: 6px 8px; margin: 6px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .aoc-occ { border-left: 3px solid #C9CED6; padding-left: 8px; margin: 6px 0; } .aoc-day-link { font-size: 14px; }
+/* spreadsheet Cards: ruled, shaded label/value rows; mini blocks per group */
+.ss-card { padding: 8px 10px; }
+.ss-grp { border-top: 2px solid #3C4654; margin-top: 6px; padding-top: 2px; }
+.ss-card-h + .ss-grp { margin-top: 2px; }
+.ss-gh { font-weight: 800; font-size: 13px; color: #1F3A5F; padding: 4px 6px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ss-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 6px; border-bottom: 1px solid #C9CED6; font-size: 14px; background: #fff; }
+.ss-row.alt { background: #F2F4F7; }
+.ss-row .k { color: #3C4654; flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ss-row .v { flex: 1 1 auto; min-width: 0; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; border-radius: 4px; padding: 0 3px; }
+.ss-row .v.k-wrap, .ss-row .v.k-text { text-align: right; }
+.ss-card.foot .ss-row { background: #E4E8EE; } .ss-card.foot .ss-row.alt { background: #DCE1E8; }
+.places-l { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 13px; margin: 0; } .places-l select { width: auto; margin: 0; }
+table.rd td.num, table.rd td:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body class="locked">
@@ -1275,14 +1288,23 @@ function pmEdSave() { const s = load('nwhSettings', {}); s.pmTasks = pmDraft.map
 /* ---------- Meter display: dates instead of Prev/Today; hour meters "Ran X hrs", resource meters "Used X" ---------- */
 const mdy = k => { const d = parseYmd(k); return String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0') + '/' + d.getFullYear(); };
 const isHourMeter = it => !!(it && (it.fields || []).some(f => f.type === 'meter' && (f.dec || /^(hrs?|hours?)$/i.test(f.unit || ''))));
-const fmtRun = d => String(Math.round(d * 100) / 100);                       // exact, up to 2 decimals, trailing zeros trimmed
+const fmtRun = d => String(Math.round(d * 100) / 100);                       // elapsed hours (trimmed)
 const fmtUsed = d => Number(d).toLocaleString('en-US', { maximumFractionDigits: 2 });
-const fmtReading = (it, v) => v == null || v === '' ? '' : isHourMeter(it) ? String(v) : Number(v).toLocaleString('en-US', { maximumFractionDigits: 2, useGrouping: false });
+// Display decimals per meter (More → Checklist → Decimals). Defaults: Boiler 2 hour 2, other hour meters 1, resource meters 0. Stored values are unchanged.
+function meterPlaces(it) {
+  const f = (it && it.fields || []).find(x => x.type === 'meter') || {};
+  if (f.places != null && f.places !== '') return Math.max(0, Math.min(2, Number(f.places)));
+  return it && it.id === 'b2hrs' ? 2 : isHourMeter(it) ? 1 : 0;
+}
+const fmtNum = (v, p) => v == null || v === '' || isNaN(v) ? '' : Number(v).toLocaleString('en-US', { minimumFractionDigits: p, maximumFractionDigits: p });
+const rawNum = (v, p) => v == null || v === '' || isNaN(v) ? '' : Number(v).toFixed(p);
+const fmtM = (it, v) => fmtNum(v, meterPlaces(it));
+const fmtReading = (it, v) => fmtM(it, v);
 // Main text for a difference: hour meters "Ran 23.8 hrs [since MM/DD/YYYY]", others "Used 1,450 [since MM/DD/YYYY]".
 function meterDiffText(it, usage, days, prevDay) {
   if (usage == null) return '';
   const since = days > 1 && prevDay ? ` since ${mdy(prevDay)}` : '';
-  return isHourMeter(it) ? `Ran ${fmtRun(usage)} hrs${since}` : `Used ${fmtUsed(usage)}${since}`;
+  return isHourMeter(it) ? `Ran ${fmtM(it, usage)} hrs${since}` : `Used ${fmtM(it, usage)}${since}`;
 }
 const meterDefById = id => allItemDefs().find(i => i.id === id) || { fields: [] };
 
@@ -1295,7 +1317,7 @@ function hourSanity(id, day, W, key) {
   const t1 = tOf(inf.prevDay), t2 = tOf(day);
   if (t1 && t2) {
     const el = Math.round((new Date(day + 'T' + t2) - new Date(inf.prevDay + 'T' + t1)) / 36e5 * 100) / 100;
-    if (el > 0 && inf.usage > el) return { flag: true, text: `! Ran ${fmtRun(inf.usage)} hrs in ${fmtRun(el)} hrs elapsed, check reading` };
+    if (el > 0 && inf.usage > el) return { flag: true, text: `! Ran ${fmtM(meterDefById(id), inf.usage)} hrs in ${fmtRun(el)} hrs elapsed, check reading` };
     return { flag: false, text: `(${fmtRun(el)} hrs between reads)` };
   }
   if (inf.days === 1 && inf.usage > 24) return { flag: true, text: '! Check: >24 hrs between dated reads; add read times to confirm' };
@@ -1372,9 +1394,9 @@ function renderMeters() {
   if (!it) { out.innerHTML = '<p class="muted">No meter items. Add a Meter value field in More → Daily checklist.</p>'; return; }
   const ser = meterSeries(it.id, W, meterKey(it)), hr = isHourMeter(it), today = ymd(new Date());
   const span = n => { const from = ymd(addDays(new Date(), -n)); const pts = ser.filter(x => x.usage != null && x.usage >= 0 && x.day > from && x.day <= today); return pts.length ? { sum: mRound(pts.reduce((a, x) => a + x.usage, 0)), days: pts.reduce((a, x) => a + x.days, 0) } : null; };
-  const stat = n => { const a = span(n); return `<div class="stat"><div class="v">${a ? (hr ? fmtRun(a.sum) + ' hrs' : fmtUsed(a.sum)) : '—'}</div><small>${hr ? 'Total run' : 'Used'}, last ${n} days${!hr && a && a.days ? `<br>Avg/day ${fmtUsed(mRound(a.sum / a.days))}` : ''}</small></div>`; };
+  const stat = n => { const a = span(n); return `<div class="stat"><div class="v">${a ? (hr ? fmtM(it, a.sum) + ' hrs' : fmtM(it, a.sum)) : '—'}</div><small>${hr ? 'Total run' : 'Used'}, last ${n} days${!hr && a && a.days ? `<br>Avg/day ${fmtUsed(mRound(a.sum / a.days))}` : ''}</small></div>`; };
   out.innerHTML = `<div class="stats-row">${stat(7)}${stat(30)}</div>` + (ser.length ? `<table class="rd"><tr><th>Date</th><th>Reading</th><th>${hr ? 'Ran' : 'Used'}</th></tr>
-    ${ser.slice().reverse().slice(0, 45).map(x => `<tr onclick="openDay('${x.day}')"><td>${mdy(x.day)}${x.isExample ? ' <span class="badge ex">EX</span>' : ''}</td><td>${x.value}</td><td class="${x.usage < 0 ? 'oor' : ''}">${x.usage == null ? '—' : (x.usage < 0 ? '! ' : '') + meterDiffText(it, x.usage, x.days, x.prevDay).replace(/^(Ran|Used) /, '')}</td></tr>`).join('')}
+    ${ser.slice().reverse().slice(0, 45).map(x => `<tr onclick="openDay('${x.day}')"><td>${mdy(x.day)}${x.isExample ? ' <span class="badge ex">EX</span>' : ''}</td><td class="num">${fmtM(it, x.value)}</td><td class="${x.usage < 0 ? 'oor' : ''}">${x.usage == null ? '—' : (x.usage < 0 ? '! ' : '') + meterDiffText(it, x.usage, x.days, x.prevDay).replace(/^(Ran|Used) /, '')}</td></tr>`).join('')}
   </table><p class="muted">Newest first. ${hr ? 'Ran = hours run since the previous reading.' : 'Used = reading minus the previous reading.'} "!" in red = negative (rollover or typo), left out of totals. Tap a row to open that day.</p>` : '<p class="muted">No readings yet for this meter.</p>');
 }
 
@@ -1429,8 +1451,8 @@ function meterInfo(id, day, W, key) {
 }
 function meterUsageHtml(id, day, key) {
   const m = meterInfo(id, day, null, key), it = meterDefById(id);
-  const prev = m.prevDay ? `${mdy(m.prevDay)}: <b>${m.prev}</b>` : '<span class="muted">No earlier reading</span>';
-  const today = `${mdy(day)}: <b>${m.today != null ? m.today : '—'}</b>`;
+  const prev = m.prevDay ? `${mdy(m.prevDay)}: <b>${fmtM(it, m.prev)}</b>` : '<span class="muted">No earlier reading</span>';
+  const today = `${mdy(day)}: <b>${m.today != null ? fmtM(it, m.today) : '—'}</b>`;
   let use = '';
   if (m.usage != null) use = `<b class="${m.usage < 0 ? 'neg' : ''}">${meterDiffText(it, m.usage, m.days, m.prevDay)}</b>${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
   const hs = isHourMeter(it) ? hourSanity(id, day, null, key) : null;
@@ -1558,7 +1580,7 @@ function clEdFieldRow(i, j, f) { return `<div class="cl-ed-field">
         <select onchange="clFieldType(${i},${j},this.value)"><option value="number"${f.type === 'number' || !f.type ? ' selected' : ''}>Number</option><option value="meter"${f.type === 'meter' && !f.dec ? ' selected' : ''}>Meter (digits)</option><option value="meterdec"${f.type === 'meter' && f.dec ? ' selected' : ''}>Meter (decimal)</option><option value="time"${f.type === 'time' ? ' selected' : ''}>Time</option></select>
         <input type="number" step="any" value="${f.min != null ? f.min : ''}" placeholder="Min" onchange="clDraft[${i}].fields[${j}].min=this.value===''?undefined:Number(this.value)">
         <input type="number" step="any" value="${f.max != null ? f.max : ''}" placeholder="Max" onchange="clDraft[${i}].fields[${j}].max=this.value===''?undefined:Number(this.value)">
-        <button class="small danger" onclick="clDraft[${i}].fields.splice(${j},1);clEdRender()" aria-label="Remove value field">✕</button></div>${f.sec ? freqEd(i, j, f) : ''}${f.sec ? infoEd(`clDraft[${i}].fields[${j}]`, f.info, `defaultInfo('field',clDraft[${i}].fields[${j}])`, f.label + ' note') : ''}`; }
+        <button class="small danger" onclick="clDraft[${i}].fields.splice(${j},1);clEdRender()" aria-label="Remove value field">✕</button>${f.type === 'meter' ? `<label class="places-l">Decimals <select aria-label="Decimals" onchange="clPlaces(${i},${j},this.value)">${[0, 1, 2].map(n => `<option value="${n}"${meterPlaces(clDraft[i]) === n ? ' selected' : ''}>${n}</option>`).join('')}</select></label>` : ''}</div>${f.sec ? freqEd(i, j, f) : ''}${f.sec ? infoEd(`clDraft[${i}].fields[${j}]`, f.info, `defaultInfo('field',clDraft[${i}].fields[${j}])`, f.label + ' note') : ''}`; }
 function freqEd(i, j, f) {
   const q = freqOf(f), ref = `clDraft[${i}].fields[${j}]`, days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   return `<div class="freq-ed"><label>How often</label><select aria-label="${esc(f.label)} frequency" onchange="${ref}.freq={type:this.value,dow:${ref}.freq&&${ref}.freq.dow||1,dom:${ref}.freq&&${ref}.freq.dom||1};clEdRender()">${Object.entries(FREQ_LABEL).map(([k, l]) => `<option value="${k}"${q.type === k ? ' selected' : ''}>${l}</option>`).join('')}</select>
@@ -1569,6 +1591,7 @@ function infoEd(ref, text, def, label) {
   return `<div class="info-ed"><textarea rows="2" aria-label="${esc(label)}" placeholder="${esc(label)} (optional)" onchange="${ref}.info=this.value">${esc(text || '')}</textarea>
     <button type="button" class="small secondary" onclick="${ref}.info=${def};clEdRender()">Reset to default</button></div>`;
 }
+function clPlaces(i, j, v) { clDraft[i].fields[j].places = v === '' ? undefined : Number(v); }
 function clFieldType(i, j, v) { const f = clDraft[i].fields[j]; f.type = v === 'meterdec' ? 'meter' : v; f.dec = v === 'meterdec'; clDraft[i].meter = clDraft[i].fields.some(x => x.type === 'meter'); }
 function clEdMove(i, d) { const j = i + d; if (j < 0 || j >= clDraft.length) return; [clDraft[i], clDraft[j]] = [clDraft[j], clDraft[i]]; clEdRender(); }
 function clEdAdd() {
@@ -2001,12 +2024,14 @@ function buildSheet(scr, from, to, desc) {
         const r = cl[it.id] || {}, v = r.values || {};
         const missed = !r.done && !Object.keys(v).length;
         if (it.sections) {
-          it.sections.forEach(sec => { wsCols(it, sec.id).forEach(f => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(v[f.key] + ' !', { bg: AMBER_BG, bold: true }) : C(v[f.key])) : C('')));
+          const nf = x => typeof x === 'number' ? x.toLocaleString('en-US', { maximumFractionDigits: 6 }) : x;
+          it.sections.forEach(sec => { wsCols(it, sec.id).forEach(f => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(nf(v[f.key]) + ' !', { bg: AMBER_BG, bold: true, raw: v[f.key] + ' !' }) : C(nf(v[f.key]), { raw: String(v[f.key]) })) : C('')));
             const x = (r.sec || {})[sec.id] || {}; cells.push(C(x.time ? fmtTime(x.time) : '')); });
           cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }), C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
           return;
         }
-        if (it.fields.length) it.fields.forEach((f, fi) => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(v[f.key] + ' !', { bg: AMBER_BG, bold: true }) : C(v[f.key])) : missed && fi === 0 ? C('✗', { color: RED, bold: true }) : C(it.fields.length === 1 && r.done ? '✓' : '', { color: GREEN, bold: true })));
+        const fv = (f, x) => f.type === 'meter' ? fmtM(it, x) : typeof x === 'number' ? x.toLocaleString('en-US', { maximumFractionDigits: 6 }) : x;
+        if (it.fields.length) it.fields.forEach((f, fi) => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(fv(f, v[f.key]) + ' !', { bg: AMBER_BG, bold: true, raw: v[f.key] + ' !' }) : C(fv(f, v[f.key]), { raw: String(v[f.key]) })) : missed && fi === 0 ? C('✗', { color: RED, bold: true }) : C(it.fields.length === 1 && r.done ? '✓' : '', { color: GREEN, bold: true })));
         else cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }));
         cells.push(C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
       });
@@ -2027,18 +2052,19 @@ function buildSheet(scr, from, to, desc) {
       meters.forEach((m, i) => {
         if (!has(k, m)) { cells.push(C('—', { color: '#aaa' }), C('')); return; }
         const inf = meterInfo(m.id, k, W, m.key);
-        cells.push(C(fmtReading(m.it, inf.today)));
+        const p = meterPlaces(m.it);
+        cells.push(C(fmtNum(inf.today, p), { raw: rawNum(inf.today, p) }));
         if (inf.usage == null) { cells.push(C('—', { color: '#aaa' })); return; }
-        const t = meterDiffText(m.it, inf.usage, inf.days, inf.prevDay).replace(/^(Ran|Used) /, '').replace(/ hrs/, '');
-        const hs = m.hr && inf.usage >= 0 ? hourSanity(m.id, k, W, m.key) : null;
-        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true }) : hs && hs.flag ? C(t + ' ' + hs.text, { bg: AMBER_BG, bold: true }) : C(t + (hs && hs.text ? ' ' + hs.text : '')));
+        const since = inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : '', t = fmtNum(inf.usage, p) + since, tr = rawNum(inf.usage, p) + since;
+        const hs = m.hr && inf.usage >= 0 ? hourSanity(m.id, k, W, m.key) : null, ex = hs && hs.text ? ' ' + hs.text : '';
+        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true, raw: '! ' + tr }) : hs && hs.flag ? C(t + ex, { bg: AMBER_BG, bold: true, raw: tr + ex }) : C(t + ex, { raw: tr + ex }));
         if (inf.usage >= 0) { tot[i].u += inf.usage; tot[i].d += inf.days; tot[i].n++; }
       });
       sp.rows.push({ day: k, cells });
     });
     sp.totals = tot.map(t => ({ total: t.n ? mRound(t.u) : null, days: t.d, avg: t.d ? mRound(t.u / t.d) : null }));
-    sp.foot.push({ cells: [C('Total run / used', { bold: true }), ...sp.totals.flatMap((t, i) => [C(''), C(t.total == null ? '—' : meters[i].hr ? 'Total run ' + fmtRun(t.total) : fmtUsed(t.total), { bold: true })])] });
-    sp.foot.push({ cells: [C('Avg/day', { bold: true }), ...sp.totals.flatMap((t, i) => [C(''), C(meters[i].hr || t.avg == null ? '' : fmtUsed(t.avg))])] });
+    sp.foot.push({ cells: [C('Total run / used', { bold: true }), ...sp.totals.flatMap((t, i) => { const p = meterPlaces(meters[i].it); return [C(''), t.total == null ? C('—', { bold: true }) : C((meters[i].hr ? 'Total run ' : '') + fmtNum(t.total, p), { bold: true, raw: (meters[i].hr ? 'Total run ' : '') + rawNum(t.total, p) })]; })] });
+    sp.foot.push({ cells: [C('Avg/day', { bold: true }), ...sp.totals.flatMap((t, i) => [C(''), meters[i].hr || t.avg == null ? C('') : C(fmtUsed(t.avg), { raw: String(t.avg) })])] });
   }
   if (scr === 'aocs') {
     sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Equipment', kind: 'text' }, { h: 'Category', kind: 'text' }, { h: 'Title', kind: 'wrap' }, { h: 'Severity', kind: 'text' }, { h: 'Status', kind: 'text' }, { h: 'Seen', kind: 'num' },
@@ -2122,9 +2148,19 @@ function renderSheet(scr) {
 }
 // Phone layout: one card per row (label/value pairs). No horizontal scrolling anywhere.
 function sheetCardsHtml(sp) {
-  const lab = c => (c.g ? c.g + ' · ' : '') + c.h;
-  const card = (r, foot) => `<div class="card ss-card${foot ? ' foot' : ''}" ${!foot && r.id ? `onclick="openAoc('${r.id}')"` : !foot && r.day ? `onclick="openDay('${r.day}')"` : ''}>
-    <div class="ss-card-h">${esc(r.cells[0].t)}</div><dl>${r.cells.slice(1).map((c, i) => c.t === '' || c.t === '—' ? '' : `<dt>${esc(lab(sp.cols[i + 1]))}</dt><dd class="k-${sp.cols[i + 1].kind}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</dd>`).join('')}</dl></div>`;
+  // One card per row. Columns are grouped into mini blocks (group name as a small bold heading); each label/value
+  // row has a thin divider and alternating shading; a heavier divider separates groups.
+  const card = (r, foot) => {
+    const blocks = []; let cur = null, n = 0;
+    r.cells.slice(1).forEach((c, i) => {
+      const col = sp.cols[i + 1];
+      if (c.t === '' || c.t === '—') return;
+      if (!cur || cur.g !== (col.g || '')) blocks.push(cur = { g: col.g || '', rows: [] });
+      cur.rows.push(`<div class="ss-row${n++ % 2 ? ' alt' : ''}"><span class="k">${esc(col.h)}</span><span class="v k-${col.kind}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</span></div>`);
+    });
+    return `<div class="card ss-card${foot ? ' foot' : ''}" ${!foot && r.id ? `onclick="openAoc('${r.id}')"` : !foot && r.day ? `onclick="openDay('${r.day}')"` : ''}>
+    <div class="ss-card-h">${esc(r.cells[0].t)}</div>${blocks.map(b => `<div class="ss-grp">${b.g ? `<div class="ss-gh">${esc(b.g)}</div>` : ''}${b.rows.join('')}</div>`).join('')}</div>`;
+  };
   return sp.rows.map(r => card(r)).join('') + sp.foot.map(r => card(r, true)).join('');
 }
 function fitTables() {
@@ -2335,7 +2371,8 @@ function makePdf(jpegs) {
 const dataUrlBytes = u => { const b = atob(u.split(',')[1]); const a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };
 function sheetCsv(sp) {
   const q = s => /[",\n]/.test(String(s)) ? '"' + String(s).replace(/"/g, '""') + '"' : String(s);
-  const lines = [sp.cols.map(c => (c.g ? c.g + ' – ' : '') + c.h), ...sp.rows.map(r => r.cells.map((c, i) => i === 0 && r.day ? r.day : c.t)), ...sp.foot.map(r => r.cells.map(c => c.t))];
+  const v = c => c.raw != null ? c.raw : c.t; // CSV stays raw: no thousands separators
+  const lines = [sp.cols.map(c => (c.g ? c.g + ' – ' : '') + c.h), ...sp.rows.map(r => r.cells.map((c, i) => i === 0 && r.day ? r.day : v(c))), ...sp.foot.map(r => r.cells.map(v))];
   return '\uFEFF' + lines.map(l => l.map(q).join(',')).join('\r\n');
 }
 async function shareOrDownload(files) {
