@@ -2120,7 +2120,7 @@ function buildSheet(scr, from, to, desc) {
   if (scr === 'meters') {
     const meters = getChecklist().filter(isMeter).map(it => ({ it, id: it.id, label: it.label, key: meterKey(it), hr: isHourMeter(it), unit: (it.fields.find(f => f.type === 'meter') || {}).unit || '' }));
     sp.cols.push(Object.assign({}, dateCol));
-    meters.forEach(m => { const g = m.label + (m.unit ? ` (${m.unit})` : ''); sp.cols.push({ h: 'Reading', g, kind: 'num' }, { h: m.hr ? 'Ran (hrs)' : 'Used', g, kind: 'num' }); });
+    meters.forEach(m => { const g = m.label + (m.unit ? ` (${m.unit})` : ''); sp.cols.push({ h: 'Reading', g, kind: 'num', csvAfter: m.label + ' read at' }, { h: m.hr ? 'Ran (hrs)' : 'Used', g, kind: 'num' }); });
     const has = (k, m) => { const r = W[k].checklist && W[k].checklist[m.id]; return r && r.values && r.values[m.key] != null; };
     const tot = meters.map(() => ({ u: 0, d: 0, n: 0 }));
     days.filter(k => meters.some(m => has(k, m))).forEach(k => {
@@ -2130,7 +2130,7 @@ function buildSheet(scr, from, to, desc) {
         const inf = meterInfo(m.id, k, W, m.key);
         const p = meterPlaces(m.it);
         const st = readStamp(m.id, k, W), stx = st.time || st.date !== k ? ' @ ' + stampText(st) : '';
-        cells.push(C(fmtNum(inf.today, p) + stx, { raw: rawNum(inf.today, p) + stx }));
+        cells.push(C(fmtNum(inf.today, p) + stx, { raw: rawNum(inf.today, p), csvAfter: st.time || st.date !== k ? stampText(st) : '' }));
         if (inf.usage == null) { cells.push(C('—', { color: '#aaa' })); return; }
         const cmp = meterCompare(m.id, k, W, m.key), t = cmp.short, tr = t.split(cmp.inf.usage < 0 ? fmtNum(inf.usage, p) : fmtNum(inf.usage, p)).join(rawNum(inf.usage, p));
         cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true, raw: '! ' + tr }) : cmp.flag ? C(t, { bg: AMBER_BG, bold: true, raw: tr }) : C(t, { raw: tr }));
@@ -2448,7 +2448,10 @@ const dataUrlBytes = u => { const b = atob(u.split(',')[1]); const a = new Uint8
 function sheetCsv(sp) {
   const q = s => /[",\n]/.test(String(s)) ? '"' + String(s).replace(/"/g, '""') + '"' : String(s);
   const v = c => c.raw != null ? c.raw : c.t; // CSV stays raw: no thousands separators
-  const lines = [sp.cols.map(c => (c.g ? c.g + ' – ' : '') + c.h), ...sp.rows.map(r => r.cells.map((c, i) => i === 0 && r.day ? r.day : v(c))), ...sp.foot.map(r => r.cells.map(v))];
+  // columns flagged csvAfter get an extra adjacent CSV-only column (e.g. '<Meter> read at')
+  const ex = (arr, f) => arr.flatMap((x, i) => sp.cols[i] && sp.cols[i].csvAfter ? [f(x, i), (x && x.csvAfter) || ''] : [f(x, i)]);
+  const lines = [sp.cols.flatMap(c => c.csvAfter ? [(c.g ? c.g + ' – ' : '') + c.h, c.csvAfter] : [(c.g ? c.g + ' – ' : '') + c.h]),
+    ...sp.rows.map(r => ex(r.cells, (c, i) => i === 0 && r.day ? r.day : v(c))), ...sp.foot.map(r => ex(r.cells, c => v(c)))];
   return '\uFEFF' + lines.map(l => l.map(q).join(',')).join('\r\n');
 }
 async function shareOrDownload(files) {
