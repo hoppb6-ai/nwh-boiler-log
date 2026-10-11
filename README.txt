@@ -5,16 +5,16 @@ Offline web app (navy plant-safety theme) for the Northwest Hardwoods boiler ope
 Install: open https://hoppb6-ai.github.io/nwh-boiler-log/ in Safari → Share → Add to Home Screen. PIN: 5295. The app locks itself after 5 minutes in the background.
 
 Screens
-- Home: calendar of work days (worked, OT, PTO/Sick/Holiday, checklist, AOC and note markers), month and pay-period hours (hours only), today's checklist and open AOCs. Tap a day to edit everything for that day.
-- Time of task: every checklist item and the boiler log have an editable Time (HH:MM). It fills in automatically when you check an item or enter a value, and you can change or clear it. AOCs keep their own time. Times appear in the spreadsheet cards, table, PNG/PDF and CSV. There is no clock in/out; shift start/end are entered in the day editor.
-- Checklist: the ordered 12-item daily checklist (Fill Evap Tank, Collect water samples, 7 meters, Boiler 1/2 system checks, Water sample check with optional sulfite/pH/conductivity per boiler). Meter fields take digits only (hour meters allow up to 2 decimals) and show previous / today / usage. Entering a value checks the item. The checklist can be edited in More (order, names, value fields, units, normal ranges).
+- Home: calendar of logged days (checklist complete/partial, AOC and notes/boiler log markers), this month's days logged, full checklists and AOCs, today's checklist and open AOCs. Tap a day to edit everything for that day. A day counts as logged when it has checklist, boiler log, AOC or note data.
+- Time of task: every checklist item and the boiler log have an editable Time (HH:MM). It fills in automatically when you check an item or enter a value, and you can change or clear it. AOCs keep their own time. Times appear in the spreadsheet cards, table, PNG/PDF and CSV. There is no clock in/out or shift/hours tracking.
+- Checklist: the ordered 12-item daily checklist (Fill Evap Tank, Collect water samples, 7 meters, Boiler 1/2 system checks, Water sample check with 4 sections: Feed water, Condensate, Boiler 1, Boiler 2; each has its own tests (default Sulfite ppm, pH, Conductivity µS/cm), time and note. Tests, units and normal ranges are set per section in More → Checklist (add e.g. Hardness, remove or rename tests); out-of-range values show "!" in amber. Older Boiler 1/2 values move into their sections automatically). Meter fields take digits only (hour meters allow up to 2 decimals) and show previous / today / usage. Entering a value checks the item. The checklist can be edited in More (order, names, value fields, units, normal ranges).
 - Meters: history per meter with 7-day and 30-day averages.
 - AOCs: Abnormal Operating Conditions (Probable vs Actual, equipment, severity, status, actions, tags), searchable and filterable.
-- Boiler log (pressure, water level checks, fuel, incidents/maintenance, notes) and Shifts & hours (shift, start/end, break, hours, OT flag): from Home or More.
+- Boiler log (time, pressure, water level checks, fuel, incidents/maintenance, notes): from Home or More.
 - Notes: search across notes, boiler log, checklist notes and AOCs.
 
 Editor / Spreadsheet (on the phone: Cards or a scaled Fit-table preview; the page never scrolls sideways)
-Checklist, Meters, AOCs, Boiler log and Shifts each have an Editor / Spreadsheet toggle. Spreadsheets have range pickers (This week, Last 7, Last 30, This month, Pay period, All, Custom) and newest/oldest sorting. Exports:
+Checklist, Meters, AOCs, and Boiler log each have an Editor / Spreadsheet toggle. Spreadsheets have range pickers (This week, Last 7, Last 30, This month, All, Custom) and newest/oldest sorting. Exports:
 - PNG: landscape US Letter at 300 dpi (3300 x 2550 px), one image per page.
 - PDF: landscape US Letter, multi-page (made on the device, no libraries).
 - CSV.

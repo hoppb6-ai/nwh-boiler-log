@@ -332,6 +332,12 @@ input, select, textarea { max-width: 100%; }
 table.ss td.k-wrap { white-space: normal; min-width: 180px; max-width: 320px; text-align: left; }
 table.ss td.k-text, table.ss th.k-text { text-align: left; }
 .screen.wide { max-width: 980px; }
+.ws-ed { border-left: 4px solid #1F3A5F; padding: 4px 0 6px 8px; margin: 8px 0; }
+.ws-secs { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 6px; }
+.ws-sec { border: 1px solid #C9CED6; border-left: 4px solid #1F3A5F; border-radius: 8px; padding: 8px 10px; background: #F7F8FA; }
+.ws-sec-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 10px; margin-bottom: 4px; }
+.ws-sec .cl-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; }
+.ws-sec .cl-f input { width: 100%; }
 .cl-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; }
 .cl-time-l { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #5A6472; margin: 0; font-weight: 600; }
 .cl-time-l input.cl-time { width: 7.2em; padding: 6px 6px; margin: 0; font-size: 15px; }
@@ -364,36 +370,19 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
   <div class="card">
     <div class="cal-head"><button class="small secondary" onclick="calMove(-1)" aria-label="Previous month">‹</button><h3 id="calTitle"></h3><button class="small secondary" onclick="calMove(1)" aria-label="Next month">›</button></div>
     <div class="cal-grid" id="calGrid"></div>
-    <div class="legend"><span><i class="dot work"></i> worked</span><span><i class="dot ot"></i> OT</span><span><i class="dot pto"></i> PTO/Sick/Hol</span><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot note"></i> notes</span></div>
+    <div class="legend"><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot note"></i> notes</span></div>
     <div class="cal-tools"><button class="small secondary" onclick="calToday()">Today</button><button class="small" onclick="openDay(ymd(new Date()))">＋ Log today</button></div>
   </div>
   <div class="stats-row wrap" id="homeStats"></div>
   <div class="card" id="homeChecklist"></div>
   <div class="card" id="homeAocs"></div>
-  <div class="btn-row"><button class="small secondary" onclick="showScreen('shifts')">🕒 Shifts &amp; hours</button><button class="small secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="small secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
+  <div class="btn-row"><button class="small secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="small secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
 </div>
 
 <!-- Day editor -->
 <div id="dayEditor" class="screen">
   <h2 id="dayTitle">Day</h2>
   <div id="dayCards">
-  <div class="card" id="shiftCard">
-    <h3>🕒 Shift · <span class="dayLabel"></span></h3>
-    <label class="check"><input type="checkbox" id="dWork" onchange="updateHoursInfo()"> Worked</label>
-    <div class="row2">
-      <div><label>Day type</label><select id="dType" onchange="updateHoursInfo()"><option>Regular</option><option>OT</option><option>PTO</option><option>Sick</option><option>Holiday</option><option>Off</option></select></div>
-      <div><label>Shift</label><select id="dShift" onchange="shiftChanged()"><option>Day</option><option>Swing</option><option>Night</option><option>Custom</option></select></div>
-    </div>
-    <input id="dShiftCustom" placeholder="Custom shift name" style="display:none">
-    <div class="row2">
-      <div><label>Start</label><input id="dStart" type="time" oninput="updateHoursInfo()"></div>
-      <div><label>End</label><input id="dEnd" type="time" oninput="updateHoursInfo()"></div>
-      <div><label>Break (min)</label><input id="dBreak" type="number" min="0" step="5" oninput="updateHoursInfo()"></div>
-    </div>
-    <div id="dPaidWrap" style="display:none"><label>Paid leave hours (PTO / Sick / Holiday)</label><input id="dPaidHours" type="number" step="0.25" oninput="updateHoursInfo()"></div>
-    <div id="dHoursInfo" class="hours-info"></div>
-    <button class="small" onclick="saveDayForm()">Save shift</button>
-  </div>
   <div id="dChecklist" class="card"></div>
   <div id="dAocs" class="card aoc-box"></div>
   <div class="card" id="boilerCard">
@@ -495,13 +484,6 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
   <div class="ss-pane"></div>
 </div>
 
-<!-- Shifts & hours -->
-<div id="shifts" class="screen">
-  <div class="scr-head"><h2>Shifts &amp; hours</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('shifts','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('shifts','sheet')">📊 Spreadsheet</button></div></div>
-  <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
-  <div class="ed-pane"><div id="shiftNav"></div><div id="shiftPane"></div><div class="card" id="shiftWeek"></div></div>
-  <div class="ss-pane"></div>
-</div>
 
 <!-- Notes -->
 <div id="notes" class="screen">
@@ -513,7 +495,7 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
 <!-- More -->
 <div id="more" class="screen">
   <h2>More</h2>
-  <div class="btn-row"><button class="secondary" onclick="showScreen('shifts')">🕒 Shifts &amp; hours</button><button class="secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
+  <div class="btn-row"><button class="secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
   <div class="card">
     <h3>💼 Job</h3>
     <div class="row2">
@@ -523,22 +505,9 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
     <div class="row2">
       <div style="flex:2"><label>Job title</label><input id="sTitle"></div>
       <div><label>Operator name</label><input id="sOperator" placeholder="(blank = write-in line)"></div>
-      <div><label>Paid leave h/day</label><input id="sPto" type="number" step="0.25"></div>
-    </div>
-    <div class="row2">
-      <div><label>OT after (h/day)</label><input id="sOtDaily" type="number" step="0.5"></div>
-      <div><label>OT after (h/week)</label><input id="sOtWeekly" type="number" step="0.5"></div>
-    </div>
-    <div class="row2">
-      <div><label>Pay period</label><select id="sPayLen"><option value="7">Weekly</option><option value="14">Every 2 weeks</option></select></div>
-      <div><label>A pay period start</label><input id="sPayStart" type="date"></div>
     </div>
     <label>Week starts on</label>
     <select id="sWeekStart"><option value="0">Sunday</option><option value="1">Monday</option></select>
-    <label>Shift times (start – end)</label>
-    <div class="row2"><span class="shift-l">Day</span><input id="sDayS" type="time"><input id="sDayE" type="time"></div>
-    <div class="row2"><span class="shift-l">Swing</span><input id="sSwingS" type="time"><input id="sSwingE" type="time"></div>
-    <div class="row2"><span class="shift-l">Night</span><input id="sNightS" type="time"><input id="sNightE" type="time"></div>
     <button onclick="saveSettings()">Save Settings</button>
   </div>
   <div class="card">
@@ -559,7 +528,7 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
   </div>
   <div class="card">
     <h3>📘 Example data</h3>
-    <p class="muted">Adds clearly marked example shifts, checklists, meter readings and AOCs so you can try the app. Remove removes only examples.</p>
+    <p class="muted">Adds clearly marked example checklists, boiler log entries, meter readings and AOCs so you can try the app. Remove removes only examples.</p>
     <div class="row2"><button class="olive" onclick="loadExamples()">Load example data</button><button class="secondary" onclick="removeExamples()">Remove examples</button></div>
   </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
@@ -606,27 +575,40 @@ function store(key, val) {
 const round2 = n => Math.round(n * 100) / 100;
 const exBadge = r => r && r.isExample ? ' <span class="badge ex">EXAMPLE</span>' : '';
 const DEFAULT_SETTINGS = {
-  checklist: null, employer: 'Northwest Hardwoods', abbr: 'NWH', title: 'Boiler Operator', operator: '', ptoHours: 8,
-  otDaily: 8, otWeekly: 40, payLen: 14, payStart: '2026-01-04', weekStart: 0,
-  shifts: { Day: ['06:00', '14:00'], Swing: ['14:00', '22:00'], Night: ['22:00', '06:00'] }
+  checklist: null, employer: 'Northwest Hardwoods', abbr: 'NWH', title: 'Boiler Operator', operator: '', weekStart: 0
 };
 function getSettings() {
   const s = Object.assign({}, DEFAULT_SETTINGS, load('nwhSettings', {}));
-  s.shifts = Object.assign({}, DEFAULT_SETTINGS.shifts, s.shifts || {});
-  s.checklist = Array.isArray(s.checklist) ? s.checklist : JSON.parse(JSON.stringify(DEFAULT_CHECKLIST));
+  s.checklist = upgradeChecklist(Array.isArray(s.checklist) ? s.checklist : JSON.parse(JSON.stringify(DEFAULT_CHECKLIST)));
   return s;
 }
 const getWork = () => load('nwhWork', {});
-const PAID_TYPES = ['PTO', 'Sick', 'Holiday'];
+// Water sample check: 4 sections, each with its own configurable tests (fields carry .sec), time and note.
+const WS_SECTIONS = [{ id: 'fw', label: 'Feed water' }, { id: 'cd', label: 'Condensate' }, { id: 'b1', label: 'Boiler 1' }, { id: 'b2', label: 'Boiler 2' }];
+const wsTests = sec => [{ key: sec + 'sulfite', label: 'Sulfite', unit: 'ppm', type: 'number', sec }, { key: sec + 'ph', label: 'pH', unit: '', type: 'number', sec }, { key: sec + 'cond', label: 'Conductivity', unit: 'µS/cm', type: 'number', sec }];
+const secLabel = (it, sec) => ((it.sections || []).find(x => x.id === sec) || WS_SECTIONS.find(x => x.id === sec) || { label: sec }).label;
+const fieldLabel = (it, f) => f.sec ? secLabel(it, f.sec) + ' ' + f.label : f.label;
+// Older templates had Boiler 1/2 tests only (keys b1sulfite… with labels "B1 Sulfite"): move them into sections, keep keys and ranges, add Feed water and Condensate.
+function upgradeChecklist(list) {
+  return list.map(it => {
+    if (it.id !== 'wscheck' || it.sections) return it;
+    const x = JSON.parse(JSON.stringify(it));
+    x.sections = JSON.parse(JSON.stringify(WS_SECTIONS));
+    x.fields.forEach(f => { const m = /^(b[12])/.exec(f.key); f.sec = m ? m[1] : 'b1'; f.label = String(f.label).replace(/^B[12]\s+/, ''); });
+    x.fields = [...wsTests('fw'), ...wsTests('cd'), ...x.fields.filter(f => f.sec === 'b1'), ...x.fields.filter(f => f.sec === 'b2')];
+    return x;
+  });
+}
 const parseTags = s => [...new Set(String(s || '').split(',').map(t => t.trim().replace(/^#/, '').toLowerCase()).filter(Boolean))];
 const toMin = t => { const [h, m] = String(t).split(':').map(Number); return h * 60 + m; };
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 const fmtTime = t => t ? new Date('2000-01-01T' + t).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
-const hasWork = w => w && (Object.keys(w.checklist || {}).length > 0 || w.worked || (w.dayType && w.dayType !== 'Regular') || w.start || w.end || (w.notes || '').trim() || w.pinned || (w.tags || []).length || Object.values(w.boiler || {}).some(v => String(v).trim()));
+// A day counts as logged when it has checklist, boiler log or note data (AOCs are stored separately). Old shift/hours fields are ignored.
+const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()));
 const subtitle = () => { const S = getSettings(); return `${S.employer} — ${S.title}`; };
 
 /* ---------- Screens & navigation ---------- */
-const VIEW_SCREENS = ['daily', 'meters', 'aocs', 'boiler', 'shifts'];
+const VIEW_SCREENS = ['daily', 'meters', 'aocs', 'boiler'];
 let views = (() => { try { return JSON.parse(localStorage.getItem('nwhViews') || '{}') || {}; } catch (e) { return {}; } })();
 const viewOf = s => views[s] === 'sheet' ? 'sheet' : 'editor';
 function setView(scr, v) {
@@ -634,12 +616,12 @@ function setView(scr, v) {
   renderScreen(scr);
 }
 function showScreen(id) {
-  if (id !== 'dayEditor' && id !== 'shifts' && id !== 'boiler') returnDayCards();
+  if (id !== 'dayEditor' && id !== 'boiler') returnDayCards();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
   renderScreen(id);
-  const tabFor = { home: 'home', dayEditor: 'home', daily: 'daily', meters: 'meters', aocs: 'aocs', aocEdit: 'aocs', more: 'more', restore: 'more', notes: 'more', boiler: 'more', shifts: 'more' };
+  const tabFor = { home: 'home', dayEditor: 'home', daily: 'daily', meters: 'meters', aocs: 'aocs', aocEdit: 'aocs', more: 'more', restore: 'more', notes: 'more', boiler: 'more' };
   document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === tabFor[id]));
   updateSaveUI(); updateExampleUI();
 }
@@ -656,7 +638,6 @@ function renderScreen(id) {
   if (id === 'meters' && viewOf('meters') === 'editor') renderMeters();
   if (id === 'aocs' && viewOf('aocs') === 'editor') renderAocList();
   if (id === 'boiler' && viewOf('boiler') === 'editor') renderBoilerEditor();
-  if (id === 'shifts' && viewOf('shifts') === 'editor') renderShiftEditor();
   if (id === 'notes') renderNotes();
   if (id === 'more') { fillSettings(); clDraft = null; clEdRender(); }
   if (id === 'restore') renderRestore();
@@ -691,12 +672,8 @@ function calMove(d) { calFocus = new Date(calFocus.getFullYear(), calFocus.getMo
 function calToday() { calFocus = new Date(); renderHome(); }
 function aocsByDay() { const m = {}; getAocs().forEach(a => (m[a.date] = m[a.date] || []).push(a)); return m; }
 function dayDots(key, ctx) {
-  const w = ctx.work[key], c = ctx.calc[key] || {}, out = [];
+  const w = ctx.work[key], out = [];
   if (w) {
-    if (PAID_TYPES.includes(w.dayType)) out.push('<i class="dot pto"></i>');
-    else if (w.dayType === 'Off') out.push('<i class="dot off"></i>');
-    else if (w.worked || w.start) out.push('<i class="dot work"></i>');
-    if (c.ot > 0) out.push('<i class="dot ot"></i>');
     if (w.checklist) { const p = checklistProgress(key, ctx.work); if (p.done) out.push(`<i class="dot ck${p.done >= p.total ? ' full' : ''}"></i>`); }
     if ((w.notes || '').trim() || Object.values(w.boiler || {}).some(v => String(v).trim())) out.push('<i class="dot note"></i>');
   }
@@ -706,21 +683,11 @@ function dayDots(key, ctx) {
 }
 function refreshDayCell(day) {
   const dots = document.querySelector(`#calGrid [data-day="${day}"] .dots`);
-  if (dots) dots.innerHTML = dayDots(day, { work: getWork(), calc: workCalc(), aocs: aocsByDay() });
-}
-function workSum(from, to, calc) {
-  const r = { days: 0, hours: 0, reg: 0, ot: 0, pto: 0, paid: 0 };
-  Object.entries(calc || workCalc()).forEach(([k, c]) => {
-    if (k < from || k > to) return;
-    if (c.worked) r.days++;
-    r.hours += c.hours; r.reg += c.reg; r.ot += c.ot; r.pto += c.pto; r.paid += c.paid;
-  });
-  Object.keys(r).forEach(k => r[k] = round2(r[k]));
-  return r;
+  if (dots) dots.innerHTML = dayDots(day, { work: getWork(), aocs: aocsByDay() });
 }
 function renderHome() {
-  const S = getSettings(), W = getWork(), calc = workCalc(W), today = ymd(new Date());
-  const ctx = { work: W, calc, aocs: aocsByDay() };
+  const S = getSettings(), W = getWork(), today = ymd(new Date());
+  const ctx = { work: W, aocs: aocsByDay() };
   // calendar
   const y = calFocus.getFullYear(), m = calFocus.getMonth();
   document.getElementById('calTitle').textContent = new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -735,11 +702,12 @@ function renderHome() {
   }
   document.getElementById('calGrid').innerHTML = html;
   // summaries
-  const mFrom = ymd(new Date(y, m, 1)), mTo = ymd(new Date(y, m + 1, 0)), ms = workSum(mFrom, mTo, calc);
-  const [pFrom, pTo] = payPeriodFor(today), ps = workSum(pFrom, pTo, calc);
+  const mFrom = ymd(new Date(y, m, 1)), mTo = ymd(new Date(y, m + 1, 0));
+  const mDays = Object.keys(W).filter(k => k >= mFrom && k <= mTo && hasWork(W[k]));
+  const full = mDays.filter(k => { const p = checklistProgress(k, W); return p.total && p.done >= p.total; }).length;
+  const mAocs = getAocs().filter(a => a.date >= mFrom && a.date <= mTo), open = getAocs().filter(a => a.status !== 'Resolved').length;
   const stat = (v, l) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
-  document.getElementById('homeStats').innerHTML = `<div class="sum-label">${new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long' })}</div>${stat(ms.days, 'days worked')}${stat(ms.hours, 'hours')}${stat(ms.ot, 'OT hours')}${stat(ms.pto, 'PTO hours')}
-    <div class="sum-label">Pay period ${parseYmd(pFrom).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${parseYmd(pTo).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>${stat(ps.days, 'days')}${stat(ps.hours, 'hours')}${stat(ps.reg, 'regular')}${stat(ps.ot, 'OT hours')}`;
+  document.getElementById('homeStats').innerHTML = `<div class="sum-label">${new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long' })}</div>${stat(mDays.length, 'days logged')}${stat(full, 'full checklists')}${stat(mAocs.length, 'AOCs')}${stat(open, 'open AOCs')}`;
   const c = nwhCardsHtml();
   document.getElementById('homeChecklist').innerHTML = c.checklist;
   document.getElementById('homeAocs').innerHTML = c.aocs;
@@ -759,22 +727,17 @@ function renderHome() {
   }, { passive: true });
 })();
 
-/* ---------- Day editor (cards are shared with the Shifts and Boiler editors) ---------- */
+/* ---------- Day editor (cards are shared with the Boiler editor) ---------- */
 let editingDay = null;
 function fillDayForm(key) {
   editingDay = key;
   const S = getSettings(), w = getWork()[key] || {};
   const set = (id, v) => document.getElementById(id).value = v == null ? '' : v;
-  document.getElementById('dWork').checked = !!w.worked;
-  set('dType', w.dayType || 'Regular'); set('dShift', w.shift || 'Day'); set('dShiftCustom', w.shiftName);
-  set('dStart', w.start); set('dEnd', w.end); set('dBreak', w.breakMin); set('dPaidHours', w.paidHours);
   const b = w.boiler || {};
   [['bTime', 'time'], ['bPressure', 'pressure'], ['bWater', 'water'], ['bFuel', 'fuel'], ['bIncidents', 'incidents']].forEach(([id, f]) => set(id, b[f]));
   set('dWorkNotes', w.notes); set('dWorkTags', (w.tags || []).join(', '));
   document.getElementById('dWorkPin').checked = !!w.pinned;
-  document.getElementById('dShiftCustom').style.display = w.shift === 'Custom' ? 'block' : 'none';
   document.querySelectorAll('.dayLabel').forEach(e => e.textContent = niceDate(key));
-  updateHoursInfo();
 }
 function openDay(key) {
   returnDayCards();
@@ -784,12 +747,24 @@ function openDay(key) {
   document.getElementById('dAocs').innerHTML = dayAocHtml(key);
   showScreen('dayEditor');
 }
-// Move the shift / boiler cards into another screen's editor pane, and back.
+// Move the boiler / notes cards into another screen's editor pane, and back.
 function placeCards(ids, target) { ids.forEach(id => document.getElementById(target).appendChild(document.getElementById(id))); }
 function returnDayCards() {
   const home = document.getElementById('dayCards');
   if (!home) return;
-  ['shiftCard', 'dChecklist', 'dAocs', 'boilerCard', 'notesCard'].forEach(id => home.appendChild(document.getElementById(id)));
+  ['dChecklist', 'dAocs', 'boilerCard', 'notesCard'].forEach(id => home.appendChild(document.getElementById(id)));
+}
+function readWorkForm() {
+  const v = id => document.getElementById(id).value;
+  const w = { notes: v('dWorkNotes'), tags: parseTags(v('dWorkTags')), pinned: document.getElementById('dWorkPin').checked,
+    boiler: { time: v('bTime'), pressure: v('bPressure'), water: v('bWater'), fuel: v('bFuel'), incidents: v('bIncidents') } };
+  Object.keys(w.boiler).forEach(k => { if (!String(w.boiler[k]).trim()) delete w.boiler[k]; });
+  if (Object.keys(w.boiler).length === 1 && w.boiler.time) delete w.boiler.time;
+  if (!Object.keys(w.boiler).length) delete w.boiler;
+  if (!w.notes.trim()) delete w.notes;
+  if (!w.tags.length) delete w.tags;
+  if (!w.pinned) delete w.pinned;
+  return w;
 }
 function saveDayForm(quiet) {
   const key = editingDay; if (!key) return;
@@ -806,7 +781,7 @@ function clearDay() {
   const W = getWork(); delete W[editingDay]; store('nwhWork', W); showScreen('home');
 }
 
-/* ---------- Editor date navigation (Checklist, Boiler, Shifts) ---------- */
+/* ---------- Editor date navigation (Checklist, Boiler) ---------- */
 let edDay = ymd(new Date());
 function edMove(n) { edDay = ymd(addDays(parseYmd(edDay), n)); renderScreen(document.querySelector('.screen.active').id); }
 function edSet(v) { if (v) { edDay = v; renderScreen(document.querySelector('.screen.active').id); } }
@@ -824,15 +799,6 @@ function renderBoilerEditor() {
   placeCards(['boilerCard', 'notesCard'], 'boilerPane');
   document.getElementById('boilerBox').open = true;
 }
-function renderShiftEditor() {
-  document.getElementById('shiftNav').innerHTML = dateNav();
-  fillDayForm(edDay);
-  placeCards(['shiftCard'], 'shiftPane');
-  const calc = workCalc(), wk = weekStartKey(edDay, getSettings().weekStart), we = ymd(addDays(parseYmd(wk), 6)), s = workSum(wk, we, calc);
-  const [pf, pt] = payPeriodFor(edDay), p = workSum(pf, pt, calc);
-  document.getElementById('shiftWeek').innerHTML = `<div class="kv"><span>Week of ${parseYmd(wk).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span><b>${s.hours} h · OT ${s.ot} h · ${s.days} days</b></div>
-    <div class="kv"><span>Pay period ${parseYmd(pf).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${parseYmd(pt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span><b>${p.hours} h · OT ${p.ot} h · PTO ${p.pto} h</b></div>`;
-}
 
 /* ---------- Notes search ---------- */
 function noteItems() {
@@ -840,7 +806,8 @@ function noteItems() {
   Object.entries(W).forEach(([k, w]) => {
     const b = w.boiler || {};
     const lines = [w.notes, ...[['Pressure', b.pressure && b.pressure + ' psi'], ['Water', b.water], ['Fuel', b.fuel], ['Incident/maint', b.incidents]].filter(x => x[1]).map(x => x.join(': ')),
-      ...Object.entries(w.checklist || {}).filter(([, r]) => r.note).map(([id, r]) => `${(defs.find(d => d.id === id) || { label: id }).label}: ${r.note}`)].filter(x => x && String(x).trim());
+      ...Object.entries(w.checklist || {}).filter(([, r]) => r.note).map(([id, r]) => `${(defs.find(d => d.id === id) || { label: id }).label}: ${r.note}`),
+      ...Object.entries(w.checklist || {}).flatMap(([id, r]) => Object.entries(r.sec || {}).filter(([, x]) => x.note).map(([sec, x]) => `Water sample · ${secLabel(defs.find(d => d.id === id) || {}, sec)}: ${x.note}`))].filter(x => x && String(x).trim());
     if (lines.length || (w.tags || []).length) out.push({ key: k, kind: 'day', text: lines.join('\n'), tags: w.tags || [], pinned: !!w.pinned, isExample: w.isExample });
   });
   getAocs().forEach(a => out.push({ key: a.date, kind: 'aoc', id: a.id, text: `⚠️ AOC: ${a.title}\nProbable: ${a.probable || '—'} · Actual: ${a.actual || '—'}${a.actions ? '\nActions: ' + a.actions : ''}`, tags: a.tags || [], pinned: false, isExample: a.isExample }));
@@ -859,35 +826,41 @@ function renderNotes() {
 function fillSettings() {
   const S = getSettings();
   const set = (id, v) => document.getElementById(id).value = v;
-  set('sEmployer', S.employer); set('sAbbr', S.abbr); set('sTitle', S.title); set('sOperator', S.operator || ''); set('sPto', S.ptoHours);
-  set('sOtDaily', S.otDaily); set('sOtWeekly', S.otWeekly); set('sPayLen', String(S.payLen)); set('sPayStart', S.payStart); set('sWeekStart', String(S.weekStart));
-  set('sDayS', S.shifts.Day[0]); set('sDayE', S.shifts.Day[1]); set('sSwingS', S.shifts.Swing[0]); set('sSwingE', S.shifts.Swing[1]); set('sNightS', S.shifts.Night[0]); set('sNightE', S.shifts.Night[1]);
+  set('sEmployer', S.employer); set('sAbbr', S.abbr); set('sTitle', S.title); set('sOperator', S.operator || ''); set('sWeekStart', String(S.weekStart));
 }
 function saveSettings() {
   const v = id => document.getElementById(id).value;
-  const num = (id, d) => { const n = parseFloat(v(id)); return isNaN(n) ? d : n; };
   const s = load('nwhSettings', {});   // keeps the checklist template
   Object.assign(s, {
     employer: v('sEmployer').trim() || DEFAULT_SETTINGS.employer, abbr: v('sAbbr').trim().slice(0, 6) || DEFAULT_SETTINGS.abbr, title: v('sTitle').trim() || DEFAULT_SETTINGS.title, operator: v('sOperator').trim(),
-    ptoHours: num('sPto', 8), otDaily: num('sOtDaily', 8), otWeekly: num('sOtWeekly', 40),
-    payLen: Number(v('sPayLen')) || 14, payStart: v('sPayStart') || DEFAULT_SETTINGS.payStart, weekStart: Number(v('sWeekStart')) || 0,
-    shifts: { Day: [v('sDayS'), v('sDayE')], Swing: [v('sSwingS'), v('sSwingE')], Night: [v('sNightS'), v('sNightE')] }
+    weekStart: Number(v('sWeekStart')) || 0
   });
+  ['ptoHours', 'otDaily', 'otWeekly', 'payLen', 'payStart', 'shifts'].forEach(k => delete s[k]); // shift/hours tracking removed
   store('nwhSettings', s);
   toast('Settings saved');
 }
 
 /* ---------- Data migration / Hopp import ---------- */
+// Shift/hours tracking was removed: drop those fields; days left with nothing logged are removed.
+const SHIFT_FIELDS = ['worked', 'dayType', 'shift', 'shiftName', 'start', 'end', 'breakMin', 'paidHours', 'clockedIn'];
+function stripShiftFields(work) {
+  Object.keys(work).forEach(k => { const w = work[k]; if (!w || typeof w !== 'object') { delete work[k]; return; } SHIFT_FIELDS.forEach(f => delete w[f]); if (!hasWork(w)) delete work[k]; });
+  return work;
+}
 function migrateData() {
+  const W0 = load('nwhWork', null);
+  if (W0 && typeof W0 === 'object' && Object.values(W0).some(w => w && SHIFT_FIELDS.some(f => f in w))) localStorage.setItem('nwhWork', JSON.stringify(stripShiftFields(W0)));
+  const S0 = load('nwhSettings', null);
+  if (S0 && typeof S0 === 'object' && ['ptoHours', 'otDaily', 'otWeekly', 'payLen', 'payStart', 'shifts'].some(k => k in S0)) { ['ptoHours', 'otDaily', 'otWeekly', 'payLen', 'payStart', 'shifts'].forEach(k => delete S0[k]); localStorage.setItem('nwhSettings', JSON.stringify(S0)); }
   if (load('nwhSchema', 0) < 1) { if (localStorage.getItem('nwhWork') !== null || localStorage.getItem('nwhAocs') !== null) store('nwhSchema', 1); }
 }
-// Hopp backup (app "hopps-invoices") → this app's data. Only work days, checklist template, AOCs and work settings are kept.
+// Hopp backup (app "hopps-invoices") → this app's data. Only work days (checklist, boiler log, notes), the checklist template, AOCs and basic settings are kept; shift/hours fields are dropped.
 function fromHopp(d) {
   d = d || {};
   const work = JSON.parse(JSON.stringify(d.hoppsWork && typeof d.hoppsWork === 'object' ? d.hoppsWork : {}));
   const hs = d.hoppsSettings && typeof d.hoppsSettings === 'object' ? d.hoppsSettings : {};
   const s = {};
-  ['employer', 'abbr', 'title', 'operator', 'ptoHours', 'otDaily', 'otWeekly', 'payLen', 'payStart', 'weekStart', 'shifts'].forEach(k => { if (hs[k] !== undefined) s[k] = hs[k]; });
+  ['employer', 'abbr', 'title', 'operator', 'weekStart'].forEach(k => { if (hs[k] !== undefined) s[k] = hs[k]; });
   const schema = Number(d.hoppsSchema) || 0;
   if (Array.isArray(hs.checklist)) {
     if (schema >= 6) s.checklist = hs.checklist;
@@ -903,8 +876,7 @@ function fromHopp(d) {
     if (extra.length) w.notes = [w.notes, ...extra].filter(Boolean).join('\n');
     delete b.chem; delete b.blowdowns;
   });
-  // very old Hopp (schema < 4) kept "went to work" in the side-business log
-  if (schema < 4 && d.hoppsLog && typeof d.hoppsLog === 'object') Object.entries(d.hoppsLog).forEach(([k, e]) => { if (e && e.work && !work[k]) work[k] = { worked: true, dayType: 'Regular', shift: 'Day' }; });
+  stripShiftFields(work);
   return { nwhWork: work, nwhAocs: Array.isArray(d.hoppsAocs) ? d.hoppsAocs : [], nwhSettings: s, nwhSchema: 1 };
 }
 
@@ -920,17 +892,17 @@ function loadExamples() {
   const d = k => ymd(addDays(new Date(), k));
   const W = getWork();
   const exAt = new Date(); exAt.setHours(9, 0, 0, 0);
-  const exCl = (done, values, notes) => Object.fromEntries(done.map(id => [id, Object.assign({ done: true, at: exAt.toISOString() }, values[id] ? { values: values[id] } : {}, (notes || {})[id] ? { note: notes[id] } : {})]));
-  const shift = (start, end, extra) => Object.assign({ isExample: true, worked: true, dayType: 'Regular', shift: 'Day', start, end }, extra || {});
+  const exCl = (done, values, notes) => Object.fromEntries(done.map(id => [id, Object.assign({ done: true, at: exAt.toISOString() }, values[id] ? { values: values[id] } : {}, (notes || {})[id] ? { note: notes[id] } : {}, id === 'wscheck' && values[id] ? { sec: { fw: { time: '08:05' }, cd: { time: '08:10' }, b1: { time: '08:20' }, b2: { time: '08:30', note: 'Example: sample cooler slow' } } } : {})]));
+  const day = extra => Object.assign({ isExample: true }, extra);
   const ex = {
-    [d(-1)]: shift('06:00', '16:30', { notes: 'Example: stayed late, #2 boiler feedwater pump acting up.', tags: ['pump'], boiler: { pressure: '128', water: 'Gauge glass OK 7am / 11am / 3pm', fuel: 'Hog fuel ~20 tons', incidents: 'Feedwater pump #2 seal leaking, wrote work order' } }),
-    [d(-2)]: shift('06:00', '14:00', { boiler: { pressure: '125', water: 'Low-water cutoff tested OK' } }),
-    [d(-3)]: shift('06:00', '14:00', { boiler: { pressure: '126', fuel: 'Sawdust + hog fuel' } }),
-    [d(-4)]: shift('06:00', '15:00', { notes: 'Example: safety meeting at shift change.', tags: ['safety'] }),
-    [d(-5)]: shift('06:00', '14:00', { boiler: { pressure: '124' } }),
-    [d(-8)]: { isExample: true, worked: false, dayType: 'PTO', shift: 'Day', notes: 'Example: PTO day.' },
-    [d(-9)]: shift('22:00', '06:00', { shift: 'Night', notes: 'Example: covered night shift.', pinned: true }),
-    [d(-10)]: shift('06:00', '14:00', { dayType: 'OT', notes: 'Example: Saturday call-in, all hours OT.' })
+    [d(-1)]: day({ notes: 'Example: #2 boiler feedwater pump acting up.', tags: ['pump'], boiler: { time: '07:15', pressure: '128', water: 'Gauge glass OK 7am / 11am / 3pm', fuel: 'Hog fuel ~20 tons', incidents: 'Feedwater pump #2 seal leaking, wrote work order' } }),
+    [d(-2)]: day({ boiler: { time: '07:05', pressure: '125', water: 'Low-water cutoff tested OK' } }),
+    [d(-3)]: day({ boiler: { time: '07:20', pressure: '126', fuel: 'Sawdust + hog fuel' } }),
+    [d(-4)]: day({ notes: 'Example: safety meeting at start of day.', tags: ['safety'] }),
+    [d(-5)]: day({ boiler: { time: '07:10', pressure: '124' } }),
+    [d(-8)]: day({ notes: 'Example: soot blowers run on both boilers.' }),
+    [d(-9)]: day({ notes: 'Example: pinned reminder, order more sulfite reagent.', pinned: true }),
+    [d(-10)]: day({ boiler: { time: '08:00', pressure: '127' }, notes: 'Example: Saturday walk-through.' })
   };
   const mBase = { gas: [996000, 520], b2gas: [385000000, 21000], daybin: [2070000, 4100], b2hrs: [86100.5, 8.25], b1hrs: [17350.2, 23.6], scrubhrs: [21815.4, 23.4], water: [8930000, 10100] };
   const jit = [0, 3, -2, 5, 1, -4, 2, 0, 6, -1, 3];
@@ -938,7 +910,7 @@ function loadExamples() {
   [-10, -9, -5, -4, -3, -2, -1].forEach(k => {
     const n = k + 10, vals = {};
     Object.entries(mBase).forEach(([id, [b, rate]], m) => { vals[id] = { reading: mRound(b + rate * n + rate * jit[(n + m) % 11] / 50) }; });
-    vals.wscheck = { b1sulfite: 30 + jit[n % 11], b1ph: 11.1, b1cond: 2800 + jit[n % 11] * 20, b2sulfite: 28 - jit[(n + 2) % 11], b2ph: 10.9, b2cond: k === -1 ? 3720 : 3000 + jit[(n + 3) % 11] * 25 };
+    vals.wscheck = { fwsulfite: 4 + (jit[n % 11] > 3 ? 1 : 0), fwph: 8.9, fwcond: 180 + jit[n % 11] * 5, cdsulfite: 0, cdph: 8.4, cdcond: 25 + jit[(n + 1) % 11], b1sulfite: 30 + jit[n % 11], b1ph: 11.1, b1cond: 2800 + jit[n % 11] * 20, b2sulfite: 28 - jit[(n + 2) % 11], b2ph: 10.9, b2cond: k === -1 ? 3720 : 3000 + jit[(n + 3) % 11] * 25 };
     ex[d(k)].checklist = exCl(k === -2 ? ids.slice(0, 7) : ids, vals, k === -1 ? { wscheck: 'Example: B2 conductivity high, increased blowdown' } : {});
   });
   Object.entries(ex).forEach(([k, v]) => { if (!W[k]) W[k] = v; });
@@ -981,87 +953,8 @@ function toast(msg) {
 
 function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
 
-function dayHours(e) {
-  if (!e || !e.worked || PAID_TYPES.includes(e.dayType) || e.dayType === 'Off') return 0;
-  if (!e.start || !e.end) return 0;
-  let m = toMin(e.end) - toMin(e.start);
-  if (m <= 0) m += 1440;              // overnight shift
-  m -= Number(e.breakMin) || 0;
-  return round2(Math.max(0, m) / 60);
-}
-
 function weekStartKey(key, ws) {
   const d = parseYmd(key); d.setDate(d.getDate() - ((d.getDay() - ws + 7) % 7)); return ymd(d);
-}
-
-function workCalc(Wover) {
-  const W = Wover || getWork(), S = getSettings(), out = {}, weeks = {};
-  Object.keys(W).sort().forEach(k => (weeks[weekStartKey(k, S.weekStart)] = weeks[weekStartKey(k, S.weekStart)] || []).push(k));
-  Object.values(weeks).forEach(days => {
-    let cumReg = 0;
-    days.forEach(k => {
-      const e = W[k], h = dayHours(e);
-      let reg = h, ot = 0;
-      if (e.dayType === 'OT') { ot = h; reg = 0; }
-      else {
-        ot = Math.max(0, h - S.otDaily); reg = h - ot;
-        if (cumReg + reg > S.otWeekly) { const ex = cumReg + reg - S.otWeekly; reg -= ex; ot += ex; }
-      }
-      cumReg += reg;
-      const paid = PAID_TYPES.includes(e.dayType) ? (e.paidHours !== undefined && e.paidHours !== '' ? Number(e.paidHours) : S.ptoHours) : 0;
-      out[k] = { hours: h, reg: round2(reg), ot: round2(ot), paid, pto: e.dayType === 'PTO' ? paid : 0, worked: !!e.worked && h >= 0 && !PAID_TYPES.includes(e.dayType) && e.dayType !== 'Off' };
-    });
-  });
-  return out;
-}
-
-function payPeriodFor(key) {
-  const S = getSettings();
-  const start = parseYmd(S.payStart || '2026-01-04'), d = parseYmd(key);
-  const n = Math.floor((d - start) / 86400000 / S.payLen);
-  const ps = addDays(start, n * S.payLen);
-  return [ymd(ps), ymd(addDays(ps, S.payLen - 1))];
-}
-
-function shiftChanged() {
-  const S = getSettings(), s = document.getElementById('dShift').value;
-  document.getElementById('dShiftCustom').style.display = s === 'Custom' ? 'block' : 'none';
-  if (S.shifts[s]) { document.getElementById('dStart').value = S.shifts[s][0]; document.getElementById('dEnd').value = S.shifts[s][1]; }
-  if (S.shifts[s] && !document.getElementById('dWork').checked && document.getElementById('dType').value === 'Regular') document.getElementById('dWork').checked = true;
-  updateHoursInfo();
-}
-
-function readWorkForm() {
-  const v = id => document.getElementById(id).value;
-  const w = {
-    worked: document.getElementById('dWork').checked, dayType: v('dType'), shift: v('dShift'),
-    start: v('dStart'), end: v('dEnd'), notes: v('dWorkNotes'), tags: parseTags(v('dWorkTags')), pinned: document.getElementById('dWorkPin').checked,
-    boiler: { time: v('bTime'), pressure: v('bPressure'), water: v('bWater'), fuel: v('bFuel'), incidents: v('bIncidents') }
-  };
-  if (w.shift === 'Custom') w.shiftName = v('dShiftCustom').trim();
-  if (v('dBreak')) w.breakMin = Number(v('dBreak'));
-  if (PAID_TYPES.includes(w.dayType) && v('dPaidHours') !== '') w.paidHours = Number(v('dPaidHours'));
-  Object.keys(w.boiler).forEach(k => { if (!String(w.boiler[k]).trim()) delete w.boiler[k]; });
-  if (Object.keys(w.boiler).length === 1 && w.boiler.time) delete w.boiler.time;
-  if (!Object.keys(w.boiler).length) delete w.boiler;
-  if (!w.tags.length) delete w.tags;
-  if (!w.pinned) delete w.pinned;
-  return w;
-}
-
-function updateHoursInfo() {
-  const w = readWorkForm(), S = getSettings();
-  document.getElementById('dPaidWrap').style.display = PAID_TYPES.includes(w.dayType) ? 'block' : 'none';
-  const el = document.getElementById('dHoursInfo');
-  if (PAID_TYPES.includes(w.dayType)) { el.innerHTML = `${w.dayType}: <b>${w.paidHours != null ? w.paidHours : S.ptoHours} paid hours</b>`; return; }
-  if (w.dayType === 'Off') { el.innerHTML = 'Day off'; return; }
-  // compute with this day's draft merged into the week
-  const W = getWork(); W[editingDay] = w;
-  const c = workCalc(W)[editingDay] || { hours: 0, ot: 0 };
-  const daily = Math.max(0, c.hours - S.otDaily);
-  el.innerHTML = w.worked && w.start && w.end
-    ? `<b>${c.hours} h</b>${c.ot ? ` · <span class="ot-flag">⚠ OT ${c.ot} h</span>` : ''}${daily > 0 && w.dayType !== 'OT' ? ` <span class="muted">(over ${S.otDaily} h/day)</span>` : ''}${c.ot > daily && w.dayType !== 'OT' ? ` <span class="muted">(week over ${S.otWeekly} h)</span>` : ''}`
-    : (w.worked ? '<span class="muted">Add start and end times to calculate hours.</span>' : '');
 }
 
 const sameData = (a, b) => { const c = x => JSON.stringify(Object.assign({}, x || {}, { isExample: undefined, clockedIn: undefined })); return c(a) === c(b); };
@@ -1113,7 +1006,7 @@ const DEFAULT_CHECKLIST = [
   meterItem('water', 'Water meter'),
   { id: 'b1check', label: 'Boiler 1 system check', fields: [] },
   { id: 'b2check', label: 'Boiler 2 system check', fields: [] },
-  { id: 'wscheck', label: 'Water sample check', fields: [...chemFields('b1'), ...chemFields('b2')] }
+  { id: 'wscheck', label: 'Water sample check', sections: JSON.parse(JSON.stringify(WS_SECTIONS)), fields: WS_SECTIONS.flatMap(x => wsTests(x.id)) }
 ];
 // v4.2 default items: no longer on the checklist, but their recorded data is kept and shown in history
 const LEGACY_CHECKLIST = [
@@ -1163,6 +1056,18 @@ function checklistProgress(day, W) {
   const done = items.filter(it => cl[it.id] && cl[it.id].done).length;
   return { done, total: items.length };
 }
+function clFieldHtml(f, vals, day, id) {
+  return `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}${f.min != null || f.max != null ? ` <small class="muted">[${f.min != null ? f.min : ''}–${f.max != null ? f.max : ''}]</small>` : ''}
+    <input type="${f.type === 'time' ? 'time' : 'number'}" step="any" inputmode="decimal" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${id}','value','${f.key}')"></label>`;
+}
+function wsSectionsHtml(it, r, day) {
+  const vals = r.values || {}, sx = r.sec || {};
+  return `<div class="ws-secs">${it.sections.map(sec => { const fs = it.fields.filter(f => f.sec === sec.id), x = sx[sec.id] || {};
+    return `<div class="ws-sec" data-sec="${sec.id}"><div class="ws-sec-h"><b>${esc(sec.label)}</b>
+      <label class="cl-time-l">Time <input type="time" class="ws-time" value="${esc(x.time || '')}" aria-label="${esc(sec.label)} time" onchange="clSet(this,'${day}','${it.id}','stime','${sec.id}')"></label></div>
+      ${fs.length ? `<div class="cl-fields">${fs.map(f => clFieldHtml(f, vals, day, it.id)).join('')}</div>` : '<p class="muted">No tests set for this section (More → Checklist).</p>'}
+      <input class="cl-note ws-note" placeholder="${esc(sec.label)} note (optional)" value="${esc(x.note || '')}" onchange="clSet(this,'${day}','${it.id}','snote','${sec.id}')"></div>`; }).join('')}</div>`;
+}
 function checklistHtml(day) {
   const items = getChecklist(), cl = (getWork()[day] || {}).checklist || {};
   const { done, total } = checklistProgress(day);
@@ -1174,7 +1079,7 @@ function checklistHtml(day) {
       return `<div class="cl-item${r.done ? ' done' : ''}" data-item="${it.id}">
         <div class="cl-top"><label class="check"><input type="checkbox" ${r.done ? 'checked' : ''} onchange="clSet(this,'${day}','${it.id}','done')"> <span class="cl-n">${n + 1}.</span> ${esc(it.label)}</label>
         <label class="cl-time-l">Time <input type="time" class="cl-time" value="${taskTime(r)}" aria-label="Time of task" onchange="clSet(this,'${day}','${it.id}','time')"></label></div>
-        ${it.fields.length ? `<div class="cl-fields">${it.fields.map(f => `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}
+        ${it.sections ? wsSectionsHtml(it, r, day) : it.fields.length ? `<div class="cl-fields">${it.fields.map(f => `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}
           ${f.type === 'meter' ? `<input type="text" inputmode="decimal" autocomplete="off" pattern="[0-9.]*" oninput="meterInput(this,${!!f.dec})" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${it.id}','value','${f.key}')"></label>` : `<input type="${f.type === 'time' ? 'time' : 'number'}" step="any" inputmode="decimal" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${it.id}','value','${f.key}')"></label>`}`).join('')}</div>` : ''}
         ${isMeter(it) ? `<div class="mu" data-mu="${it.id}">${meterUsageHtml(it.id, day, meterKey(it))}</div>` : ''}
         <input class="cl-note" placeholder="Note (optional)" value="${esc(r.note || '')}" onchange="clSet(this,'${day}','${it.id}','note')">
@@ -1203,18 +1108,20 @@ function clSet(el, day, id, what, key) {
   const item = allItemDefs().find(i => i.id === id) || { fields: [] };
   if (what === 'done') { r.done = el.checked; if (el.checked) { r.at = new Date().toISOString(); if (!r.time) r.time = nowHM(); } else delete r.at; }
   if (what === 'time') { r.time = el.value; if (!r.time && !r.done && !r.values && !r.note) delete r.time; }
+  if (what === 'stime' || what === 'snote') { r.sec = r.sec || {}; const x = r.sec[key] = r.sec[key] || {}; const f = what === 'stime' ? 'time' : 'note'; if (el.value.trim()) x[f] = el.value; else delete x[f]; if (!Object.keys(x).length) delete r.sec[key]; if (!Object.keys(r.sec).length) delete r.sec; }
   if (what === 'value') {
     r.values = r.values || {};
     const f = item.fields.find(x => x.key === key) || {};
     if (f.type === 'meter') { el.value = cleanMeter(el.value, f.dec); if (el.value === '.') el.value = ''; }
     if (el.value === '' || (f.type !== 'time' && isNaN(Number(el.value)))) delete r.values[key]; else r.values[key] = f.type === 'time' ? el.value : Number(el.value);
     if (r.values[key] != null && !r.time) r.time = nowHM(); // entering a value stamps the time (editable)
+    if (r.values[key] != null && f.sec) { r.sec = r.sec || {}; const x = r.sec[f.sec] = r.sec[f.sec] || {}; if (!x.time) x.time = nowHM(); }
     if (r.values[key] != null && !r.done) { r.done = true; r.at = new Date().toISOString(); } // a saved value checks the item
     el.classList.toggle('oor', outOfRange(f, r.values[key]));
     if (!Object.keys(r.values).length) delete r.values;
   }
   if (what === 'note') { if (el.value.trim()) r.note = el.value; else delete r.note; }
-  if (Object.keys(r).length && (r.done || r.values || r.note || r.time)) e.checklist[id] = r; else delete e.checklist[id];
+  if (Object.keys(r).length && (r.done || r.values || r.note || r.time || r.sec)) e.checklist[id] = r; else delete e.checklist[id];
   if (!Object.keys(e.checklist).length) delete e.checklist;
   delete e.isExample;
   if (hasWork(e)) W[day] = e; else delete W[day];
@@ -1224,7 +1131,7 @@ function clSet(el, day, id, what, key) {
     box.querySelector('.cl-prog').textContent = `${p.done}/${p.total}`;
     box.querySelector('.progress i').style.width = (p.total ? Math.round(p.done / p.total * 100) : 0) + '%';
     const it = box.querySelector(`.cl-item[data-item="${id}"]`);
-    if (it) { it.classList.toggle('done', !!r.done); const ti = it.querySelector('.cl-time'); if (ti && document.activeElement !== ti) ti.value = taskTime(r); it.querySelector('input[type=checkbox]').checked = !!r.done; const mu = it.querySelector('.mu'); if (mu) mu.innerHTML = meterUsageHtml(id, day, meterKey(item)); }
+    if (it) { it.classList.toggle('done', !!r.done); const ti = it.querySelector('.cl-time'); if (ti && document.activeElement !== ti) ti.value = taskTime(r); it.querySelectorAll('.ws-sec').forEach(sb => { const t = sb.querySelector('.ws-time'); if (t && document.activeElement !== t) t.value = ((r.sec || {})[sb.dataset.sec] || {}).time || ''; }); it.querySelector('input[type=checkbox]').checked = !!r.done; const mu = it.querySelector('.mu'); if (mu) mu.innerHTML = meterUsageHtml(id, day, meterKey(item)); }
   });
   refreshDayCell(day);
 }
@@ -1239,16 +1146,19 @@ function clEdRender() {
         <button class="small secondary" onclick="clEdMove(${i},-1)" aria-label="Move up">↑</button>
         <button class="small secondary" onclick="clEdMove(${i},1)" aria-label="Move down">↓</button>
         <button class="small danger" onclick="clDraft.splice(${i},1);clEdRender()" aria-label="Remove item">✕</button></div>
-      ${it.fields.map((f, j) => `<div class="cl-ed-field">
+      ${it.sections ? it.sections.map((sec, si) => `<div class="ws-ed"><div class="row2"><b style="flex:0 0 auto;align-self:center">Section</b><input value="${esc(sec.label)}" aria-label="Section name" onchange="clDraft[${i}].sections[${si}].label=this.value"></div>
+        ${it.fields.map((f, j) => f.sec === sec.id ? clEdFieldRow(i, j, f) : '').join('')}
+        <button class="small secondary" onclick="clDraft[${i}].fields.splice(clDraft[${i}].fields.map(x=>x.sec).lastIndexOf('${sec.id}')+1||clDraft[${i}].fields.length,0,{key:'${sec.id}'+Date.now().toString(36),label:'Test',unit:'',type:'number',sec:'${sec.id}'});clEdRender()">＋ Test in ${esc(sec.label)}</button></div>`).join('') : `${it.fields.map((f, j) => clEdFieldRow(i, j, f)).join('')}
+      <button class="small secondary" onclick="clDraft[${i}].fields.push({key:'f'+Date.now().toString(36),label:'Value',unit:'',type:'number'});clEdRender()">＋ Value field</button>`}
+    </div>`).join('');
+}
+function clEdFieldRow(i, j, f) { return `<div class="cl-ed-field">
         <input value="${esc(f.label)}" placeholder="Value name" onchange="clDraft[${i}].fields[${j}].label=this.value">
         <input value="${esc(f.unit || '')}" placeholder="Unit" onchange="clDraft[${i}].fields[${j}].unit=this.value">
         <select onchange="clFieldType(${i},${j},this.value)"><option value="number"${f.type === 'number' || !f.type ? ' selected' : ''}>Number</option><option value="meter"${f.type === 'meter' && !f.dec ? ' selected' : ''}>Meter (digits)</option><option value="meterdec"${f.type === 'meter' && f.dec ? ' selected' : ''}>Meter (decimal)</option><option value="time"${f.type === 'time' ? ' selected' : ''}>Time</option></select>
         <input type="number" step="any" value="${f.min != null ? f.min : ''}" placeholder="Min" onchange="clDraft[${i}].fields[${j}].min=this.value===''?undefined:Number(this.value)">
         <input type="number" step="any" value="${f.max != null ? f.max : ''}" placeholder="Max" onchange="clDraft[${i}].fields[${j}].max=this.value===''?undefined:Number(this.value)">
-        <button class="small danger" onclick="clDraft[${i}].fields.splice(${j},1);clEdRender()" aria-label="Remove value field">✕</button></div>`).join('')}
-      <button class="small secondary" onclick="clDraft[${i}].fields.push({key:'f'+Date.now().toString(36),label:'Value',unit:'',type:'number'});clEdRender()">＋ Value field</button>
-    </div>`).join('');
-}
+        <button class="small danger" onclick="clDraft[${i}].fields.splice(${j},1);clEdRender()" aria-label="Remove value field">✕</button></div>`; }
 function clFieldType(i, j, v) { const f = clDraft[i].fields[j]; f.type = v === 'meterdec' ? 'meter' : v; f.dec = v === 'meterdec'; clDraft[i].meter = clDraft[i].fields.some(x => x.type === 'meter'); }
 function clEdMove(i, d) { const j = i + d; if (j < 0 || j >= clDraft.length) return; [clDraft[i], clDraft[j]] = [clDraft[j], clDraft[i]]; clEdRender(); }
 function clEdAdd() {
@@ -1589,8 +1499,7 @@ const SHEETS = {
   daily: { title: 'NWH Daily Checklist', slug: 'Checklist' },
   meters: { title: 'NWH Meter Readings', slug: 'Meters' },
   aocs: { title: 'NWH Abnormal Operating Conditions', slug: 'AOCs' },
-  boiler: { title: 'NWH Boiler Log', slug: 'Boiler-Log' },
-  shifts: { title: 'NWH Shifts & Hours', slug: 'Shifts' }
+  boiler: { title: 'NWH Boiler Log', slug: 'Boiler-Log' }
 };
 const ssState = {};
 const ssSt = scr => ssState[scr] || (ssState[scr] = { range: 'last7', from: '', to: '', desc: true, layout: 'cards' });
@@ -1601,7 +1510,6 @@ function rangeDates(st) {
   if (k === 'last7') return [back(6), today];
   if (k === 'last30') return [back(29), today];
   if (k === 'month') return [today.slice(0, 8) + '01', today];
-  if (k === 'pay') return payPeriodFor(today);
   if (k === 'all') {
     const keys = [...Object.keys(getWork()), ...getAocs().map(a => a.date)].sort();
     return [keys[0] || today, keys.length && keys[keys.length - 1] > today ? keys[keys.length - 1] : today];
@@ -1624,6 +1532,13 @@ function buildSheet(scr, from, to, desc) {
     sp.cols.push(dateCol);
     items.forEach((it, n) => {
       const lab = `${n + 1}. ${it.label}`;
+      if (it.sections) {
+        it.sections.forEach(sec => { const g = `${n + 1}. Water · ${sec.label}`;
+          it.fields.filter(f => f.sec === sec.id).forEach(f => sp.cols.push({ h: f.label + (f.unit ? ` (${f.unit})` : ''), g, kind: 'num' }));
+          sp.cols.push({ h: 'Time', g, kind: 'text', align: 'center' }); });
+        sp.cols.push({ h: 'Done', g: lab, kind: 'text', align: 'center' }, { h: 'Time', g: lab, kind: 'text', align: 'center' });
+        return;
+      }
       if (it.fields.length) it.fields.forEach(f => sp.cols.push({ h: it.fields.length > 1 ? f.label + (f.unit ? ` (${f.unit})` : '') : (f.unit ? `Value (${f.unit})` : 'Value'), g: lab, kind: 'num' }));
       else sp.cols.push({ h: 'Done', g: lab, kind: 'text', align: 'center' });
       sp.cols.push({ h: 'Time', g: lab, kind: 'text', align: 'center' });
@@ -1634,6 +1549,12 @@ function buildSheet(scr, from, to, desc) {
       items.forEach(it => {
         const r = cl[it.id] || {}, v = r.values || {};
         const missed = !r.done && !Object.keys(v).length;
+        if (it.sections) {
+          it.sections.forEach(sec => { it.fields.filter(f => f.sec === sec.id).forEach(f => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(v[f.key] + ' !', { bg: AMBER_BG, bold: true }) : C(v[f.key])) : C('')));
+            const x = (r.sec || {})[sec.id] || {}; cells.push(C(x.time ? fmtTime(x.time) : '')); });
+          cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }), C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
+          return;
+        }
         if (it.fields.length) it.fields.forEach((f, fi) => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(v[f.key] + ' !', { bg: AMBER_BG, bold: true }) : C(v[f.key])) : missed && fi === 0 ? C('✗', { color: RED, bold: true }) : C(it.fields.length === 1 && r.done ? '✓' : '', { color: GREEN, bold: true })));
         else cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }));
         cells.push(C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
@@ -1685,25 +1606,7 @@ function buildSheet(scr, from, to, desc) {
       sp.rows.push({ day: k, cells: [C(sDate(k)), C(b.time ? fmtTime(b.time) : ''), C(b.pressure), C(b.water), C(b.fuel), C(b.incidents ? '! ' + b.incidents : '', b.incidents ? { bg: AMBER_BG } : {}), C(w.notes)] });
     });
   }
-  if (scr === 'shifts') {
-    sp.cols = [dateCol, { h: 'Day type', kind: 'text' }, { h: 'Shift', kind: 'text' }, { h: 'Start', kind: 'text' }, { h: 'End', kind: 'text' }, { h: 'Break (min)', kind: 'num' },
-      { h: 'Hours', kind: 'num' }, { h: 'Regular', kind: 'num' }, { h: 'OT', kind: 'num' }, { h: 'Paid leave', kind: 'num' }].map(c => Object.assign({ g: '' }, c));
-    const calc = workCalc(W), t = { days: 0, hours: 0, reg: 0, ot: 0, paid: 0 };
-    days.forEach(k => {
-      const w = W[k], c = calc[k] || {};
-      if (!(w.worked || w.start || (w.dayType && w.dayType !== 'Regular'))) return;
-      if (c.worked) t.days++;
-      t.hours += c.hours || 0; t.reg += c.reg || 0; t.ot += c.ot || 0; t.paid += c.paid || 0;
-      sp.rows.push({ day: k, cells: [C(sDate(k)), C(w.dayType || 'Regular'),
-        C(PAID_TYPES.includes(w.dayType) || w.dayType === 'Off' ? '' : w.shift === 'Custom' ? (w.shiftName || 'Custom') : (w.shift || '')), C(fmtTime(w.start)), C(fmtTime(w.end)), C(w.breakMin || ''),
-        C(c.hours || (c.paid ? '' : 0)), C(c.reg || ''), C(c.ot ? '! ' + c.ot : '', c.ot ? { bg: AMBER_BG, bold: true } : {}), C(c.paid || '')] });
-    });
-    Object.keys(t).forEach(k => t[k] = round2(t[k]));
-    sp.totals = t;
-    sp.foot.push({ cells: [C('Totals', { bold: true }), C(`${t.days} days worked`, { bold: true }), C(''), C(''), C(''), C(''), C(t.hours, { bold: true }), C(t.reg, { bold: true }), C(t.ot, { bold: true }), C(t.paid, { bold: true })] });
-  }
-  const sh = [...new Set(days.filter(k => W[k].worked && !PAID_TYPES.includes(W[k].dayType) && W[k].dayType !== 'Off').map(k => W[k].shift === 'Custom' ? (W[k].shiftName || 'Custom') : W[k].shift).filter(Boolean))];
-  sp.shiftText = sh.join(', ');
+
   const ra = getAocs().filter(a => a.date >= from && a.date <= to), act = aocSort(getAocs().filter(a => a.status !== 'Resolved' && a.date <= to));
   const mark = a => a.severity === 'High' ? '‼' : a.severity === 'Med' ? '!' : '·';
   sp.status = scr === 'aocs'
@@ -1737,7 +1640,7 @@ function renderSheet(scr) {
   const st = ssSt(scr), box = document.querySelector(`#${scr} .ss-pane`);
   if (!box.dataset.init) {
     box.innerHTML = `<div class="row2"><select class="ssRange" onchange="ssSt('${scr}').range=this.value;renderSheet('${scr}')">
-        <option value="week">This week</option><option value="last7">Last 7 days</option><option value="last30">Last 30 days</option><option value="month">This month</option><option value="pay">Pay period</option><option value="all">All</option><option value="custom">Custom…</option></select>
+        <option value="week">This week</option><option value="last7">Last 7 days</option><option value="last30">Last 30 days</option><option value="month">This month</option><option value="all">All</option><option value="custom">Custom…</option></select>
         <button class="small secondary ssSort" onclick="ssSt('${scr}').desc=!ssSt('${scr}').desc;renderSheet('${scr}')"></button></div>
       <div class="row2 ssCustom"><label>From <input type="date" class="ssFrom" onchange="ssSt('${scr}').from=this.value;renderSheet('${scr}')"></label><label>To <input type="date" class="ssTo" onchange="ssSt('${scr}').to=this.value;renderSheet('${scr}')"></label></div>
       <div class="seg mini ssLayout"><button data-l="cards" onclick="ssSt('${scr}').layout='cards';renderSheet('${scr}')">▤ Cards</button><button data-l="fit" onclick="ssSt('${scr}').layout='fit';renderSheet('${scr}')">⊞ Fit table</button></div>
@@ -1889,8 +1792,7 @@ function drawPage(sp, pg, idx, total) {
   T(`${S.title} log`, L + 40, MARGIN + 210, FONT(34), '#D5DDE8');
   const fr = sDate(sp.from, true), to = sDate(sp.to, true);
   T(`Date range: ${fr} – ${to}`, R - 40, MARGIN + 75, FONT(36, true), '#fff', 'right');
-  T(`Shift: ${sp.shiftText || '__________'}`, R - 40, MARGIN + 135, FONT(36), '#fff', 'right');
-  T(`Operator: ${S.operator || '____________________'}`, R - 40, MARGIN + 195, FONT(36), '#fff', 'right');
+  T(`Operator: ${S.operator || '____________________'}`, R - 40, MARGIN + 165, FONT(36), '#fff', 'right');
   const { ch, fs, hLines, hH, gH, lh, padY, padX } = pg;
   const xs = []; let x = L; ch.widths.forEach(w => { xs.push(x); x += w; });
   const tableW = x - L, top = MARGIN + TABLE_TOP;
