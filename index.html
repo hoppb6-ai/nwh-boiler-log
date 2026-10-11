@@ -441,6 +441,13 @@ body.in-round #tabBar, body.in-round header, body.in-round .app-header { display
 html.dark { filter: invert(.9) hue-rotate(180deg); background: #fff; }
 html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
 @media (prefers-reduced-motion: reduce) { button.pressed, .tap-ok { animation: none; } }
+.t24 { font-variant-numeric: tabular-nums; letter-spacing: .02em; } .t24.bad { border-color: #C62828 !important; background: #FDECEC; }
+.tbox:has(.t24) .tph { display: none !important; } .tbox .t24, input.t24 { height: 38px !important; min-height: 38px !important; max-height: 38px; margin-top: 0 !important; margin-bottom: 0 !important; } .tbox .t24 { width: 96px !important; } .tbox .tph { pointer-events: none; }
+.now-btn { width: auto !important; min-width: 0; margin: 0 0 0 4px !important; padding: 0 7px !important; height: 38px !important; min-height: 0 !important; line-height: 1; font-size: 12px !important; flex: 0 0 auto; background: #F2F4F7 !important; color: #1F3A5F !important; border: 1px solid #C9CED6 !important; border-radius: 8px; }
+.cl-time-l { flex-wrap: nowrap; }
+.readon { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: #3C4654; margin: 2px 0 4px; min-width: 0; } .readon span { white-space: nowrap; }
+.readon select, .readon input { width: auto; max-width: 100%; margin: 0; padding: 4px 6px; font-size: 13px; min-height: 32px; }
+.round-time .now-btn { height: 44px; padding: 0 12px !important; font-size: 15px !important; }
 </style>
 </head>
 <body class="locked">
@@ -787,7 +794,7 @@ function upgradeChecklist(list) {
 const parseTags = s => [...new Set(String(s || '').split(',').map(t => t.trim().replace(/^#/, '').toLowerCase()).filter(Boolean))];
 const toMin = t => { const [h, m] = String(t).split(':').map(Number); return h * 60 + m; };
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
-const fmtTime = t => t ? new Date('2000-01-01T' + t).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
+const fmtTime = t => t && /^\d{1,2}:\d{2}/.test(t) ? String(t).padStart(5, '0').slice(0, 5) : ''; // 24-hour HH:MM everywhere
 // A day counts as logged when it has checklist, boiler log or note data (AOCs are stored separately). Old shift/hours fields are ignored.
 const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()) || (w.chem || []).length > 0 || Object.keys(w.pm || {}).length > 0);
 const subtitle = () => { const S = getSettings(); return `${S.employer} — ${S.title}`; };
@@ -1566,7 +1573,7 @@ function checklistHtml(day) {
         <label class="cl-time-l"><span class="tl">🕒 Time</span><span class="tbox"><input type="time" required class="cl-time" value="${taskTime(r)}" aria-label="Time of task" onchange="clSet(this,'${day}','${it.id}','time')"><span class="tph" aria-hidden="true">--:--</span></span></label></div>
         ${it.sections ? wsSectionsHtml(it, r, day) : it.fields.length ? `<div class="cl-fields">${it.fields.map(f => `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}
           ${f.type === 'meter' ? `<input type="text" inputmode="decimal" autocomplete="off" pattern="[0-9.]*" oninput="meterInput(this,${!!f.dec})" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${it.id}','value','${f.key}')"></label>` : `<input type="${f.type === 'time' ? 'time' : 'number'}" step="any" inputmode="decimal" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${it.id}','value','${f.key}')"></label>`}`).join('')}</div>` : ''}
-        ${isMeter(it) ? `<div class="mu" data-mu="${it.id}">${meterUsageHtml(it.id, day, meterKey(it))}</div>` : ''}
+        ${isMeter(it) ? `<div class="mu" data-mu="${it.id}">${meterUsageHtml(it.id, day, meterKey(it))}</div>${readOnHtml(day, it.id, r)}` : ''}
         <input class="cl-note" placeholder="Note (optional)" value="${esc(r.note || '')}" onchange="clSet(this,'${day}','${it.id}','note')">
       </div>`;
     }).join('')}
@@ -1902,7 +1909,7 @@ function applyData(data) {
 }
 async function restoreSnapshot(id) {
   const s = (await listSnapshots()).find(x => x.id === id); if (!s) return;
-  if (!confirm(`Replace ALL current data with the snapshot from ${new Date(s.ts).toLocaleString()}?\n(${countsText(s.counts)})\nYour current data is snapshotted first.`)) return;
+  if (!confirm(`Replace ALL current data with the snapshot from ${new Date(s.ts).toLocaleString('en-US', { hourCycle: 'h23' })}?\n(${countsText(s.counts)})\nYour current data is snapshotted first.`)) return;
   await takeSnapshot('pre-restore', true);
   applyData(s.data);
   document.getElementById('recoveryCard').style.display = 'none';
@@ -1936,7 +1943,7 @@ async function renderRestore() {
   const list = await listSnapshots();
   document.getElementById('snapList').innerHTML = list.length ? list.map(s => `
     <div class="card snap">
-      <div class="top"><b>${new Date(s.ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</b>
+      <div class="top"><b>${new Date(s.ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}</b>
         <span class="badge" style="background:${s.kind === 'daily' ? 'var(--olive)' : s.kind === 'pre-restore' ? '#F2A900' : '#888'}">${s.kind === 'daily' ? 'DAILY' : s.kind === 'pre-restore' ? 'BEFORE RESTORE' : 'AUTO'}</span>${s.fallback ? ' <span class="badge ex">fallback</span>' : ''}</div>
       <div class="muted">${countsText(s.counts)}</div>
       <button class="small" onclick="restoreSnapshot('${s.id}')">Restore this snapshot</button>
@@ -1994,7 +2001,7 @@ async function saveFile(saveAs) {
 function updateSaveUI() {
   const last = localStorage.getItem('nwhLastFileSave');
   const snap = localStorage.getItem('nwhLastSnapshot');
-  const fmt = t => new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const fmt = t => new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
   const info = document.getElementById('lastSaveInfo');
   if (info) info.innerHTML = `Last file save: <b>${last ? fmt(last) : 'never'}</b>${localStorage.getItem('nwhLastFileName') ? ` (${esc(localStorage.getItem('nwhLastFileName'))})` : ''}<br>Last auto snapshot: <b>${snap ? fmt(snap) : '—'}</b>`;
   const banner = document.getElementById('saveReminder'); if (!banner) return;
@@ -2016,7 +2023,7 @@ async function checkRecovery() {
   const s = snaps[0];
   const card = document.getElementById('recoveryCard');
   card.innerHTML = `<h3>⚠️ ${bad.length ? 'Some saved data could not be read' : 'No data found on this device'}</h3>
-    <p>${bad.length ? 'Damaged: ' + bad.map(esc).join(', ') + '. ' : ''}A snapshot from <b>${new Date(s.ts).toLocaleString()}</b> is available (${countsText(s.counts)}).</p>
+    <p>${bad.length ? 'Damaged: ' + bad.map(esc).join(', ') + '. ' : ''}A snapshot from <b>${new Date(s.ts).toLocaleString('en-US', { hourCycle: 'h23' })}</b> is available (${countsText(s.counts)}).</p>
     <button onclick="restoreSnapshot('${s.id}')">Restore latest snapshot</button>
     <button class="secondary" onclick="document.getElementById('recoveryCard').style.display='none'">Not now</button>`;
   card.style.display = 'block';
@@ -2096,13 +2103,13 @@ function buildSheet(scr, from, to, desc) {
           const nf = x => typeof x === 'number' ? x.toLocaleString('en-US', { maximumFractionDigits: 6 }) : x;
           it.sections.forEach(sec => { wsCols(it, sec.id).forEach(f => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(nf(v[f.key]) + ' !', { bg: AMBER_BG, bold: true, raw: v[f.key] + ' !' }) : C(nf(v[f.key]), { raw: String(v[f.key]) })) : C('')));
             const x = (r.sec || {})[sec.id] || {}; cells.push(C(x.time ? fmtTime(x.time) : '')); });
-          cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }), C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
+          cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }), C(itemTimeText(r, k)));
           return;
         }
         const fv = (f, x) => f.type === 'meter' ? fmtM(it, x) : typeof x === 'number' ? x.toLocaleString('en-US', { maximumFractionDigits: 6 }) : x;
         if (it.fields.length) it.fields.forEach((f, fi) => cells.push(v[f.key] != null ? (outOfRange(f, v[f.key]) ? C(fv(f, v[f.key]) + ' !', { bg: AMBER_BG, bold: true, raw: v[f.key] + ' !' }) : C(fv(f, v[f.key]), { raw: String(v[f.key]) })) : missed && fi === 0 ? C('✗', { color: RED, bold: true }) : C(it.fields.length === 1 && r.done ? '✓' : '', { color: GREEN, bold: true })));
         else cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }));
-        cells.push(C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
+        cells.push(C(itemTimeText(r, k)));
       });
       cells.push(C((W[k].chem || []).map(e => chemEntryText(k, e)).join(' ; ')));
       const p = checklistProgress(k, W);
@@ -2122,11 +2129,11 @@ function buildSheet(scr, from, to, desc) {
         if (!has(k, m)) { cells.push(C('—', { color: '#aaa' }), C('')); return; }
         const inf = meterInfo(m.id, k, W, m.key);
         const p = meterPlaces(m.it);
-        cells.push(C(fmtNum(inf.today, p), { raw: rawNum(inf.today, p) }));
+        const st = readStamp(m.id, k, W), stx = st.time || st.date !== k ? ' @ ' + stampText(st) : '';
+        cells.push(C(fmtNum(inf.today, p) + stx, { raw: rawNum(inf.today, p) + stx }));
         if (inf.usage == null) { cells.push(C('—', { color: '#aaa' })); return; }
-        const since = inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : '', t = fmtNum(inf.usage, p) + since, tr = rawNum(inf.usage, p) + since;
-        const hs = m.hr && inf.usage >= 0 ? hourSanity(m.id, k, W, m.key) : null, ex = hs && hs.text ? ' ' + hs.text : '';
-        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true, raw: '! ' + tr }) : hs && hs.flag ? C(t + ex, { bg: AMBER_BG, bold: true, raw: tr + ex }) : C(t + ex, { raw: tr + ex }));
+        const cmp = meterCompare(m.id, k, W, m.key), t = cmp.short, tr = t.split(cmp.inf.usage < 0 ? fmtNum(inf.usage, p) : fmtNum(inf.usage, p)).join(rawNum(inf.usage, p));
+        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true, raw: '! ' + tr }) : cmp.flag ? C(t, { bg: AMBER_BG, bold: true, raw: tr }) : C(t, { raw: tr }));
         if (inf.usage >= 0) { tot[i].u += inf.usage; tot[i].d += inf.days; tot[i].n++; }
       });
       sp.rows.push({ day: k, cells });
@@ -2409,7 +2416,7 @@ function drawPage(sp, pg, idx, total) {
   // footer
   const fy = PAGE_H - MARGIN + 10;
   T('Operator initials: ________     Reviewed by: ________', L, fy, FONT(32), INK);
-  T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · NWH Log', PAGE_W / 2, fy, FONT(26), '#555', 'center');
+  T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) + ' · NWH Log', PAGE_W / 2, fy, FONT(26), '#555', 'center');
   T(`Page ${idx + 1} of ${total}`, R, fy, FONT(34, true), INK, 'right');
   cv.texts = texts; cv.fontPx = fs;
   return cv;
@@ -2564,7 +2571,7 @@ function exportPage(title, from, to, drawBody) {
   T(`Operator: ${S.operator || '____________________'}`, R - 40, MARGIN + 165, FONT(36), '#fff', 'right');
   const pages = drawBody ? 1 : 1; drawBody(ctx, L, MARGIN + 290, R - L, PAGE_H - MARGIN * 2 - 360);
   T('Operator initials: ________     Reviewed by: ________', L, PAGE_H - MARGIN + 10, FONT(32), INK);
-  T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · NWH Log', PAGE_W / 2, PAGE_H - MARGIN + 10, FONT(26), '#555', 'center');
+  T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) + ' · NWH Log', PAGE_W / 2, PAGE_H - MARGIN + 10, FONT(26), '#555', 'center');
   return cv;
 }
 function trendCanvas() {
@@ -2590,15 +2597,15 @@ function reportData(day) {
   const W = getWork(), w = W[day] || {}, cl = w.checklist || {}, items = getChecklist(), out = [];
   const p = checklistProgress(day, W);
   out.push({ h: `Checklist  ${p.done}/${p.total}` });
-  items.forEach((it, n) => { const r = cl[it.id] || {}; out.push({ t: `${r.done ? '✓' : '✗'} ${n + 1}. ${it.label}`, r: taskTime(r) ? fmtTime(taskTime(r)) : '', miss: !r.done, note: r.note }); });
+  items.forEach((it, n) => { const r = cl[it.id] || {}; out.push({ t: `${r.done ? '✓' : '✗'} ${n + 1}. ${it.label}`, r: itemTimeText(r, day), miss: !r.done, note: r.note }); });
   const meters = items.filter(isMeter);
   if (meters.length) { out.push({ h: 'Meters' }); meters.forEach(it => { const inf = meterInfo(it.id, day, W, meterKey(it)); if (inf.today == null) { out.push({ t: `${it.label}: —`, miss: true }); return; }
-    const hs = isHourMeter(it) && inf.usage != null && inf.usage >= 0 ? hourSanity(it.id, day, W, meterKey(it)) : null;
-    out.push({ t: `${it.label}: ${fmtM(it, inf.today)}`, r: inf.usage == null ? '' : (inf.usage < 0 ? '! ' : '') + meterDiffText(it, inf.usage, inf.days, inf.prevDay) + (hs && hs.flag ? ' !' : ''), flag: inf.usage < 0 || (hs && hs.flag) }); }); }
+    const cmp = meterCompare(it.id, day, W, meterKey(it)), st = readStamp(it.id, day, W);
+    out.push({ t: `${it.label}: ${fmtM(it, inf.today)}${st.time || st.date !== day ? ' @ ' + stampText(st) : ''}`, note: cmp ? (inf.usage < 0 ? '! ' : '') + cmp.text : '', flag: inf.usage < 0 || (cmp && cmp.flag) }); }); }
   const ws = wsItem();
   if (ws) { const r = cl[ws.id] || {}, v = r.values || {}, sx = r.sec || {}; const rows = [];
     ws.sections.forEach(sec => { const fs = ws.fields.filter(f => f.sec === sec.id && v[f.key] != null); if (!fs.length) return;
-      rows.push({ t: `${sec.label}${(sx[sec.id] || {}).time ? ' @ ' + fmtTime(sx[sec.id].time) : ''}: ` + fs.map(f => `${f.label} ${tNum(v[f.key])}${f.unit ? ' ' + f.unit : ''}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · '), flag: fs.some(f => outOfRange(f, v[f.key])), note: (sx[sec.id] || {}).note }); });
+      rows.push({ t: `${sec.label}${(sx[sec.id] || {}).time ? ' @ ' + sx[sec.id].time : ''}: ` + fs.map(f => `${f.label} ${tNum(v[f.key])}${f.unit ? ' ' + f.unit : ''}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · '), flag: fs.some(f => outOfRange(f, v[f.key])), note: (sx[sec.id] || {}).note }); });
     if (rows.length) out.push({ h: 'Water tests' }, ...rows); }
   if ((w.chem || []).length) { out.push({ h: 'Chemical additions' }); w.chem.forEach(e => out.push({ t: chemEntryText(day, e) })); }
   const pm = pmActive().map(t => ({ t, st: pmStatus(t, day, W), r: (w.pm || {})[t.id] })).filter(x => (x.r && x.r.done) || !x.st.done);
@@ -2674,7 +2681,7 @@ function ringSvg(done, total, size) { const r = 26, c = 2 * Math.PI * r, f = tot
 function todayFlags(day) {
   const W = getWork(), cl = ((W[day] || {}).checklist) || {}, out = [];
   getChecklist().forEach(it => { const v = (cl[it.id] || {}).values || {}; it.fields.forEach(f => { if (v[f.key] != null && outOfRange(f, v[f.key])) out.push(`${it.sections ? ((it.sections.find(s => s.id === f.sec) || {}).label || '') + ' ' : it.label + ' '}${f.label} ${tNum(v[f.key])}`); });
-    if (isMeter(it)) { const inf = meterInfo(it.id, day, W, meterKey(it)); if (inf.usage != null && inf.usage < 0) out.push(`${it.label}: lower than previous`); else if (inf.usage != null && isHourMeter(it)) { const hs = hourSanity(it.id, day, W, meterKey(it)); if (hs && hs.flag) out.push(`${it.label}: check reading`); } } });
+    if (isMeter(it)) { const inf = meterInfo(it.id, day, W, meterKey(it)); if (inf.usage != null && inf.usage < 0) out.push(`${it.label}: lower than previous`); else if (inf.usage != null && isHourMeter(it)) { const c = meterCompare(it.id, day, W, meterKey(it)); if (c && c.flag) out.push(`${it.label}: check reading/time`); } } });
   return out;
 }
 function homeDashHtml() {
@@ -2707,10 +2714,10 @@ function renderRound() {
   let body = '';
   if (it.sections) body = `<div class="round-ws" data-item="${it.id}">${wsSectionsHtml(it, r, roundDay)}</div>`;
   else if (it.fields.length) body = it.fields.map(f => `<label class="round-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}<input ${f.type === 'meter' ? `type="text" inputmode="decimal" autocomplete="off" oninput="meterInput(this,${!!f.dec})"` : 'type="number" step="any" inputmode="decimal"'} enterkeyhint="next" data-field="${f.key}" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" onchange="clSet(this,roundDay,'${it.id}','value','${f.key}');renderRoundMu()"></label>`).join('')
-    + (isMeter(it) ? `<div class="mu" data-mu="${it.id}" id="roundMu">${meterUsageHtml(it.id, roundDay, meterKey(it))}</div>` : '');
+    + (isMeter(it) ? `<div class="mu" data-mu="${it.id}" id="roundMu">${meterUsageHtml(it.id, roundDay, meterKey(it))}</div>${readOnHtml(roundDay, it.id, r)}` : '');
   else body = `<button class="round-done${r.done ? ' on' : ''}" onclick="roundCheck('${it.id}')">${r.done ? '✓ Done' : 'Tap when done'}</button>`;
   box.innerHTML = `<div class="round-card${r.done ? ' done' : ''}"><div class="round-step">Step ${roundI + 1} of ${items.length}</div><h2>${esc(it.label)}</h2>${it.info && !it.sections ? `<p class="muted">${esc(it.info)}</p>` : ''}${body}
-    <label class="round-time">🕒 Time <input type="time" value="${taskTime(r)}" onchange="clSet(this,roundDay,'${it.id}','time')"></label></div>`;
+    <label class="round-time">🕒 Time <input type="time" value="${taskTime(r)}" onchange="clSet(this,roundDay,'${it.id}','time');renderRoundMu()"></label></div>`;
   const first = box.querySelector('input[data-field]'); if (first && !it.sections) setTimeout(() => { try { first.focus({ preventScroll: true }); } catch (e) {} }, 60);
   enhanceMeterInputs(box);
 }
@@ -2755,8 +2762,102 @@ renderDailyEditor = function () { _renderDailyEditor(); enhanceMeterInputs(); };
 applyTheme();
 window.addEventListener('resize', () => { if (document.getElementById('trends').classList.contains('active')) renderTrends(); });
 
+/* ===================== 24-hour times & full read timestamps =====================
+   Times are always HH:MM 24h (custom text field, never the locale AM/PM picker).
+   A checklist record may carry r.date ('Read on' date, default = the log day) + r.time; together they form the read stamp.
+   Auto "checked at" stamps (r.at) are never used as read times. */
+const HM_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const validHM = t => typeof t === 'string' && HM_RE.test(t);
+function normHM(v) { // '930' → 09:30, '0130' → 01:30, '1:5'→ invalid, '' → ''
+  v = String(v || '').trim(); if (!v) return '';
+  let m = v.match(/^(\d{1,2}):(\d{2})$/); if (!m) { const d = v.replace(/\D/g, ''); if (/^\d{3,4}$/.test(d) && d.length === v.length) m = [0, d.slice(0, d.length - 2), d.slice(-2)]; else if (/^\d{1,2}$/.test(v)) m = [0, v, '00']; }
+  if (!m) return null; const h = Number(m[1]), mi = Number(m[2]); if (h > 23 || mi > 59) return null;
+  return String(h).padStart(2, '0') + ':' + String(mi).padStart(2, '0');
+}
+taskTime = function (r) { return r && validHM(r.time) ? r.time : ''; };
+function readStamp(id, k, W) { const r = ((W[k] || {}).checklist || {})[id] || {}; const date = r.date || k, time = validHM(r.time) ? r.time : ''; return { date, time, ms: time ? new Date(date + 'T' + time + ':00').getTime() : null }; }
+const stampText = s => mdy(s.date) + (s.time ? ' ' + s.time : '');
+const itemTimeText = (r, k) => validHM(r && r.time) ? (r.date && r.date !== k ? mdy(r.date) + ' ' : '') + r.time : '';
+// Compare a reading with the previous one: elapsed hours from full stamps; hour meters flag only if Ran > elapsed + 0.1 h
+function meterCompare(id, day, W, key) {
+  W = W || getWork(); const it = meterDefById(id), inf = meterInfo(id, day, W, key || meterKey(it)); if (inf.usage == null) return null;
+  const a = readStamp(id, inf.prevDay, W), b = readStamp(id, day, W), hr = isHourMeter(it);
+  const el = a.ms != null && b.ms != null ? Math.round((b.ms - a.ms) / 36e5 * 100) / 100 : null, Y = el == null ? '' : fmtNum(el, 1), X = fmtM(it, inf.usage);
+  const flag = hr && el != null && inf.usage > el + 0.1;
+  const since = inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : '';
+  const text = hr ? (el == null ? `Ran ${X} hrs${since} (add read time to compare)` : flag ? `! Ran ${X} hrs in ${Y} hrs elapsed, check reading/time` : `Ran ${X} hrs over ${Y} hrs between reads`)
+    : el == null ? `Used ${X}${since}` : `Used ${X} over ${Y} hrs between reads`;
+  const short = hr ? (el == null ? `${X}${since} (add read time)` : flag ? `! ${X} in ${Y} hrs elapsed, check reading/time` : `${X} over ${Y} hrs`) : el == null ? `${X}${since}` : `${X} over ${Y} hrs`;
+  return { inf, it, el, flag, text, short, prev: a, cur: b };
+}
+hourSanity = function (id, day, W, key) { const c = meterCompare(id, day, W, key); return c && isHourMeter(c.it) ? { flag: c.flag, text: c.text } : null; };
+meterUsageHtml = function (id, day, key) {
+  const W = getWork(), m = meterInfo(id, day, W, key), it = meterDefById(id), c = meterCompare(id, day, W, key);
+  const prev = m.prevDay ? `${stampText(readStamp(id, m.prevDay, W))}: <b>${fmtM(it, m.prev)}</b>` : '<span class="muted">No earlier reading</span>';
+  const today = `${stampText(readStamp(id, day, W))}: <b>${m.today != null ? fmtM(it, m.today) : '—'}</b>`;
+  let use = '';
+  if (c) use = `<b class="${m.usage < 0 ? 'neg' : c.flag ? 'amber-flag' : ''}">${esc(c.text)}</b>${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
+  return [prev, today, use].filter(Boolean).join(' · ');
+};
+// 'Read on' date per meter reading (default: the log day)
+function readOnHtml(day, id, r) {
+  r = r || {}; const nx = addDayKey(day, 1), mode = !r.date || r.date === day ? '' : r.date === nx ? 'next' : 'pick';
+  return `<div class="readon" data-ro="${id}"><span>Read on</span><select aria-label="Read on date" onchange="readOnSet(this,'${day}','${id}')"><option value=""${mode === '' ? ' selected' : ''}>Log day ${mdy(day).slice(0, 5)}</option><option value="next"${mode === 'next' ? ' selected' : ''}>Next day ${mdy(nx).slice(0, 5)}</option><option value="pick"${mode === 'pick' ? ' selected' : ''}>Other date…</option></select><input type="date" aria-label="Read on (date)" value="${mode === 'pick' ? r.date : ''}" ${mode === 'pick' ? '' : 'hidden'} onchange="readOnSet(this,'${day}','${id}')"></div>`;
+}
+function readOnSet(el, day, id) {
+  const box = el.closest('.readon'), sel = box.querySelector('select'), di = box.querySelector('input[type=date]');
+  let date = null;
+  if (el === sel) { di.hidden = sel.value !== 'pick'; if (sel.value === 'pick') { di.value = di.value || day; di.focus(); return; } date = sel.value === 'next' ? addDayKey(day, 1) : ''; }
+  else date = di.value || '';
+  const W = getWork(), e = W[day] = W[day] || {}; e.checklist = e.checklist || {}; const r = e.checklist[id] = e.checklist[id] || {};
+  if (date && date !== day) r.date = date; else delete r.date;
+  delete e.isExample; store('nwhWork', W);
+  refreshMeterDisplays(day); haptic(box);
+}
+function refreshMeterDisplays(day) { document.querySelectorAll('.mu[data-mu]').forEach(m => { const d = (m.closest('[data-cl]') || {}).dataset ? m.closest('[data-cl]').dataset.cl : null; const k = d || (m.id === 'roundMu' ? roundDay : day); m.innerHTML = meterUsageHtml(m.dataset.mu, k, meterKey(meterDefById(m.dataset.mu))); }); refreshDayCell && refreshDayCell(day); }
+// When a time is auto-filled after midnight while logging the previous day, the read date becomes the actual (next) day
+const _clSet2 = clSet;
+clSet = function (el, day, id, what, key) {
+  const before = ((((getWork()[day] || {}).checklist || {})[id]) || {}).time;
+  _clSet2(el, day, id, what, key);
+  const W = getWork(), r = (((W[day] || {}).checklist || {})[id]); if (!r) return;
+  const now = new Date(), today = ymd(now);
+  if (!before && r.time && (what === 'value' || what === 'done') && isMeter(meterDefById(id)) && !r.date && today === addDayKey(day, 1) && now.getHours() < 12) { r.date = today; store('nwhWork', W); const ro = document.querySelector(`.cl[data-cl="${day}"] .readon[data-ro="${id}"]`); if (ro) ro.outerHTML = readOnHtml(day, id, r); }
+  if (what === 'time' || what === 'value' || what === 'done') refreshMeterDisplays(day);
+};
+// One-time cleanup: drop read times that are really import/auto stamps (same minute stamped on several different days)
+function cleanImportStamps() {
+  if (localStorage.getItem('nwhStampFix1')) return;
+  const W = getWork(), HM = at => { const d = new Date(at); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+  const minuteDays = {}; Object.entries(W).forEach(([k, w]) => Object.values(w.checklist || {}).forEach(r => { if (r.at) { const m = String(r.at).slice(0, 16); (minuteDays[m] = minuteDays[m] || new Set()).add(k); } }));
+  let n = 0;
+  Object.entries(W).forEach(([k, w]) => Object.values(w.checklist || {}).forEach(r => { if (!r.at) return; const m = String(r.at).slice(0, 16), bulk = minuteDays[m].size >= 2;
+    if (bulk && r.time && r.time === HM(r.at)) { delete r.time; n++; } }));
+  if (n) store('nwhWork', W); localStorage.setItem('nwhStampFix1', '1'); return n;
+}
+// 24h time fields: every <input type=time> becomes a numeric HH:MM text field with a Now button
+function to24(inp) {
+  if (inp.dataset.t24) return; inp.dataset.t24 = '1';
+  inp.type = 'text'; inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('placeholder', '--:--'); inp.setAttribute('maxlength', '5'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('pattern', '([01][0-9]|2[0-3]):[0-5][0-9]'); inp.removeAttribute('required'); inp.classList.add('t24');
+  if (!inp.hasAttribute('data-nonow')) { const b = document.createElement('button'); b.type = 'button'; b.className = 'now-btn'; b.textContent = 'Now'; b.setAttribute('aria-label', 'Set to current time');
+    b.onclick = e => { e.preventDefault(); e.stopPropagation(); inp.value = nowHM(); inp.classList.remove('bad'); inp.dispatchEvent(new Event('change', { bubbles: true })); haptic(inp); };
+    (inp.closest('.tbox') || inp).insertAdjacentElement('afterend', b); }
+}
+function conv24(root) { (root.querySelectorAll ? root : document).querySelectorAll('input[type=time]').forEach(to24); }
+new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) { if (n.matches('input[type=time]')) to24(n); else conv24(n); } }))).observe(document.documentElement, { childList: true, subtree: true });
+conv24(document);
+document.addEventListener('focusin', e => { if (e.target.classList && e.target.classList.contains('t24')) e.target.dataset.prev = e.target.value; });
+document.addEventListener('input', e => { const t = e.target; if (!t.classList || !t.classList.contains('t24')) return;
+  let d = t.value.replace(/[^\d:]/g, ''); if (!d.includes(':')) { d = d.replace(/\D/g, '').slice(0, 4); if (d.length > 2) d = d[0] >= '3' ? d[0] + ':' + d.slice(1, 3) : d.slice(0, 2) + ':' + d.slice(2); } else d = d.slice(0, 5);
+  if (t.value !== d) t.value = d; t.classList.toggle('bad', d.length === 5 && !validHM(d)); });
+document.addEventListener('change', e => { const t = e.target; if (!t.classList || !t.classList.contains('t24')) return;
+  const v = normHM(t.value);
+  if (v === null) { e.stopImmediatePropagation(); e.stopPropagation(); t.value = t.dataset.prev || ''; t.classList.add('bad'); toast('Use 24-hour time HH:MM (00:00–23:59)'); setTimeout(() => t.classList.remove('bad'), 1500); return; }
+  t.value = v; t.dataset.prev = v; t.classList.remove('bad'); }, true);
+
 /* ---------- Startup ---------- */
 migrateData();
+cleanImportStamps();
 updateExampleUI();
 checkRecovery();
 metaGet('fileHandle').then(h => { if (h) fileHandle = h; }).catch(() => {});

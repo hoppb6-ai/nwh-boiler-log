@@ -48,3 +48,9 @@ v2.0 polish and power features
 - Round mode: a full-screen walk through the checklist, one item per screen with big inputs. It advances on Done/Enter and ends with a summary of missed items and flags.
 - Dark mode: Auto (follows the phone), Light or Dark in More → Display. Exports always print light.
 - Button press feedback, an offline-ready badge and the app version in More.
+
+24-hour times and read timestamps
+- Every time field is a 24-hour HH:MM text field with a Now button (no AM/PM picker). Typing 1345 becomes 13:45 and 930 becomes 09:30; anything outside 00:00–23:59 is rejected. All displays, sheets, exports and CSV use 24-hour time.
+- Each meter reading has a "Read on" date (log day by default, Next day, or another date), so a 01:30 read logged on the previous shift day is stamped correctly. Readings show as MM/DD/YYYY HH:MM.
+- Elapsed time comes from the full stamps, so midnight and multi-day gaps are handled. Hour meters show "Ran X hrs over Y hrs between reads" and are flagged only when Ran > elapsed + 0.1 hr. Without both times: "Ran X hrs (add read time to compare)", no flag. Resource meters show "Used N over Y hrs between reads".
+- Auto check stamps are never used as read times. A one-time cleanup removes times that came from a bulk import.
