@@ -1255,6 +1255,20 @@ function pmEdMove(i, d) { const j = i + d; if (j < 0 || j >= pmDraft.length) ret
 function pmEdAdd() { pmDraft.push({ id: 'pm' + Date.now().toString(36), name: 'New task', freq: { type: 'weekly', dow: 1 }, anchor: ymd(new Date()), sched: 'completion', equipment: 'Both', value: { on: false }, info: '', active: true }); renderPmTasks(); }
 function pmEdSave() { const s = load('nwhSettings', {}); s.pmTasks = pmDraft.map(t => Object.assign(t, { name: String(t.name || '').trim() || 'Task' })); store('nwhSettings', s); pmDraft = null; renderPmTasks(); toast('Scheduled tasks saved'); }
 
+/* ---------- Meter display: dates instead of Prev/Today; hour meters "Ran X hrs", resource meters "Used X" ---------- */
+const mdy = k => { const d = parseYmd(k); return String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0') + '/' + d.getFullYear(); };
+const isHourMeter = it => !!(it && (it.fields || []).some(f => f.type === 'meter' && (f.dec || /^(hrs?|hours?)$/i.test(f.unit || ''))));
+const fmtRun = d => String(Math.round(d * 100) / 100);                       // exact, up to 2 decimals, trailing zeros trimmed
+const fmtUsed = d => Number(d).toLocaleString('en-US', { maximumFractionDigits: 2 });
+const fmtReading = (it, v) => v == null || v === '' ? '' : isHourMeter(it) ? String(v) : Number(v).toLocaleString('en-US', { maximumFractionDigits: 2, useGrouping: false });
+// Main text for a difference: hour meters "Ran 23.8 hrs [since MM/DD/YYYY]", others "Used 1,450 [since MM/DD/YYYY]".
+function meterDiffText(it, usage, days, prevDay) {
+  if (usage == null) return '';
+  const since = days > 1 && prevDay ? ` since ${mdy(prevDay)}` : '';
+  return isHourMeter(it) ? `Ran ${fmtRun(usage)} hrs${since}` : `Used ${fmtUsed(usage)}${since}`;
+}
+const meterDefById = id => allItemDefs().find(i => i.id === id) || { fields: [] };
+
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -1305,12 +1319,12 @@ function renderMeters() {
   if (items.some(it => it.id === cur)) sel.value = cur;
   const it = items.find(x => x.id === sel.value), out = document.getElementById('mtTable');
   if (!it) { out.innerHTML = '<p class="muted">No meter items. Add a Meter value field in More → Daily checklist.</p>'; return; }
-  const ser = meterSeries(it.id, W, meterKey(it)), unit = it.fields[0] && it.fields[0].unit ? ' ' + esc(it.fields[0].unit) : '';
-  const a7 = meterAvg(ser, 7), a30 = meterAvg(ser, 30);
-  const avg = (a, n) => `<div class="stat"><div class="v">${a ? a.avg : '—'}</div><small>${n}-day avg/day${a ? ` · ${a.n} reading${a.n === 1 ? '' : 's'}` : ''}</small></div>`;
-  out.innerHTML = `<div class="stats-row">${avg(a7, 7)}${avg(a30, 30)}</div>` + (ser.length ? `<div class="table-wrap"><table class="rd"><tr><th>Date</th><th>Reading${unit}</th><th>Usage</th><th>Days</th></tr>
-    ${ser.slice().reverse().slice(0, 45).map(x => `<tr onclick="openDay('${x.day}','work')"><td>${parseYmd(x.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}${x.isExample ? ' <span class="badge ex">EX</span>' : ''}</td><td>${x.value}</td><td class="${x.usage < 0 ? 'oor' : ''}">${x.usage == null ? '—' : x.usage}</td><td>${x.days == null ? '' : x.days}</td></tr>`).join('')}
-  </table></div><p class="muted">Newest first. Usage = reading minus the previous reading. Red = negative (rollover or typo); negative usage is left out of averages. Tap a row to open that day.</p>` : '<p class="muted">No readings yet for this meter.</p>');
+  const ser = meterSeries(it.id, W, meterKey(it)), hr = isHourMeter(it), today = ymd(new Date());
+  const span = n => { const from = ymd(addDays(new Date(), -n)); const pts = ser.filter(x => x.usage != null && x.usage >= 0 && x.day > from && x.day <= today); return pts.length ? { sum: mRound(pts.reduce((a, x) => a + x.usage, 0)), days: pts.reduce((a, x) => a + x.days, 0) } : null; };
+  const stat = n => { const a = span(n); return `<div class="stat"><div class="v">${a ? (hr ? fmtRun(a.sum) + ' hrs' : fmtUsed(a.sum)) : '—'}</div><small>${hr ? 'Total run' : 'Used'}, last ${n} days${!hr && a && a.days ? `<br>Avg/day ${fmtUsed(mRound(a.sum / a.days))}` : ''}</small></div>`; };
+  out.innerHTML = `<div class="stats-row">${stat(7)}${stat(30)}</div>` + (ser.length ? `<table class="rd"><tr><th>Date</th><th>Reading</th><th>${hr ? 'Ran' : 'Used'}</th></tr>
+    ${ser.slice().reverse().slice(0, 45).map(x => `<tr onclick="openDay('${x.day}')"><td>${mdy(x.day)}${x.isExample ? ' <span class="badge ex">EX</span>' : ''}</td><td>${x.value}</td><td class="${x.usage < 0 ? 'oor' : ''}">${x.usage == null ? '—' : (x.usage < 0 ? '! ' : '') + meterDiffText(it, x.usage, x.days, x.prevDay).replace(/^(Ran|Used) /, '')}</td></tr>`).join('')}
+  </table><p class="muted">Newest first. ${hr ? 'Ran = hours run since the previous reading.' : 'Used = reading minus the previous reading.'} "!" in red = negative (rollover or typo), left out of totals. Tap a row to open that day.</p>` : '<p class="muted">No readings yet for this meter.</p>');
 }
 
 const meterItem = (id, label, dec) => ({ id, label, meter: true, fields: [{ key: 'reading', label: 'Reading', unit: dec ? 'hrs' : '', type: 'meter', dec: !!dec }] });
@@ -1363,12 +1377,11 @@ function meterInfo(id, day, W, key) {
   return info;
 }
 function meterUsageHtml(id, day, key) {
-  const m = meterInfo(id, day, null, key);
-  const short = k => parseYmd(k).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const prev = m.prevDay ? `Prev <b>${m.prev}</b> <small>(${short(m.prevDay)})</small>` : '<span class="muted">No earlier reading</span>';
-  const today = `Today <b>${m.today != null ? m.today : '—'}</b>`;
+  const m = meterInfo(id, day, null, key), it = meterDefById(id);
+  const prev = m.prevDay ? `${mdy(m.prevDay)}: <b>${m.prev}</b>` : '<span class="muted">No earlier reading</span>';
+  const today = `${mdy(day)}: <b>${m.today != null ? m.today : '—'}</b>`;
   let use = '';
-  if (m.usage != null) use = `Usage <b class="${m.usage < 0 ? 'neg' : ''}">${m.usage}</b>${m.days > 1 ? ` <small>over ${m.days} days (${mRound(m.usage / m.days)}/day)</small>` : ''}${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
+  if (m.usage != null) use = `<b class="${m.usage < 0 ? 'neg' : ''}">${meterDiffText(it, m.usage, m.days, m.prevDay)}</b>${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
   return [prev, today, use].filter(Boolean).join(' · ');
 }
 const getChecklist = () => getSettings().checklist;
@@ -1918,29 +1931,27 @@ function buildSheet(scr, from, to, desc) {
     });
   }
   if (scr === 'meters') {
-    const meters = getChecklist().filter(isMeter).map(it => ({ id: it.id, label: it.label, key: meterKey(it), unit: (it.fields.find(f => f.type === 'meter') || {}).unit || '' }));
-    sp.cols.push(dateCol);
-    meters.forEach(m => { const g = m.label + (m.unit ? ` (${m.unit})` : ''); sp.cols.push({ h: 'Reading', g, kind: 'num' }, { h: 'Usage', g, kind: 'num' }); });
+    const meters = getChecklist().filter(isMeter).map(it => ({ it, id: it.id, label: it.label, key: meterKey(it), hr: isHourMeter(it), unit: (it.fields.find(f => f.type === 'meter') || {}).unit || '' }));
+    sp.cols.push(Object.assign({}, dateCol));
+    meters.forEach(m => { const g = m.label + (m.unit ? ` (${m.unit})` : ''); sp.cols.push({ h: 'Reading', g, kind: 'num' }, { h: m.hr ? 'Ran (hrs)' : 'Used', g, kind: 'num' }); });
     const has = (k, m) => { const r = W[k].checklist && W[k].checklist[m.id]; return r && r.values && r.values[m.key] != null; };
     const tot = meters.map(() => ({ u: 0, d: 0, n: 0 }));
     days.filter(k => meters.some(m => has(k, m))).forEach(k => {
-      const cells = [C(sDate(k))];
+      const cells = [C(mdy(k))];
       meters.forEach((m, i) => {
         if (!has(k, m)) { cells.push(C('—', { color: '#aaa' }), C('')); return; }
         const inf = meterInfo(m.id, k, W, m.key);
-        cells.push(C(inf.today));
-        if (inf.usage == null) cells.push(C('—', { color: '#aaa' }));
-        else {
-          cells.push(C((inf.usage > 0 ? '+' : '') + inf.usage + (inf.days > 1 ? ` (${inf.days}d)` : ''), inf.usage < 0 ? { bg: AMBER_BG, bold: true } : {}));
-          if (inf.usage < 0) cells[cells.length - 1].t = '! ' + cells[cells.length - 1].t;
-          if (inf.usage >= 0) { tot[i].u += inf.usage; tot[i].d += inf.days; tot[i].n++; }
-        }
+        cells.push(C(fmtReading(m.it, inf.today)));
+        if (inf.usage == null) { cells.push(C('—', { color: '#aaa' })); return; }
+        const t = meterDiffText(m.it, inf.usage, inf.days, inf.prevDay).replace(/^(Ran|Used) /, '').replace(/ hrs/, '');
+        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true }) : C(t));
+        if (inf.usage >= 0) { tot[i].u += inf.usage; tot[i].d += inf.days; tot[i].n++; }
       });
       sp.rows.push({ day: k, cells });
     });
     sp.totals = tot.map(t => ({ total: t.n ? mRound(t.u) : null, days: t.d, avg: t.d ? mRound(t.u / t.d) : null }));
-    sp.foot.push({ cells: [C('Total usage', { bold: true }), ...sp.totals.flatMap(t => [C(''), C(t.total == null ? '—' : t.total, { bold: true })])] });
-    sp.foot.push({ cells: [C('Avg / day', { bold: true }), ...sp.totals.flatMap(t => [C(''), C(t.avg == null ? '—' : t.avg, { bold: true })])] });
+    sp.foot.push({ cells: [C('Total run / used', { bold: true }), ...sp.totals.flatMap((t, i) => [C(''), C(t.total == null ? '—' : meters[i].hr ? 'Total run ' + fmtRun(t.total) : fmtUsed(t.total), { bold: true })])] });
+    sp.foot.push({ cells: [C('Avg/day', { bold: true }), ...sp.totals.flatMap((t, i) => [C(''), C(meters[i].hr || t.avg == null ? '' : fmtUsed(t.avg))])] });
   }
   if (scr === 'aocs') {
     sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Equipment', kind: 'text' }, { h: 'Title', kind: 'wrap' }, { h: 'Severity', kind: 'text' }, { h: 'Status', kind: 'text' },
