@@ -388,6 +388,10 @@ label, .cl-f, .cl-time-l, .tl, .fl, .fu { overflow-wrap: normal; word-break: nor
 table.rd { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; }
 table.rd th, table.rd td { white-space: normal; overflow-wrap: anywhere; word-break: normal; padding: 6px 4px; font-variant-numeric: tabular-nums; }
 table.rd th:first-child, table.rd td:first-child { width: 6.4em; }
+.amber-flag { background: #FFF1C2; color: #6b4a00; font-weight: 800; border-radius: 4px; padding: 0 4px; }
+.badge.seen { background: #1F3A5F; } .aoc-dates { font-variant-numeric: tabular-nums; } .aoc-rel { margin-top: 4px; font-size: 13px; } .aoc-acts { margin-top: 6px; }
+.aoc-group { margin: 14px 0 4px; border-bottom: 2px solid #1F3A5F; } .chip { background: #EEF2F7; border-radius: 8px; padding: 6px 8px; margin: 6px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.aoc-occ { border-left: 3px solid #C9CED6; padding-left: 8px; margin: 6px 0; } .aoc-day-link { font-size: 14px; }
 </style>
 </head>
 <body class="locked">
@@ -474,11 +478,16 @@ table.rd th:first-child, table.rd td:first-child { width: 6.4em; }
 <!-- AOCs -->
 <div id="aocs" class="screen">
   <div class="scr-head"><h2>AOCs</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('aocs','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('aocs','sheet')">📊 Spreadsheet</button></div></div>
-  <p class="muted" style="margin-top:-4px">Abnormal Operating Conditions</p>
+  <p class="muted" style="margin-top:-4px">Abnormal Operating Conditions · reference library</p>
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
   <div class="ed-pane">
     <button class="danger" onclick="openAoc(null, null, 'aocs')">＋ New AOC</button>
+    <div id="aocDayChip"></div>
     <input id="aocSearch" type="search" placeholder="Search title, cause, findings, actions, tags..." oninput="renderAocList()">
+    <div class="row2">
+      <select id="aocFCat" onchange="renderAocList()"><option value="all">All categories</option></select>
+      <select id="aocFTag" onchange="renderAocList()"><option value="all">All tags</option></select>
+    </div>
     <div class="row2">
       <select id="aocFEquip" onchange="renderAocList()"><option value="all">All equipment</option><option>Boiler 1</option><option>Boiler 2</option><option>Both</option><option>Other</option></select>
       <select id="aocFStatus" onchange="renderAocList()"><option value="all">All statuses</option><option value="active">Open + Monitoring</option><option>Open</option><option>Monitoring</option><option>Resolved</option></select>
@@ -494,10 +503,7 @@ table.rd th:first-child, table.rd td:first-child { width: 6.4em; }
 <div id="aocEdit" class="screen">
   <h2 id="aocTitle">New AOC</h2>
   <div class="card">
-    <div class="row2">
-      <div><label>Date</label><input id="aDate" type="date"></div>
-      <div><label>Time</label><input id="aTime" type="time"></div>
-    </div>
+    <input id="aDate" type="hidden"><input id="aTime" type="hidden">
     <div class="row2">
       <div><label>Equipment</label><select id="aEquip" onchange="aocEquipChanged()"><option>Boiler 1</option><option>Boiler 2</option><option>Both</option><option value="Other">Other / custom</option></select></div>
       <div><label>Severity</label><select id="aSeverity"><option>Low</option><option>Med</option><option>High</option></select></div>
@@ -517,6 +523,13 @@ table.rd th:first-child, table.rd td:first-child { width: 6.4em; }
     </div>
     <label>Tags</label>
     <input id="aTags" placeholder="comma separated">
+    <label>Category</label>
+    <input id="aCategory" list="aocCats" placeholder="e.g. Water level, Combustion, Feedwater, Chemistry"><datalist id="aocCats"></datalist>
+    <h3 style="margin-top:14px">Occurrences</h3>
+    <div id="aOccs"></div>
+    <button type="button" class="small secondary" onclick="aocOccAdd()">＋ Add occurrence</button>
+    <h3 style="margin-top:14px">Related AOCs</h3>
+    <div id="aRelated"></div>
   </div>
   <button onclick="saveAoc()">Save AOC</button>
   <button onclick="deleteAoc()" class="danger" id="aocDeleteBtn">Delete AOC</button>
@@ -762,7 +775,7 @@ document.addEventListener('visibilitychange', () => {
 let calFocus = new Date();
 function calMove(d) { calFocus = new Date(calFocus.getFullYear(), calFocus.getMonth() + d, 1); renderHome(); }
 function calToday() { calFocus = new Date(); renderHome(); }
-function aocsByDay() { const m = {}; getAocs().forEach(a => (m[a.date] = m[a.date] || []).push(a)); return m; }
+function aocsByDay() { const m = {}; getAocs().forEach(a => aocOccs(a).forEach(o => { if (!(m[o.date] = m[o.date] || []).includes(a)) m[o.date].push(a); })); return m; }
 function dayDots(key, ctx) {
   const w = ctx.work[key], out = [];
   if (w) {
@@ -800,7 +813,7 @@ function renderHome() {
   const mFrom = ymd(new Date(y, m, 1)), mTo = ymd(new Date(y, m + 1, 0));
   const mDays = Object.keys(W).filter(k => k >= mFrom && k <= mTo && hasWork(W[k]));
   const full = mDays.filter(k => { const p = checklistProgress(k, W); return p.total && p.done >= p.total; }).length;
-  const mAocs = getAocs().filter(a => a.date >= mFrom && a.date <= mTo), open = getAocs().filter(a => a.status !== 'Resolved').length;
+  const mAocs = getAocs().filter(a => aocOccs(a).some(o => o.date >= mFrom && o.date <= mTo)), open = getAocs().filter(a => a.status !== 'Resolved').length;
   const stat = (v, l) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
   document.getElementById('homeStats').innerHTML = `<div class="sum-label">${new Date(y, m, 1).toLocaleDateString('en-US', { month: 'long' })}</div>${stat(mDays.length, 'days logged')}${stat(full, 'full checklists')}${stat(mAocs.length, 'AOCs')}${stat(open, 'open AOCs')}`;
   const c = nwhCardsHtml();
@@ -907,7 +920,7 @@ function noteItems() {
       ...Object.entries(w.checklist || {}).flatMap(([id, r]) => Object.entries(r.sec || {}).filter(([, x]) => x.note).map(([sec, x]) => `Water sample · ${secLabel(defs.find(d => d.id === id) || {}, sec)}: ${x.note}`))].filter(x => x && String(x).trim());
     if (lines.length || (w.tags || []).length) out.push({ key: k, kind: 'day', text: lines.join('\n'), tags: w.tags || [], pinned: !!w.pinned, isExample: w.isExample });
   });
-  getAocs().forEach(a => out.push({ key: a.date, kind: 'aoc', id: a.id, text: `⚠️ AOC: ${a.title}\nProbable: ${a.probable || '—'} · Actual: ${a.actual || '—'}${a.actions ? '\nActions: ' + a.actions : ''}`, tags: a.tags || [], pinned: false, isExample: a.isExample }));
+  getAocs().forEach(a => out.push({ key: aocLast(a).date, kind: 'aoc', id: a.id, text: `⚠️ AOC: ${a.title}${aocOccs(a).length > 1 ? ` (seen ${aocOccs(a).length} times)` : ''}\nProbable: ${a.probable || '—'} · Actual: ${a.actual || '—'}${a.actions ? '\nActions: ' + a.actions : ''}${aocOccs(a).filter(o => o.note).map(o => '\n' + mdy(o.date) + ': ' + o.note).join('')}`, tags: a.tags || [], pinned: false, isExample: a.isExample }));
   return out;
 }
 function renderNotes() {
@@ -945,6 +958,7 @@ function stripShiftFields(work) {
   return work;
 }
 function migrateData() {
+  migrateAocs();
   const W0 = load('nwhWork', null);
   if (W0 && typeof W0 === 'object' && Object.values(W0).some(w => w && SHIFT_FIELDS.some(f => f in w))) localStorage.setItem('nwhWork', JSON.stringify(stripShiftFields(W0)));
   const S0 = load('nwhSettings', null);
@@ -1272,6 +1286,40 @@ function meterDiffText(it, usage, days, prevDay) {
 }
 const meterDefById = id => allItemDefs().find(i => i.id === id) || { fields: [] };
 
+/* ---------- Hour-meter sanity: run hours vs elapsed time between reads (data is never changed) ---------- */
+function hourSanity(id, day, W, key) {
+  W = W || getWork(); key = key || 'reading';
+  const inf = meterInfo(id, day, W, key); if (inf.usage == null || inf.usage < 0 || !inf.prevDay) return null;
+  // read time: the item's Time field; a check timestamp only counts if it was made on that same day
+  const tOf = k => { const r = ((W[k] || {}).checklist || {})[id] || {}; if (r.time != null) return r.time; return r.at && ymd(new Date(r.at)) === k ? taskTime(r) : ''; };
+  const t1 = tOf(inf.prevDay), t2 = tOf(day);
+  if (t1 && t2) {
+    const el = Math.round((new Date(day + 'T' + t2) - new Date(inf.prevDay + 'T' + t1)) / 36e5 * 100) / 100;
+    if (el > 0 && inf.usage > el) return { flag: true, text: `! Ran ${fmtRun(inf.usage)} hrs in ${fmtRun(el)} hrs elapsed, check reading` };
+    return { flag: false, text: `(${fmtRun(el)} hrs between reads)` };
+  }
+  if (inf.days === 1 && inf.usage > 24) return { flag: true, text: '! Check: >24 hrs between dated reads; add read times to confirm' };
+  return null;
+}
+
+/* ---------- AOC library: entries with dated occurrences ---------- */
+const aocOccs = a => Array.isArray(a.occ) && a.occ.length ? a.occ.slice().sort((x, y) => (x.date + (x.time || '')).localeCompare(y.date + (y.time || ''))) : [{ id: 'o0', date: a.date, time: a.time || '' }];
+const aocLast = a => { const o = aocOccs(a); return o[o.length - 1]; };
+function migrateAocs() {
+  const list = load('nwhAocs', null); if (!Array.isArray(list) || !list.some(a => !Array.isArray(a.occ))) return;
+  list.forEach(a => { if (!Array.isArray(a.occ)) a.occ = [{ id: 'o' + Math.random().toString(36).slice(2, 8), date: a.date, time: a.time || '' }]; if (a.category == null) a.category = ''; if (!Array.isArray(a.related)) a.related = []; });
+  localStorage.setItem('nwhAocs', JSON.stringify(list));
+}
+let aocDayFilter = '';
+function aocLogAgain(id, day) {
+  const list = getAocs(), a = list.find(x => x.id === id); if (!a) return;
+  a.occ = aocOccs(a).concat([{ id: 'o' + Date.now().toString(36), date: day || ymd(new Date()), time: !day || day === ymd(new Date()) ? nowHM() : '' }]);
+  if (a.status === 'Resolved') { a.status = 'Open'; a.resolved = ''; }
+  store('nwhAocs', list); toast(`Logged again · seen ${a.occ.length} times`);
+  renderScreen((document.querySelector('.screen.active') || {}).id || 'aocs');
+}
+function aocShowDay(day) { aocDayFilter = day; views.aocs = 'editor'; showScreen('aocs'); }
+
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -1385,6 +1433,8 @@ function meterUsageHtml(id, day, key) {
   const today = `${mdy(day)}: <b>${m.today != null ? m.today : '—'}</b>`;
   let use = '';
   if (m.usage != null) use = `<b class="${m.usage < 0 ? 'neg' : ''}">${meterDiffText(it, m.usage, m.days, m.prevDay)}</b>${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
+  const hs = isHourMeter(it) ? hourSanity(id, day, null, key) : null;
+  if (hs) use += hs.flag ? ` <small class="amber-flag">${esc(hs.text)}</small>` : ` <small class="muted">${esc(hs.text)}</small>`;
   return [prev, today, use].filter(Boolean).join(' · ');
 }
 const getChecklist = () => getSettings().checklist;
@@ -1541,36 +1591,56 @@ const AOC_STATUS_ORDER = { Open: 0, Monitoring: 1, Resolved: 2 };
 const SEV_COLORS = { High: '#C62828', Med: '#F2A900', Low: '#888' };
 const STATUS_COLORS = { Open: '#C62828', Monitoring: '#F2A900', Resolved: '#2E7D32' };
 const aocEquip = a => a.equipment === 'Other' ? (a.equipOther || 'Other') : a.equipment;
-function aocsByDay() { const m = {}; getAocs().forEach(a => (m[a.date] = m[a.date] || []).push(a)); return m; }
+
 function aocSort(list) { return list.slice().sort((a, b) => (AOC_STATUS_ORDER[a.status] - AOC_STATUS_ORDER[b.status]) || (b.date + (b.time || '')).localeCompare(a.date + (a.time || ''))); }
-function aocCard(a) {
-  return `<div class="aoc-card sev-${a.severity}" onclick="openAoc('${a.id}')">
-    <div class="top"><b>${esc(a.title || 'Untitled AOC')}</b>${exBadge(a)}</div>
-    <div class="muted">${niceDate(a.date)}${a.time ? ' ' + fmtTime(a.time) : ''} · ${esc(aocEquip(a))}
+function aocCard(a, day) {
+  const occ = aocOccs(a), first = occ[0], last = occ[occ.length - 1], all = getAocs();
+  const rel = (a.related || []).map(id => all.find(x => x.id === id)).filter(Boolean);
+  return `<div class="aoc-card sev-${a.severity}" data-aoc="${a.id}" onclick="openAoc('${a.id}')">
+    <div class="top"><b>${esc(a.title || 'Untitled AOC')}</b>${exBadge(a)}${occ.length > 1 ? ` <span class="badge seen">Seen ${occ.length} times</span>` : ''}</div>
+    <div class="muted">${esc(aocEquip(a))}${a.category ? ' · ' + esc(a.category) : ''}
       <span class="badge" style="background:${SEV_COLORS[a.severity]}">${esc(a.severity)}</span>
       <span class="badge" style="background:${STATUS_COLORS[a.status]}">${esc(a.status)}</span></div>
+    <div class="muted aoc-dates">${occ.length > 1 ? `First ${mdy(first.date)} · Last ${mdy(last.date)}${last.time ? ' ' + fmtTime(last.time) : ''}` : `${mdy(first.date)}${first.time ? ' ' + fmtTime(first.time) : ''}`}</div>
     <div class="pa-grid"><div><small>Probable</small><div>${esc(a.probable || '—')}</div></div><div><small>Actual</small><div>${esc(a.actual || '—')}</div></div></div>
-    ${a.actions ? `<div class="muted"><b>Actions:</b> ${esc(a.actions)}</div>` : ''}
-    ${a.status === 'Resolved' && a.resolved ? `<div class="muted">Resolved ${niceDate(a.resolved)}</div>` : ''}
+    ${a.actions ? `<div class="muted"><b>Actions / resolution:</b> ${esc(a.actions)}</div>` : ''}
+    ${a.status === 'Resolved' && a.resolved ? `<div class="muted">Resolved ${mdy(a.resolved)}</div>` : ''}
     ${(a.tags || []).length ? `<div>${a.tags.map(t => `<span class="tag">#${esc(t)}</span>`).join(' ')}</div>` : ''}
+    ${rel.length ? `<div class="aoc-rel">Related: ${rel.map(r => `<button type="button" class="link-btn" onclick="event.stopPropagation();openAoc('${r.id}')">${esc(r.title)}</button>`).join(' ')}</div>` : ''}
+    <div class="aoc-acts"><button type="button" class="small secondary" onclick="event.stopPropagation();aocLogAgain('${a.id}'${day ? `,'${day}'` : ''})">↻ Log occurrence again</button></div>
   </div>`;
 }
 let aocEditing = null, aocReturn = 'aocs';
+let aocOccDraft = [], aocRelDraft = [];
 function openAoc(id, day, ret) {
   const a = id ? getAocs().find(x => x.id === id) : null;
   aocEditing = a ? a.id : null;
   aocReturn = ret || (document.querySelector('.screen.active') || {}).id || 'aocs';
   if (aocReturn === 'aocEdit') aocReturn = 'aocs';
   const now = new Date();
-  const v = a || { date: day || ymd(now), time: day && day !== ymd(now) ? '' : nowHM(), equipment: 'Boiler 1', severity: 'Med', status: 'Open' };
+  const v = a || { equipment: 'Boiler 1', severity: 'Med', status: 'Open', category: '' };
+  aocOccDraft = a ? JSON.parse(JSON.stringify(aocOccs(a))) : [{ id: 'o' + Date.now().toString(36), date: day || ymd(now), time: day && day !== ymd(now) ? '' : nowHM() }];
+  aocRelDraft = a ? (a.related || []).slice() : [];
   const set = (id, val) => document.getElementById(id).value = val == null ? '' : val;
   document.getElementById('aocTitle').textContent = a ? 'Edit AOC' : 'New AOC';
-  set('aDate', v.date); set('aTime', v.time); set('aEquip', v.equipment); set('aEquipOther', v.equipOther); set('aTitle', v.title);
+  set('aEquip', v.equipment); set('aEquipOther', v.equipOther); set('aTitle', v.title); set('aCategory', v.category);
   set('aProbable', v.probable); set('aActual', v.actual); set('aSeverity', v.severity); set('aActions', v.actions);
   set('aStatus', v.status); set('aResolved', v.resolved); set('aTags', (v.tags || []).join(', '));
-  aocEquipChanged(); aocStatusChanged();
+  document.getElementById('aocCats').innerHTML = [...new Set(getAocs().map(x => x.category).filter(Boolean))].map(c => `<option value="${esc(c)}">`).join('');
+  aocEquipChanged(); aocStatusChanged(); aocOccRender(); aocRelRender();
   document.getElementById('aocDeleteBtn').style.display = a ? 'block' : 'none';
   showScreen('aocEdit');
+}
+function aocOccRender() {
+  document.getElementById('aOccs').innerHTML = aocOccDraft.map((o, i) => `<div class="aoc-occ"><div class="row2"><input type="date" value="${esc(o.date)}" aria-label="Occurrence date" onchange="aocOccDraft[${i}].date=this.value||aocOccDraft[${i}].date">
+    <label class="cl-time-l"><span class="tl">🕒 Time</span><span class="tbox"><input type="time" required value="${esc(o.time || '')}" onchange="aocOccDraft[${i}].time=this.value"><span class="tph" aria-hidden="true">--:--</span></span></label>
+    ${aocOccDraft.length > 1 ? `<button type="button" class="small danger" aria-label="Remove occurrence" onclick="aocOccDraft.splice(${i},1);aocOccRender()">✕</button>` : ''}</div>
+    <input placeholder="Occurrence note (optional)" value="${esc(o.note || '')}" onchange="aocOccDraft[${i}].note=this.value"></div>`).join('');
+}
+function aocOccAdd() { aocOccDraft.push({ id: 'o' + Date.now().toString(36), date: ymd(new Date()), time: nowHM() }); aocOccRender(); }
+function aocRelRender() {
+  const others = getAocs().filter(x => x.id !== aocEditing);
+  document.getElementById('aRelated').innerHTML = others.length ? others.map(x => `<label class="check"><input type="checkbox" value="${x.id}" ${aocRelDraft.includes(x.id) ? 'checked' : ''} onchange="this.checked?aocRelDraft.push(this.value):aocRelDraft.splice(aocRelDraft.indexOf(this.value),1)"> ${esc(x.title)} <small class="muted">· ${esc(aocEquip(x))}</small></label>`).join('') : '<p class="muted">No other AOCs yet.</p>';
 }
 function aocEquipChanged() { document.getElementById('aEquipOther').style.display = document.getElementById('aEquip').value === 'Other' ? 'block' : 'none'; }
 function aocStatusChanged() {
@@ -1584,13 +1654,18 @@ function saveAoc() {
   if (!title) { toast('Add a short title'); return; }
   const list = getAocs();
   const old = list.find(x => x.id === aocEditing);
-  const a = {
+  const occ = aocOccDraft.filter(o => o.date).map(o => { const x = { id: o.id, date: o.date, time: o.time || '' }; if ((o.note || '').trim()) x.note = o.note.trim(); return x; }).sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time));
+  if (!occ.length) { toast('Add at least one occurrence date'); return; }
+  const a = Object.assign(old ? JSON.parse(JSON.stringify(old)) : {}, {
     id: old ? old.id : 'AOC-' + Date.now().toString(36), created: old ? old.created : new Date().toISOString(),
-    date: v('aDate') || ymd(new Date()), time: v('aTime'), equipment: v('aEquip'), equipOther: v('aEquip') === 'Other' ? v('aEquipOther').trim() : '',
+    date: occ[0].date, time: occ[0].time, occ, equipment: v('aEquip'), equipOther: v('aEquip') === 'Other' ? v('aEquipOther').trim() : '', category: v('aCategory').trim(),
     title, probable: v('aProbable').trim(), actual: v('aActual').trim(), severity: v('aSeverity'), actions: v('aActions').trim(),
-    status: v('aStatus'), resolved: v('aStatus') === 'Resolved' ? v('aResolved') : '', tags: parseTags(v('aTags'))
-  };
+    status: v('aStatus'), resolved: v('aStatus') === 'Resolved' ? v('aResolved') : '', tags: parseTags(v('aTags')), related: aocRelDraft.filter(id => list.some(x => x.id === id))
+  });
+  delete a.isExample;
   if (old) list[list.indexOf(old)] = a; else list.push(a);
+  // keep "Related" two-way
+  list.forEach(x => { if (x.id === a.id) return; x.related = (x.related || []).filter(id => id !== a.id || a.related.includes(x.id)); if (a.related.includes(x.id) && !x.related.includes(a.id)) x.related.push(a.id); });
   store('nwhAocs', list);
   toast('AOC saved');
   backFromAoc();
@@ -1605,19 +1680,28 @@ function backFromAoc() {
   else showScreen(aocReturn || 'aocs');
 }
 function renderAocList() {
-  const q = document.getElementById('aocSearch').value.trim().toLowerCase();
+  const q = document.getElementById('aocSearch').value.trim().toLowerCase(), all = getAocs();
   const fe = document.getElementById('aocFEquip').value, fs = document.getElementById('aocFStatus').value, fv = document.getElementById('aocFSev').value;
-  const list = aocSort(getAocs()).filter(a => {
+  const cSel = document.getElementById('aocFCat'), tSel = document.getElementById('aocFTag'), fc = cSel.value, ft = tSel.value;
+  const cats = [...new Set(all.map(a => a.category).filter(Boolean))].sort(), tags = [...new Set(all.flatMap(a => a.tags || []))].sort();
+  cSel.innerHTML = '<option value="all">All categories</option>' + cats.map(c => `<option${c === fc ? ' selected' : ''}>${esc(c)}</option>`).join('');
+  tSel.innerHTML = '<option value="all">All tags</option>' + tags.map(t => `<option value="${esc(t)}"${t === ft ? ' selected' : ''}>#${esc(t)}</option>`).join('');
+  document.getElementById('aocDayChip').innerHTML = aocDayFilter ? `<div class="chip">AOCs logged ${mdy(aocDayFilter)} <button type="button" class="link-btn" onclick="aocDayFilter='';renderAocList()">✕ show all</button> <button type="button" class="small danger" onclick="openAoc(null,'${aocDayFilter}','aocs')">＋ New AOC for this day</button></div>` : '';
+  const list = aocSort(all).filter(a => {
+    if (aocDayFilter && !aocOccs(a).some(o => o.date === aocDayFilter)) return false;
     if (fe !== 'all' && a.equipment !== fe) return false;
+    if (fc !== 'all' && cSel.value !== 'all' && a.category !== cSel.value) return false;
+    if (ft !== 'all' && tSel.value !== 'all' && !(a.tags || []).includes(tSel.value)) return false;
     if (fs === 'active' && a.status === 'Resolved') return false;
     if (fs !== 'all' && fs !== 'active' && a.status !== fs) return false;
     if (fv !== 'all' && a.severity !== fv) return false;
     if (!q) return true;
-    return [a.title, a.probable, a.actual, a.actions, aocEquip(a), a.status, a.severity, a.date, niceDate(a.date), (a.tags || []).join(' ')].join(' ').toLowerCase().includes(q);
+    return [a.title, a.category, a.probable, a.actual, a.actions, aocEquip(a), a.status, a.severity, ...aocOccs(a).map(o => o.date + ' ' + mdy(o.date) + ' ' + (o.note || '')), (a.tags || []).join(' ')].join(' ').toLowerCase().includes(q);
   });
-  const open = getAocs().filter(a => a.status !== 'Resolved').length;
+  const open = all.filter(a => a.status !== 'Resolved').length;
   document.getElementById('aocCount').textContent = `${list.length} shown · ${open} open/monitoring`;
-  document.getElementById('aocList').innerHTML = list.length ? list.map(aocCard).join('') : '<p class="muted">No AOCs match.</p>';
+  const groups = {}; list.forEach(a => (groups[aocEquip(a)] = groups[aocEquip(a)] || []).push(a));
+  document.getElementById('aocList').innerHTML = list.length ? Object.entries(groups).map(([g, l]) => `<h3 class="aoc-group">${esc(g)} <small class="muted">(${l.length})</small></h3>${l.map(a => aocCard(a, aocDayFilter)).join('')}`).join('') : '<p class="muted">No AOCs match.</p>';
 }
 function nwhCardsHtml() {
   const today = ymd(new Date());
@@ -1632,9 +1716,8 @@ function nwhCardsHtml() {
   };
 }
 function dayAocHtml(day, ret) {
-  const list = aocSort(getAocs().filter(a => a.date === day));
-  return `<h3>⚠️ Abnormal Operating Conditions (AOCs)</h3>${list.map(aocCard).join('') || '<p class="muted">None logged this day.</p>'}
-    <button class="small danger" style="width:100%" onclick="openAoc(null,'${day}','${ret || 'dayEditor'}')">＋ Add AOC for this day</button>`;
+  const n = getAocs().filter(a => aocOccs(a).some(o => o.date === day)).length;
+  return `<button type="button" class="link-btn aoc-day-link" onclick="aocShowDay('${day}')">⚠️ AOCs logged ${day === ymd(new Date()) ? 'today' : 'this day'} (${n})</button>`;
 }
 
 
@@ -1947,7 +2030,8 @@ function buildSheet(scr, from, to, desc) {
         cells.push(C(fmtReading(m.it, inf.today)));
         if (inf.usage == null) { cells.push(C('—', { color: '#aaa' })); return; }
         const t = meterDiffText(m.it, inf.usage, inf.days, inf.prevDay).replace(/^(Ran|Used) /, '').replace(/ hrs/, '');
-        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true }) : C(t));
+        const hs = m.hr && inf.usage >= 0 ? hourSanity(m.id, k, W, m.key) : null;
+        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true }) : hs && hs.flag ? C(t + ' ' + hs.text, { bg: AMBER_BG, bold: true }) : C(t + (hs && hs.text ? ' ' + hs.text : '')));
         if (inf.usage >= 0) { tot[i].u += inf.usage; tot[i].d += inf.days; tot[i].n++; }
       });
       sp.rows.push({ day: k, cells });
@@ -1957,13 +2041,13 @@ function buildSheet(scr, from, to, desc) {
     sp.foot.push({ cells: [C('Avg/day', { bold: true }), ...sp.totals.flatMap((t, i) => [C(''), C(meters[i].hr || t.avg == null ? '' : fmtUsed(t.avg))])] });
   }
   if (scr === 'aocs') {
-    sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Equipment', kind: 'text' }, { h: 'Title', kind: 'wrap' }, { h: 'Severity', kind: 'text' }, { h: 'Status', kind: 'text' },
-      { h: 'Probable', kind: 'wrap' }, { h: 'Actual', kind: 'wrap' }, { h: 'Actions', kind: 'wrap' }, { h: 'Resolved', kind: 'text' }, { h: 'Tags', kind: 'text' }].map(c => Object.assign({ g: '' }, c));
+    sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Equipment', kind: 'text' }, { h: 'Category', kind: 'text' }, { h: 'Title', kind: 'wrap' }, { h: 'Severity', kind: 'text' }, { h: 'Status', kind: 'text' }, { h: 'Seen', kind: 'num' },
+      { h: 'Probable', kind: 'wrap' }, { h: 'Actual', kind: 'wrap' }, { h: 'Actions / resolution', kind: 'wrap' }, { h: 'Occurrence note', kind: 'wrap' }, { h: 'Resolved', kind: 'text' }, { h: 'Tags', kind: 'text' }].map(c => Object.assign({ g: '' }, c));
     const sev = a => a.severity === 'High' && a.status !== 'Resolved' ? C('‼ High', { color: RED, bold: true }) : a.severity === 'Med' && a.status !== 'Resolved' ? C('! Med', { bg: AMBER_BG, bold: true }) : C(a.severity);
     const stat = a => a.status === 'Resolved' ? C('✓ Resolved', { color: GREEN, bold: true }) : a.status === 'Open' ? C('● Open', { bold: true }) : C('◐ Monitoring', { bold: true });
-    getAocs().filter(a => a.date >= from && a.date <= to).sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || ''))).forEach(a => sp.rows.push({ day: a.date, id: a.id, cells: [
-      C(sDate(a.date)), C(a.time ? fmtTime(a.time) : ''), C(aocEquip(a)), C(a.title, { bold: true }), sev(a), stat(a),
-      C(a.probable), C(a.actual), C(a.actions), C(a.resolved ? parseYmd(a.resolved).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''), C((a.tags || []).map(t => '#' + t).join(' '))] }));
+    getAocs().flatMap(a => aocOccs(a).filter(o => o.date >= from && o.date <= to).map(o => ({ a, o }))).sort((x, y) => (x.o.date + (x.o.time || '')).localeCompare(y.o.date + (y.o.time || ''))).forEach(({ a, o }) => sp.rows.push({ day: o.date, id: a.id, cells: [
+      C(sDate(o.date)), C(o.time ? fmtTime(o.time) : ''), C(aocEquip(a)), C(a.category || ''), C(a.title, { bold: true }), sev(a), stat(a), C(aocOccs(a).length),
+      C(a.probable), C(a.actual), C(a.actions), C(o.note || ''), C(a.resolved ? parseYmd(a.resolved).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''), C((a.tags || []).map(t => '#' + t).join(' '))] }));
   }
   if (scr === 'pm') {
     sp.cols = [{ h: 'Task', kind: 'wrap', key: true }, { h: 'Equipment', kind: 'text' }, { h: 'Frequency', kind: 'text' }, { h: 'Done in range', kind: 'num' }, { h: 'Last done', kind: 'text' }, { h: 'Last value', kind: 'num' }, { h: 'Next due', kind: 'text' }, { h: 'Status', kind: 'text' }, { h: 'Notes in range', kind: 'wrap' }].map(c => Object.assign({ g: '' }, c));
@@ -2055,7 +2139,7 @@ function fitTables() {
 window.addEventListener('resize', fitTables);
 
 /* Canvas pages: landscape US Letter at 300 dpi */
-const PAGE_W = 3300, PAGE_H = 2550, MARGIN = 150, TABLE_TOP = 300, BOX_H = 250, FOOT_H = 90;
+const PAGE_W = 3300, PAGE_H = 2550, MARGIN = 150, TABLE_TOP = 300, BOX_H = 0, FOOT_H = 90; // no Notes/AOC status box: the table uses that space
 const FONT = (px, bold) => `${bold ? 'bold ' : ''}${px}px Inter, Arial, Helvetica, sans-serif`;
 // Group header: one line if it fits, else wrap to 2 lines, else a smart abbreviation (e.g. "B2 Hour Mtr").
 const ABBR = [[/\bBoiler\s*(\d)/gi, 'B$1'], [/\bmeter\b/gi, 'Mtr'], [/\breading\b/gi, 'Rdg'], [/\bcycle\b/gi, 'Cyc'], [/\bScrubber\b/gi, 'Scrub'], [/\bconductivity\b/gi, 'Cond'], [/\bhour\b/gi, 'Hour']];
@@ -2217,15 +2301,6 @@ function drawPage(sp, pg, idx, total) {
     rect(xs[k] - (heavy ? 2 : 1), bodyStart, heavy ? 4 : 2, y - bodyStart, heavy ? HEAVY : GRID);
   });
   ctx.strokeStyle = HEAVY; ctx.lineWidth = 4; ctx.strokeRect(L, top, tableW, y - top);
-  // Notes / AOC status box
-  const by = PAGE_H - MARGIN - FOOT_H - BOX_H;
-  ctx.strokeStyle = HEAVY; ctx.lineWidth = 3; ctx.strokeRect(L, by, W, BOX_H);
-  rect(L, by, 14, BOX_H, NAVY);
-  const half = L + W * 0.55;
-  (sp.status || []).slice(0, 4).forEach((l, j) => T(l, L + 40, by + 52 + j * 48, FONT(j ? 32 : 34, !j), INK));
-  rect(half, by + 20, 2, BOX_H - 40, GRID);
-  T('Notes:', half + 30, by + 52, FONT(34, true), INK);
-  for (let j = 0; j < 3; j++) rect(half + 30, by + 110 + j * 52, R - half - 70, 2, GRID);
   // footer
   const fy = PAGE_H - MARGIN + 10;
   T('Operator initials: ________     Reviewed by: ________', L, fy, FONT(32), INK);

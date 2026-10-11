@@ -23,10 +23,15 @@ Checklist, Meters, AOCs, and Boiler log each have an Editor / Spreadsheet toggle
 - PNG: landscape US Letter at 300 dpi (3300 x 2550 px), one image per page.
 - PDF: landscape US Letter, multi-page (made on the device, no libraries).
 - CSV.
-Each page has the title, date range, "Northwest Hardwoods — Boiler Operator", page numbers, an navy header strip and column headers, shaded rows, a Notes/AOC status box and an initials line. Flags also use symbols so they survive black-and-white printing: ✓ done, ✗ missed, ! out of range or attention, ‼ High open AOC. Wide tables shrink the font, then split column groups across pages (the Date column repeats). On iPhone the share sheet opens (Save to Files / Photos); otherwise files download.
 
 Backups
 - Save / Save As (header or More), Restore (snapshots or a file), startup recovery if data is damaged, reminder after 3 days without a saved file.
 - Restore also accepts a Hopp backup: work days, checklist template, meter readings, AOCs and work settings are imported; invoices, quotes, jobs, customers, personal and money settings are ignored.
 
 Example data is only added from More → Example data, and can be removed there.
+
+AOC library (AOCs tab): AOCs are a reference library separate from the daily log. Each entry has title, equipment, category, severity, status, Probable vs Actual, actions/resolution, tags, related AOCs and dated occurrences ("Seen N times"). Search and filter by equipment, category, tag, status and severity; the list is grouped by equipment. "Log occurrence again" adds a dated occurrence to the same entry (and reopens it if it was resolved) instead of creating a duplicate. The daily log shows only a link "AOCs logged today (n)". Older AOCs were converted to entries with one occurrence each. The AOC spreadsheet/exports list one row per occurrence.
+
+Exports: PNG/PDF pages have the header, the table and the footer (initials / page X of Y); there is no Notes/AOC status box.
+
+Hour-meter check (data is never changed): when both readings have a Time, the run hours are compared with the elapsed time between reads. "Ran 27 hrs (27 hrs between reads)" is fine; more run than elapsed is flagged amber "! Ran 27 hrs in 26.5 hrs elapsed, check reading". Without times, more than 24 hrs over a 1-day gap shows "! Check: >24 hrs between dated reads; add read times to confirm". Flags show in the app, cards, table, PNG/PDF and CSV.
