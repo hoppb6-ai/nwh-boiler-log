@@ -1,4 +1,4 @@
-const CACHE = 'nwh-log-v8';
+const CACHE = 'nwh-log-v9';
 const ASSETS = [
   './',
   './index.html',
