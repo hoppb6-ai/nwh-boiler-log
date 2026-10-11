@@ -341,6 +341,17 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
 .cl-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; }
 .cl-time-l { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #5A6472; margin: 0; font-weight: 600; }
 .cl-time-l input.cl-time { width: 7.2em; padding: 6px 6px; margin: 0; font-size: 15px; }
+.info-btn { border: 0; background: none; color: #1F3A5F; font-size: 17px; padding: 0 6px; margin: 0; min-height: 0; width: auto; box-shadow: none; cursor: pointer; vertical-align: middle; }
+.info-note { display: block; font-size: 13px; font-weight: 400; color: #3C4654; background: #EEF2F7; border-left: 3px solid #1F3A5F; border-radius: 4px; padding: 4px 8px; margin: 3px 0 4px; line-height: 1.35; white-space: normal; }
+.info-note[hidden] { display: none; }
+.ws-info { margin: 4px 0; } .ws-sec-t { min-width: 0; flex: 1 1 60%; }
+.info-ed { display: flex; gap: 6px; align-items: flex-start; margin: 4px 0 8px; } .info-ed textarea { flex: 1; font-size: 13px; margin: 0; } .info-ed button { flex: 0 0 auto; }
+.dot.chem { background: #fff; border: 2px solid #1F3A5F; box-sizing: border-box; }
+.chem-box { margin-top: 10px; border-top: 2px solid #1F3A5F; padding-top: 8px; }
+.chem-entry { border: 1px solid #C9CED6; border-left: 4px solid #1F3A5F; border-radius: 8px; padding: 8px 10px; margin: 8px 0; background: #F7F8FA; }
+.chem-row { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: flex-end; } .chem-row > * { flex: 1 1 110px; min-width: 0; } .chem-row .chem-name { flex: 3 1 180px; }
+.chem-entry select, .chem-entry input { width: 100%; max-width: 100%; }
+.chem-entry .cl-time-l input { width: 7.2em; }
 </style>
 </head>
 <body class="locked">
@@ -370,7 +381,7 @@ table.ss td.k-text, table.ss th.k-text { text-align: left; }
   <div class="card">
     <div class="cal-head"><button class="small secondary" onclick="calMove(-1)" aria-label="Previous month">‹</button><h3 id="calTitle"></h3><button class="small secondary" onclick="calMove(1)" aria-label="Next month">›</button></div>
     <div class="cal-grid" id="calGrid"></div>
-    <div class="legend"><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot note"></i> notes</span></div>
+    <div class="legend"><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot chem"></i> chemical</span><span><i class="dot note"></i> notes</span></div>
     <div class="cal-tools"><button class="small secondary" onclick="calToday()">Today</button><button class="small" onclick="openDay(ymd(new Date()))">＋ Log today</button></div>
   </div>
   <div class="stats-row wrap" id="homeStats"></div>
@@ -585,17 +596,34 @@ function getSettings() {
 const getWork = () => load('nwhWork', {});
 // Water sample check: 4 sections, each with its own configurable tests (fields carry .sec), time and note.
 const WS_SECTIONS = [{ id: 'fw', label: 'Feed water' }, { id: 'cd', label: 'Condensate' }, { id: 'b1', label: 'Boiler 1' }, { id: 'b2', label: 'Boiler 2' }];
+const WS_INFO = {
+  overall: "General guidance only. Follow NWH's water treatment program and vendor limits for target ranges and corrective actions.",
+  sulfite: 'Oxygen scavenger. A residual means dissolved O2 is being removed, preventing pitting. Low: increase feed / check the deaerator. High: wasted chemical and raised TDS.',
+  ph: 'Acidity/alkalinity. Boiler water is kept alkaline to limit corrosion. Low pH: corrosion risk. Too high: caustic/foaming risk.',
+  cond: 'Measures dissolved solids (TDS). Rising conductivity means concentrating solids; control it with blowdown. High: scale, foaming, and carryover risk.',
+  fw: 'Water entering the boiler (makeup plus returned condensate). Shows treatment and pretreatment going in.',
+  cd: 'Returned steam. Low pH points to carbonic acid corrosion in the return lines; high conductivity can mean contamination or a leak.',
+  b1: 'Concentrated boiler water. Used to set blowdown and the chemical feed for that boiler.',
+  b2: 'Concentrated boiler water. Used to set blowdown and the chemical feed for that boiler.'
+};
+// Default info note for a test (by its built-in key), a section (by id) or the overall item; tests the user adds default to ''.
+const defaultInfo = (kind, x) => kind === 'overall' ? WS_INFO.overall : kind === 'sec' ? (WS_INFO[x.id] || '') : ((/^(fw|cd|b1|b2)(sulfite|ph|cond)$/.exec(x.key) || [])[2] ? WS_INFO[/^(?:fw|cd|b1|b2)(sulfite|ph|cond)$/.exec(x.key)[1]] : '');
 const wsTests = sec => [{ key: sec + 'sulfite', label: 'Sulfite', unit: 'ppm', type: 'number', sec }, { key: sec + 'ph', label: 'pH', unit: '', type: 'number', sec }, { key: sec + 'cond', label: 'Conductivity', unit: 'µS/cm', type: 'number', sec }];
 const secLabel = (it, sec) => ((it.sections || []).find(x => x.id === sec) || WS_SECTIONS.find(x => x.id === sec) || { label: sec }).label;
 const fieldLabel = (it, f) => f.sec ? secLabel(it, f.sec) + ' ' + f.label : f.label;
 // Older templates had Boiler 1/2 tests only (keys b1sulfite… with labels "B1 Sulfite"): move them into sections, keep keys and ranges, add Feed water and Condensate.
 function upgradeChecklist(list) {
   return list.map(it => {
-    if (it.id !== 'wscheck' || it.sections) return it;
+    if (it.id !== 'wscheck') return it;
     const x = JSON.parse(JSON.stringify(it));
-    x.sections = JSON.parse(JSON.stringify(WS_SECTIONS));
-    x.fields.forEach(f => { const m = /^(b[12])/.exec(f.key); f.sec = m ? m[1] : 'b1'; f.label = String(f.label).replace(/^B[12]\s+/, ''); });
-    x.fields = [...wsTests('fw'), ...wsTests('cd'), ...x.fields.filter(f => f.sec === 'b1'), ...x.fields.filter(f => f.sec === 'b2')];
+    if (!x.sections) {
+      x.sections = JSON.parse(JSON.stringify(WS_SECTIONS));
+      x.fields.forEach(f => { const m = /^(b[12])/.exec(f.key); f.sec = m ? m[1] : 'b1'; f.label = String(f.label).replace(/^B[12]\s+/, ''); });
+      x.fields = [...wsTests('fw'), ...wsTests('cd'), ...x.fields.filter(f => f.sec === 'b1'), ...x.fields.filter(f => f.sec === 'b2')];
+    }
+    if (x.info === undefined) x.info = defaultInfo('overall');
+    x.sections.forEach(sec => { if (sec.info === undefined) sec.info = defaultInfo('sec', sec); });
+    x.fields.forEach(f => { if (f.sec && f.info === undefined) f.info = defaultInfo('field', f); });
     return x;
   });
 }
@@ -604,7 +632,7 @@ const toMin = t => { const [h, m] = String(t).split(':').map(Number); return h *
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 const fmtTime = t => t ? new Date('2000-01-01T' + t).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
 // A day counts as logged when it has checklist, boiler log or note data (AOCs are stored separately). Old shift/hours fields are ignored.
-const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()));
+const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()) || (w.chem || []).length > 0);
 const subtitle = () => { const S = getSettings(); return `${S.employer} — ${S.title}`; };
 
 /* ---------- Screens & navigation ---------- */
@@ -675,6 +703,7 @@ function dayDots(key, ctx) {
   const w = ctx.work[key], out = [];
   if (w) {
     if (w.checklist) { const p = checklistProgress(key, ctx.work); if (p.done) out.push(`<i class="dot ck${p.done >= p.total ? ' full' : ''}"></i>`); }
+    if ((w.chem || []).length) out.push('<i class="dot chem"></i>');
     if ((w.notes || '').trim() || Object.values(w.boiler || {}).some(v => String(v).trim())) out.push('<i class="dot note"></i>');
   }
   const a = ctx.aocs[key];
@@ -807,6 +836,7 @@ function noteItems() {
     const b = w.boiler || {};
     const lines = [w.notes, ...[['Pressure', b.pressure && b.pressure + ' psi'], ['Water', b.water], ['Fuel', b.fuel], ['Incident/maint', b.incidents]].filter(x => x[1]).map(x => x.join(': ')),
       ...Object.entries(w.checklist || {}).filter(([, r]) => r.note).map(([id, r]) => `${(defs.find(d => d.id === id) || { label: id }).label}: ${r.note}`),
+      ...(w.chem || []).map(e => '🧪 ' + chemEntryText(k, e)),
       ...Object.entries(w.checklist || {}).flatMap(([id, r]) => Object.entries(r.sec || {}).filter(([, x]) => x.note).map(([sec, x]) => `Water sample · ${secLabel(defs.find(d => d.id === id) || {}, sec)}: ${x.note}`))].filter(x => x && String(x).trim());
     if (lines.length || (w.tags || []).length) out.push({ key: k, kind: 'day', text: lines.join('\n'), tags: w.tags || [], pinned: !!w.pinned, isExample: w.isExample });
   });
@@ -904,6 +934,8 @@ function loadExamples() {
     [d(-9)]: day({ notes: 'Example: pinned reminder, order more sulfite reagent.', pinned: true }),
     [d(-10)]: day({ boiler: { time: '08:00', pressure: '127' }, notes: 'Example: Saturday walk-through.' })
   };
+  ex[d(-1)].chem = [{ id: 'exc1', chem: 'o2', amount: 2, unit: 'gal', to: 'Feed water', time: '08:40', reason: 'Example: low sulfite residual' }, { id: 'exc2', chem: 'int', amount: 1.5, unit: 'gal', to: 'Feed water', time: '09:05', reason: 'Example: B2 conductivity high', link: 'wscheck.b2cond', note: 'Example: increased blowdown too' }];
+  ex[d(-3)].chem = [{ id: 'exc3', chem: 'amine', amount: 0.5, unit: 'gal', to: 'Feed steam', time: '10:15', reason: 'Example: routine weekly dose' }];
   const mBase = { gas: [996000, 520], b2gas: [385000000, 21000], daybin: [2070000, 4100], b2hrs: [86100.5, 8.25], b1hrs: [17350.2, 23.6], scrubhrs: [21815.4, 23.4], water: [8930000, 10100] };
   const jit = [0, 3, -2, 5, 1, -4, 2, 0, 6, -1, 3];
   const ids = DEFAULT_CHECKLIST.map(i => i.id);
@@ -931,6 +963,90 @@ function removeExamples() {
   store('nwhAocs', getAocs().filter(a => !a.isExample));
   toast('Example data removed');
   showScreen(document.querySelector('.screen.active').id);
+}
+
+/* ---------- Chemical additions (daily log, after the water sample check) ---------- */
+const DEFAULT_CHEMICALS = [
+  { id: 'o2', label: 'Oxygen scavenger (sulfite)', unit: 'gal', info: 'Fed with feed water; removes dissolved O2 to prevent pitting. Dose to keep a sulfite residual in the boilers.' },
+  { id: 'alk', label: 'Alkalinity builder (caustic)', unit: 'gal', info: 'Fed with feed water; raises pH/alkalinity in the system to limit corrosion.' },
+  { id: 'int', label: 'Internal treatment (phosphate/polymer)', unit: 'gal', info: 'Fed with feed water; keeps hardness in suspension in the boilers so it blows down instead of scaling.' },
+  { id: 'amine', label: 'Condensate treatment (amine)', unit: 'gal', info: 'Fed with feed steam; neutralizes carbonic acid in steam and return lines and raises condensate pH.' },
+  { id: 'other', label: 'Other', unit: '', info: '' }
+];
+const DEFAULT_CHEM_TARGETS = ['Feed water', 'Feed steam'];
+const getChemTargets = () => { const t = load('nwhSettings', {}).chemTargets; return Array.isArray(t) && t.length ? t : DEFAULT_CHEM_TARGETS.slice(); };
+const getChemicals = () => { const s = load('nwhSettings', {}); return Array.isArray(s.chemicals) ? s.chemicals : JSON.parse(JSON.stringify(DEFAULT_CHEMICALS)); };
+const chemName = id => (getChemicals().find(c => c.id === id) || { label: id || '' }).label;
+// Out-of-range readings that day (for linking a reason)
+function oorReadings(day) {
+  const r = ((getWork()[day] || {}).checklist || {}), out = [];
+  getChecklist().forEach(it => it.fields.forEach(f => { const v = ((r[it.id] || {}).values || {})[f.key]; if (outOfRange(f, v)) out.push({ ref: it.id + '.' + f.key, label: `${fieldLabel(it, f)} ${v}${f.unit ? ' ' + f.unit : ''}` }); }));
+  return out;
+}
+function chemLinkLabel(day, ref) {
+  if (!ref) return '';
+  const [id, key] = ref.split('.'), it = allItemDefs().find(i => i.id === id), f = it && it.fields.find(x => x.key === key);
+  const v = ((((getWork()[day] || {}).checklist || {})[id] || {}).values || {})[key];
+  return f ? `${fieldLabel(it, f)}${v != null ? ' ' + v : ''}` : ref;
+}
+function chemEntryText(day, e) {
+  return [e.time ? fmtTime(e.time) : '', chemName(e.chem), [e.amount, e.unit].filter(x => x !== '' && x != null).join(' '), e.to ? '→ ' + e.to : '',
+    e.reason || e.link ? '— ' + [e.reason, e.link ? '(! ' + chemLinkLabel(day, e.link) + ')' : ''].filter(Boolean).join(' ') : '', e.note ? '· ' + e.note : ''].filter(Boolean).join(' ');
+}
+function chemHtml(day) {
+  const list = (getWork()[day] || {}).chem || [], chems = getChemicals(), oor = oorReadings(day);
+  const opt = (v, cur, lab) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab)}</option>`;
+  return `<div class="chem-box" data-chem="${day}"><div class="cl-head"><b>🧪 Chemical additions</b><span class="cl-prog">${list.length}</span></div>
+    ${list.map((e, i) => { const c = chems.find(x => x.id === e.chem);
+      return `<div class="chem-entry" data-i="${i}">
+      <div class="chem-row"><label class="cl-f chem-name">Chemical${c && c.info ? `<button type="button" class="info-btn" aria-label="What is this?" aria-expanded="false" onclick="infoToggle(event,this)">ⓘ</button><span class="info-note" hidden>${esc(c.info)}</span>` : ''}
+        <select onchange="chemSet('${day}',${i},'chem',this.value,true)">${chems.map(x => opt(x.id, e.chem, x.label)).join('')}${!c && e.chem ? opt(e.chem, e.chem, e.chem) : ''}</select></label>
+        <label class="cl-time-l">Time <input type="time" class="chem-time" value="${esc(e.time || '')}" onchange="chemSet('${day}',${i},'time',this.value)"></label></div>
+      <div class="chem-row"><label class="cl-f">Amount<input type="number" step="any" inputmode="decimal" value="${esc(e.amount != null ? e.amount : '')}" data-k="amount" onchange="chemSet('${day}',${i},'amount',this.value)"></label>
+        <label class="cl-f">Unit<input value="${esc(e.unit || '')}" placeholder="gal, lb, qt…" onchange="chemSet('${day}',${i},'unit',this.value)"></label>
+        <label class="cl-f">Applied to<select onchange="chemSet('${day}',${i},'to',this.value)">${getChemTargets().map(t => opt(t, e.to, t)).join('')}${e.to && !getChemTargets().includes(e.to) ? opt(e.to, e.to, e.to) : ''}</select></label></div>
+      <label class="cl-f">Reason<input value="${esc(e.reason || '')}" placeholder="e.g. low sulfite residual" onchange="chemSet('${day}',${i},'reason',this.value)"></label>
+      ${oor.length || e.link ? `<label class="cl-f">Linked reading<select onchange="chemSet('${day}',${i},'link',this.value)"><option value="">— none —</option>${oor.map(o => opt(o.ref, e.link, '! ' + o.label)).join('')}${e.link && !oor.some(o => o.ref === e.link) ? opt(e.link, e.link, chemLinkLabel(day, e.link)) : ''}</select></label>` : ''}
+      <input class="cl-note" placeholder="Note (optional)" value="${esc(e.note || '')}" onchange="chemSet('${day}',${i},'note',this.value)">
+      <button type="button" class="small danger" onclick="chemDel('${day}',${i})">✕ Remove</button></div>`; }).join('')}
+    <button type="button" class="small" onclick="chemAdd('${day}')">＋ Add chemical addition</button></div>`;
+}
+function chemSave(day, list) {
+  const W = getWork(), e = W[day] || {};
+  if (list.length) e.chem = list; else delete e.chem;
+  delete e.isExample;
+  if (hasWork(e)) W[day] = e; else delete W[day];
+  store('nwhWork', W); refreshDayCell(day);
+}
+function chemRerender(day) { document.querySelectorAll(`.chem-box[data-chem="${day}"]`).forEach(b => b.outerHTML = chemHtml(day)); }
+function chemAdd(day) {
+  const list = ((getWork()[day] || {}).chem || []).slice(), c = getChemicals()[0] || { id: 'other', unit: '' };
+  list.push({ id: 'c' + Date.now().toString(36), chem: c.id, amount: '', unit: c.unit || '', to: getChemTargets()[0], time: nowHM() });
+  chemSave(day, list); chemRerender(day);
+}
+function chemDel(day, i) {
+  if (!confirm('Remove this chemical addition?')) return;
+  const list = ((getWork()[day] || {}).chem || []).slice(); list.splice(i, 1); chemSave(day, list); chemRerender(day);
+}
+function chemSet(day, i, k, v, rerender) {
+  const list = ((getWork()[day] || {}).chem || []).slice(), e = list[i]; if (!e) return;
+  if (k === 'amount') e.amount = v === '' || isNaN(Number(v)) ? '' : Number(v); else if (v === '' && k !== 'chem') delete e[k]; else e[k] = v;
+  if (k === 'chem') { const c = getChemicals().find(x => x.id === v); if (c && c.unit && !e.unit) e.unit = c.unit; }
+  if (k !== 'time' && !e.time) e.time = nowHM();
+  chemSave(day, list); if (rerender) chemRerender(day);
+}
+/* Chemical list editor (More → Checklist) */
+let chemDraft = null, chemTargetsDraft = null;
+function chemEdHtml() {
+  if (!chemDraft) chemDraft = JSON.parse(JSON.stringify(getChemicals()));
+  if (!chemTargetsDraft) chemTargetsDraft = getChemTargets();
+  return `<div class="sub-card chem-ed"><b>🧪 Chemical list (for Chemical additions)</b>
+    ${chemDraft.map((c, i) => `<div class="ws-ed"><div class="row2"><input value="${esc(c.label)}" aria-label="Chemical name" onchange="chemDraft[${i}].label=this.value" style="flex:3"><input value="${esc(c.unit || '')}" placeholder="Unit" aria-label="Default unit" onchange="chemDraft[${i}].unit=this.value">
+      <button class="small danger" onclick="chemDraft.splice(${i},1);clEdRender()" aria-label="Remove chemical">✕</button></div>
+      ${infoEd(`chemDraft[${i}]`, c.info, `((DEFAULT_CHEMICALS.find(d=>d.id===chemDraft[${i}].id)||{}).info||'')`, c.label + ' note')}</div>`).join('')}
+    <button class="small secondary" onclick="chemDraft.push({id:'k'+Date.now().toString(36),label:'New chemical',unit:'',info:''});clEdRender()">＋ Chemical</button>
+    <div class="ws-ed"><b>Applied to (feed points)</b>${chemTargetsDraft.map((t, i) => `<div class="row2"><input value="${esc(t)}" aria-label="Feed point" onchange="chemTargetsDraft[${i}]=this.value.trim()||chemTargetsDraft[${i}]"><button class="small danger" onclick="chemTargetsDraft.length>1&&chemTargetsDraft.splice(${i},1);clEdRender()" aria-label="Remove feed point">✕</button></div>`).join('')}
+      <button class="small secondary" onclick="chemTargetsDraft.push('New feed point');clEdRender()">＋ Feed point</button> <button class="small secondary" onclick="chemTargetsDraft=DEFAULT_CHEM_TARGETS.slice();clEdRender()">Reset to default</button></div></div>`;
 }
 
 function esc(s) {
@@ -1006,7 +1122,7 @@ const DEFAULT_CHECKLIST = [
   meterItem('water', 'Water meter'),
   { id: 'b1check', label: 'Boiler 1 system check', fields: [] },
   { id: 'b2check', label: 'Boiler 2 system check', fields: [] },
-  { id: 'wscheck', label: 'Water sample check', sections: JSON.parse(JSON.stringify(WS_SECTIONS)), fields: WS_SECTIONS.flatMap(x => wsTests(x.id)) }
+  upgradeChecklist([{ id: 'wscheck', label: 'Water sample check', sections: JSON.parse(JSON.stringify(WS_SECTIONS)), fields: WS_SECTIONS.flatMap(x => wsTests(x.id)) }])[0]
 ];
 // v4.2 default items: no longer on the checklist, but their recorded data is kept and shown in history
 const LEGACY_CHECKLIST = [
@@ -1057,13 +1173,16 @@ function checklistProgress(day, W) {
   return { done, total: items.length };
 }
 function clFieldHtml(f, vals, day, id) {
-  return `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}${f.min != null || f.max != null ? ` <small class="muted">[${f.min != null ? f.min : ''}–${f.max != null ? f.max : ''}]</small>` : ''}
+  return `<label class="cl-f">${esc(f.label)}${f.unit ? ` <small>(${esc(f.unit)})</small>` : ''}${f.min != null || f.max != null ? ` <small class="muted">[${f.min != null ? f.min : ''}–${f.max != null ? f.max : ''}]</small>` : ''}${infoBtn(f.info)}${infoNote(f.info)}
     <input type="${f.type === 'time' ? 'time' : 'number'}" step="any" inputmode="decimal" value="${esc(vals[f.key] != null ? vals[f.key] : '')}" class="${outOfRange(f, vals[f.key]) ? 'oor' : ''}" data-field="${f.key}" onchange="clSet(this,'${day}','${id}','value','${f.key}')"></label>`;
 }
+const infoBtn = t => t ? `<button type="button" class="info-btn" aria-label="What is this?" aria-expanded="false" onclick="infoToggle(event,this)">ⓘ</button>` : '';
+const infoNote = t => t ? `<span class="info-note" hidden>${esc(t)}</span>` : '';
+function infoToggle(e, b) { e.preventDefault(); e.stopPropagation(); const n = b.parentElement.querySelector(':scope > .info-note'); if (n) { n.hidden = !n.hidden; b.setAttribute('aria-expanded', String(!n.hidden)); } }
 function wsSectionsHtml(it, r, day) {
   const vals = r.values || {}, sx = r.sec || {};
-  return `<div class="ws-secs">${it.sections.map(sec => { const fs = it.fields.filter(f => f.sec === sec.id), x = sx[sec.id] || {};
-    return `<div class="ws-sec" data-sec="${sec.id}"><div class="ws-sec-h"><b>${esc(sec.label)}</b>
+  return `<div class="ws-info">${it.info ? `<span class="muted">About these tests</span>${infoBtn(it.info)}${infoNote(it.info)}` : ''}</div><div class="ws-secs">${it.sections.map(sec => { const fs = it.fields.filter(f => f.sec === sec.id), x = sx[sec.id] || {};
+    return `<div class="ws-sec" data-sec="${sec.id}"><div class="ws-sec-h"><span class="ws-sec-t"><b>${esc(sec.label)}</b>${infoBtn(sec.info)}${infoNote(sec.info)}</span>
       <label class="cl-time-l">Time <input type="time" class="ws-time" value="${esc(x.time || '')}" aria-label="${esc(sec.label)} time" onchange="clSet(this,'${day}','${it.id}','stime','${sec.id}')"></label></div>
       ${fs.length ? `<div class="cl-fields">${fs.map(f => clFieldHtml(f, vals, day, it.id)).join('')}</div>` : '<p class="muted">No tests set for this section (More → Checklist).</p>'}
       <input class="cl-note ws-note" placeholder="${esc(sec.label)} note (optional)" value="${esc(x.note || '')}" onchange="clSet(this,'${day}','${it.id}','snote','${sec.id}')"></div>`; }).join('')}</div>`;
@@ -1085,6 +1204,7 @@ function checklistHtml(day) {
         <input class="cl-note" placeholder="Note (optional)" value="${esc(r.note || '')}" onchange="clSet(this,'${day}','${it.id}','note')">
       </div>`;
     }).join('')}
+    ${chemHtml(day)}
     ${legacyChecklistHtml(day, items, cl)}
   </div>`;
 }
@@ -1146,11 +1266,14 @@ function clEdRender() {
         <button class="small secondary" onclick="clEdMove(${i},-1)" aria-label="Move up">↑</button>
         <button class="small secondary" onclick="clEdMove(${i},1)" aria-label="Move down">↓</button>
         <button class="small danger" onclick="clDraft.splice(${i},1);clEdRender()" aria-label="Remove item">✕</button></div>
+      ${it.sections ? infoEd(`clDraft[${i}]`, it.info, `defaultInfo('overall')`, 'Overall note') : ''}
       ${it.sections ? it.sections.map((sec, si) => `<div class="ws-ed"><div class="row2"><b style="flex:0 0 auto;align-self:center">Section</b><input value="${esc(sec.label)}" aria-label="Section name" onchange="clDraft[${i}].sections[${si}].label=this.value"></div>
+        ${infoEd(`clDraft[${i}].sections[${si}]`, sec.info, `defaultInfo('sec',clDraft[${i}].sections[${si}])`, sec.label + ' note')}
         ${it.fields.map((f, j) => f.sec === sec.id ? clEdFieldRow(i, j, f) : '').join('')}
-        <button class="small secondary" onclick="clDraft[${i}].fields.splice(clDraft[${i}].fields.map(x=>x.sec).lastIndexOf('${sec.id}')+1||clDraft[${i}].fields.length,0,{key:'${sec.id}'+Date.now().toString(36),label:'Test',unit:'',type:'number',sec:'${sec.id}'});clEdRender()">＋ Test in ${esc(sec.label)}</button></div>`).join('') : `${it.fields.map((f, j) => clEdFieldRow(i, j, f)).join('')}
+        <button class="small secondary" onclick="clDraft[${i}].fields.splice(clDraft[${i}].fields.map(x=>x.sec).lastIndexOf('${sec.id}')+1||clDraft[${i}].fields.length,0,{key:'${sec.id}'+Date.now().toString(36),label:'Test',unit:'',type:'number',sec:'${sec.id}',info:''});clEdRender()">＋ Test in ${esc(sec.label)}</button></div>`).join('') : `${it.fields.map((f, j) => clEdFieldRow(i, j, f)).join('')}
       <button class="small secondary" onclick="clDraft[${i}].fields.push({key:'f'+Date.now().toString(36),label:'Value',unit:'',type:'number'});clEdRender()">＋ Value field</button>`}
     </div>`).join('');
+  document.getElementById('clEditor').insertAdjacentHTML('beforeend', chemEdHtml());
 }
 function clEdFieldRow(i, j, f) { return `<div class="cl-ed-field">
         <input value="${esc(f.label)}" placeholder="Value name" onchange="clDraft[${i}].fields[${j}].label=this.value">
@@ -1158,7 +1281,11 @@ function clEdFieldRow(i, j, f) { return `<div class="cl-ed-field">
         <select onchange="clFieldType(${i},${j},this.value)"><option value="number"${f.type === 'number' || !f.type ? ' selected' : ''}>Number</option><option value="meter"${f.type === 'meter' && !f.dec ? ' selected' : ''}>Meter (digits)</option><option value="meterdec"${f.type === 'meter' && f.dec ? ' selected' : ''}>Meter (decimal)</option><option value="time"${f.type === 'time' ? ' selected' : ''}>Time</option></select>
         <input type="number" step="any" value="${f.min != null ? f.min : ''}" placeholder="Min" onchange="clDraft[${i}].fields[${j}].min=this.value===''?undefined:Number(this.value)">
         <input type="number" step="any" value="${f.max != null ? f.max : ''}" placeholder="Max" onchange="clDraft[${i}].fields[${j}].max=this.value===''?undefined:Number(this.value)">
-        <button class="small danger" onclick="clDraft[${i}].fields.splice(${j},1);clEdRender()" aria-label="Remove value field">✕</button></div>`; }
+        <button class="small danger" onclick="clDraft[${i}].fields.splice(${j},1);clEdRender()" aria-label="Remove value field">✕</button></div>${f.sec ? infoEd(`clDraft[${i}].fields[${j}]`, f.info, `defaultInfo('field',clDraft[${i}].fields[${j}])`, f.label + ' note') : ''}`; }
+function infoEd(ref, text, def, label) {
+  return `<div class="info-ed"><textarea rows="2" aria-label="${esc(label)}" placeholder="${esc(label)} (optional)" onchange="${ref}.info=this.value">${esc(text || '')}</textarea>
+    <button type="button" class="small secondary" onclick="${ref}.info=${def};clEdRender()">Reset to default</button></div>`;
+}
 function clFieldType(i, j, v) { const f = clDraft[i].fields[j]; f.type = v === 'meterdec' ? 'meter' : v; f.dec = v === 'meterdec'; clDraft[i].meter = clDraft[i].fields.some(x => x.type === 'meter'); }
 function clEdMove(i, d) { const j = i + d; if (j < 0 || j >= clDraft.length) return; [clDraft[i], clDraft[j]] = [clDraft[j], clDraft[i]]; clEdRender(); }
 function clEdAdd() {
@@ -1167,8 +1294,8 @@ function clEdAdd() {
   document.getElementById('clNewItem').value = ''; clEdRender();
 }
 function clEdSave() {
-  const s = load('nwhSettings', {}); s.checklist = clDraft; store('nwhSettings', s);
-  clDraft = null; clEdRender(); toast('Checklist saved');
+  const s = load('nwhSettings', {}); s.checklist = clDraft; if (chemDraft) s.chemicals = chemDraft; if (chemTargetsDraft) s.chemTargets = chemTargetsDraft; store('nwhSettings', s);
+  clDraft = null; chemDraft = null; chemTargetsDraft = null; clEdRender(); toast('Checklist saved');
 }
 function clEdReset() {
   if (!confirm('Reset the checklist to the default items? Logged values are kept.')) return;
@@ -1543,9 +1670,10 @@ function buildSheet(scr, from, to, desc) {
       else sp.cols.push({ h: 'Done', g: lab, kind: 'text', align: 'center' });
       sp.cols.push({ h: 'Time', g: lab, kind: 'text', align: 'center' });
     });
+    sp.cols.push({ h: 'Entries', g: 'Chemical additions', kind: 'wrap' });
     sp.cols.push({ h: 'Done', g: '', kind: 'text', align: 'center' });
-    days.filter(k => W[k].checklist).forEach(k => {
-      const cl = W[k].checklist, cells = [C(sDate(k))];
+    days.filter(k => W[k].checklist || (W[k].chem || []).length).forEach(k => {
+      const cl = W[k].checklist || {}, cells = [C(sDate(k))];
       items.forEach(it => {
         const r = cl[it.id] || {}, v = r.values || {};
         const missed = !r.done && !Object.keys(v).length;
@@ -1559,6 +1687,7 @@ function buildSheet(scr, from, to, desc) {
         else cells.push(r.done ? C('✓', { color: GREEN, bold: true }) : C('✗', { color: RED, bold: true }));
         cells.push(C(taskTime(r) ? fmtTime(taskTime(r)) : ''));
       });
+      cells.push(C((W[k].chem || []).map(e => chemEntryText(k, e)).join(' ; ')));
       const p = checklistProgress(k, W);
       cells.push(p.done >= p.total ? C(`✓ ${p.done}/${p.total}`, { bold: true, color: GREEN }) : C(`! ${p.done}/${p.total}`, { bold: true, bg: AMBER_BG }));
       sp.rows.push({ day: k, cells });
