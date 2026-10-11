@@ -1750,6 +1750,20 @@ function renderSheet(scr) {
 /* Canvas pages: landscape US Letter at 300 dpi */
 const PAGE_W = 3300, PAGE_H = 2550, MARGIN = 150, TABLE_TOP = 300, BOX_H = 250, FOOT_H = 90;
 const FONT = (px, bold) => `${bold ? 'bold ' : ''}${px}px Inter, Arial, Helvetica, sans-serif`;
+// Group header: one line if it fits, else wrap to 2 lines, else a smart abbreviation (e.g. "B2 Hour Mtr").
+const ABBR = [[/\bBoiler\s*(\d)/gi, 'B$1'], [/\bmeter\b/gi, 'Mtr'], [/\breading\b/gi, 'Rdg'], [/\bcycle\b/gi, 'Cyc'], [/\bScrubber\b/gi, 'Scrub'], [/\bconductivity\b/gi, 'Cond'], [/\bhour\b/gi, 'Hour']];
+const abbrev = t => ABBR.reduce((a, [r, x]) => a.replace(r, x), t).replace(/\b([a-z])/g, m => m.toUpperCase());
+function groupLabel(ctx, text, w) {
+  if (ctx.measureText(text).width <= w) return [text];
+  const two = wrapLines(ctx, text, w);
+  if (two.length <= 2 && two.every(l => ctx.measureText(l).width <= w)) return two;
+  const ab = abbrev(text);
+  if (ctx.measureText(ab).width <= w) return [ab];
+  const ab2 = wrapLines(ctx, ab, w);
+  if (ab2.length <= 2 && ab2.every(l => ctx.measureText(l).width <= w)) return ab2;
+  let l = ab; while (ctx.measureText(l + '…').width > w && l.length > 3) l = l.slice(0, -1);
+  return [l + '…'];
+}
 function wrapLines(ctx, text, w) {
   const out = [];
   String(text || '').split('\n').forEach(par => {
@@ -1814,7 +1828,9 @@ function sheetPages(sp) {
     // header heights (header text can wrap to 2 lines)
     meas.font = FONT(fs, true);
     const hLines = ch.cols.map((i, k) => wrapLines(meas, sp.cols[i].h, ch.widths[k] - padX * 2).slice(0, 3));
-    const hH = Math.max(...hLines.map(l => l.length)) * lh + padY * 2, gH = groups ? lh + padY * 2 : 0;
+    const hH = Math.max(...hLines.map(l => l.length)) * lh + padY * 2;
+    const gLines = groups ? Math.max(...ch.cols.map((i, k) => { const g = sp.cols[i].g; if (!g) return 1; const w = ch.cols.reduce((a, j, kk) => a + (sp.cols[j].g === g ? ch.widths[kk] : 0), 0); return groupLabel(meas, g, w - padX).length; })) : 0;
+    const gH = groups ? gLines * lh + padY * 2 : 0;
     const rowLines = r => ch.cols.map((i, k) => { meas.font = FONT(fs, (r.cells[i] || {}).bold); const c = sp.cols[i]; return c.kind === 'wrap' ? wrapLines(meas, (r.cells[i] || {}).t, ch.widths[k] - padX * 2) : [(r.cells[i] || {}).t || '']; });
     const bodyTop = headTop + gH + hH, bottom = PAGE_H - MARGIN - FOOT_H - BOX_H - 30;
     let page = { chunk: ci, rows: [], foot: false, fs, ch, hLines, hH, gH, lh, padY, padX };
@@ -1858,8 +1874,9 @@ function drawPage(sp, pg, idx, total) {
       let n = 1; while (c.g && k + n < ch.cols.length && sp.cols[ch.cols[k + n]].g === c.g) n++;
       if (c.g) {
         const w = ch.widths.slice(k, k + n).reduce((a, b) => a + b, 0);
-        ctx.font = FONT(fs, true); let lab = c.g; while (ctx.measureText(lab).width > w - padX && lab.length > 3) lab = lab.slice(0, -2) + '…';
-        T(lab, xs[k] + w / 2, y + padY + fs, FONT(fs, true), '#fff', 'center');
+        ctx.font = FONT(fs, true);
+        const gl = groupLabel(ctx, c.g, w - padX);
+        gl.forEach((l, j) => T(l, xs[k] + w / 2, y + padY + fs + j * lh - (gl.length - 1) * lh / 2 + (gH - lh - padY * 2) / 2, FONT(fs, true), '#fff', 'center'));
         rect(xs[k] + 6, y + gH - 2, w - 12, 2, 'rgba(255,255,255,.55)');
       }
       k += n;
