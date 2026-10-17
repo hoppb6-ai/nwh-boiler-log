@@ -537,7 +537,6 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .dial-n { position: absolute; transform: translate(-50%, -50%); width: 52px !important; height: 52px; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border-radius: 50%; background: #fff !important; color: #1F3A5F !important; border: 2px solid #1F3A5F !important; font-size: 20px; font-weight: 800; touch-action: manipulation; }
 .dial-n.on { background: #F2A900 !important; color: #222 !important; border-color: #222 !important; transform: translate(-50%, -50%) scale(1.12); }
 .dial-lbl { text-align: center; font-weight: 800; font-size: 18px; margin: 4px 0 0; }
-.wheel-rot { transition: transform .45s cubic-bezier(.3, 1.4, .5, 1); transform-box: view-box; transform-origin: 50% 50%; }
 .bs-row.lh { flex-direction: row; justify-content: space-between; gap: 8px; }
 .bk-card { border-left: 5px solid #1F3A5F; }
 #printArea { display: none; }
@@ -559,6 +558,10 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .ds-sub { font-weight: 800; margin: 10px 0 2px; color: #1F3A5F; } .ds-empty { text-align: center; padding: 18px; } .ds-empty b { font-size: 20px; }
 .dot.flag { width: auto !important; height: auto !important; background: none !important; color: #B36B00; font: 900 10px/1 system-ui; font-style: normal; }
 .dot.pmover { background: #C62828; border-radius: 50%; box-shadow: 0 0 0 2px #fff inset; }
+.wheel-rot { transition: none !important; }
+html.dark svg.wheel { filter: invert(1) hue-rotate(180deg); } /* cancel the dark-mode page inversion so the wheel keeps its exact colours */
+html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
+.live-t.empty { border-top-color: #C9CED6 !important; background: #FAFBFC !important; } .live-t.empty b { color: #8792A2; } .live-t.empty .live-when { color: #1F3A5F; font-weight: 700; }
 </style>
 </head>
 <body class="locked">
@@ -790,7 +793,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
     <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.2 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.3 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2634,7 +2637,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.2.2';
+const APP_VER = '2.2.3';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3719,6 +3722,35 @@ dayDots = function (key, ctx) { let h = _dayDots24(key, ctx); const w = ctx.work
   if (w) { try { if (readoutEvents(key).some(e => e.flag)) h += '<i class="dot flag" title="flag">!</i>'; } catch (e) {} }
   if (key === ymd(new Date()) && (ctx.pm || []).some(t => pmStatus(t, key, ctx.work).overdue > 0 && !(((w || {}).pm || {})[t.id] || {}).done)) h = h.replace('<i class="dot pmdue"></i>', '') + '<i class="dot pmover"></i>';
   return h; };
+
+/* ===================== v2.2.3: explicit-colour handwheel (light + dark), JS-animated rotation, calmer live tiles ===================== */
+wheelSvg = function (clock, valve, size) {
+  const h = (Number(clock) || 12), rot = (h % 12) * 30, R = 34, spokes = [0, 72, 144, 216, 288];
+  const ticks = [...Array(12)].map((_, i) => { const a = i * 30 * Math.PI / 180, r1 = 56, r2 = i % 3 ? 52 : 49; return `<line x1="${(Math.sin(a) * r1).toFixed(1)}" y1="${(-Math.cos(a) * r1).toFixed(1)}" x2="${(Math.sin(a) * r2).toFixed(1)}" y2="${(-Math.cos(a) * r2).toFixed(1)}" stroke="#6B7686" stroke-width="${i % 3 ? 1.2 : 2.4}"/>`; }).join('');
+  return `<svg class="wheel" width="${size}" height="${size}" viewBox="-60 -60 120 120" role="img" aria-label="Handwheel, marked spoke at ${h} o'clock, valve ${valve || 'unknown'}">
+    <circle r="59" fill="#FFFFFF"/>${ticks}
+    <g font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="8" fill="#3C4654" text-anchor="middle"><text x="0" y="-41">12</text><text x="43" y="3">3</text><text x="0" y="47">6</text><text x="-43" y="3">9</text></g>
+    <g class="wheel-rot" data-rot="${rot}" transform="rotate(${rot})">
+      <circle r="${R}" fill="none" stroke="#1F3A5F" stroke-width="8"/><circle r="${R}" fill="none" stroke="#5B7BA6" stroke-width="2"/>
+      ${spokes.slice(1).map(a => `<line x1="0" y1="0" x2="${(Math.sin(a * Math.PI / 180) * R).toFixed(2)}" y2="${(-Math.cos(a * Math.PI / 180) * R).toFixed(2)}" stroke="#1F3A5F" stroke-width="6" stroke-linecap="round"/>`).join('')}
+      <line class="mspoke" x1="0" y1="0" x2="0" y2="${-R - 4}" stroke="#E07B00" stroke-width="10" stroke-linecap="round"/>
+      <circle class="mknob" cx="0" cy="${-R - 6}" r="8" fill="#E07B00" stroke="#7A3E00" stroke-width="2"/><text x="0" y="${-R - 3}" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="900" fill="#FFFFFF" text-anchor="middle">M</text>
+      <circle r="9" fill="#1F3A5F"/><circle r="3.5" fill="#FFFFFF"/></g></svg>`;
+};
+function wheelTurn(g, to) { // tween the SVG attribute: works in iOS Safari without CSS transform-box quirks
+  if (!g) return; let from = Number(g.dataset.rot) || 0; let d = ((to - from) % 360 + 540) % 360 - 180; const t0 = performance.now(), dur = 450;
+  cancelAnimationFrame(g._raf); g.dataset.rot = to;
+  const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); g.setAttribute('transform', `rotate(${(from + d * e).toFixed(2)})`); if (k < 1) g._raf = requestAnimationFrame(step); else g.setAttribute('transform', `rotate(${to})`); };
+  g._raf = requestAnimationFrame(step);
+}
+blowClock = function (h) { blowDraft.clock = h; wheelTurn(document.querySelector('#mpad .dial-wheel .wheel-rot'), (h % 12) * 30);
+  document.querySelectorAll('#mpad .dial-n').forEach(b => b.classList.toggle('on', Number(b.dataset.h) === h)); haptic(document.querySelector(`#mpad .dial-n[data-h="${h}"]`)); const l = document.getElementById('dialLbl'); if (l) l.textContent = `Marked spoke → ${h} o'clock`; };
+const _blowSave25 = blowSave;
+blowSave = function () { const prev = blowNow(), from = prev && prev.clock ? (prev.clock % 12) * 30 : 0, to = (blowDraft.clock % 12) * 30; _blowSave25();
+  const g = document.querySelector('#homeBoilers .bo-card .wheel-rot'); if (g && from !== to) { g.setAttribute('transform', `rotate(${from})`); g.dataset.rot = from; wheelTurn(g, to); } };
+const _liveTile25 = liveTile;
+liveTile = function (b, k) { const s = fieldSeries(b.id, k); if (s.length) return _liveTile25(b, k);
+  return `<button type="button" class="live-t empty" data-live="${b.id}:${k}" onclick="liveLog('${b.id}','${k}')"><small>${esc(bsFieldLabel(b, k))}</small><b>—</b><span class="live-when">Tap to log</span></button>`; };
 
 /* ---------- Startup ---------- */
 migrateData();
