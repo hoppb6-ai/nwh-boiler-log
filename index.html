@@ -542,6 +542,11 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .bk-card { border-left: 5px solid #1F3A5F; }
 #printArea { display: none; }
 @media print { @page { size: letter landscape; margin: 0; } body.printing > *:not(#printArea) { display: none !important; } body.printing #printArea { display: block; } #printArea img { width: 100%; display: block; page-break-after: always; } html.dark { filter: none !important; } }
+.file-btn { position: relative; display: block; overflow: hidden; }
+.file-btn input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 200px; cursor: pointer; z-index: 2; }
+.rs-err { background: #FDECEA; border-left: 4px solid #C62828; padding: 10px; font-weight: 700; overflow-wrap: anywhere; }
+#pasteText { width: 100%; min-height: 110px; font: 12px ui-monospace, Menlo, monospace; box-sizing: border-box; }
+.upd-bar { position: fixed; left: 8px; right: 8px; top: calc(env(safe-area-inset-top) + 8px); z-index: 9999; width: auto !important; background: #F2A900 !important; color: #222 !important; font-weight: 800; border-radius: 12px; min-height: 48px; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 </style>
 </head>
 <body class="locked">
@@ -735,8 +740,8 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
     <h3>💾 Backup &amp; restore</h3>
     <p class="muted" id="lastSaveInfo"></p>
     <div class="row2"><button onclick="saveFile()">💾 Save backup</button><button class="secondary" onclick="saveFile(true)">Save As…</button></div>
-    <label class="btn-like restore-btn" for="quickRestore">⤓ Restore from backup…</label><input id="quickRestore" class="vh-file" type="file" accept="application/json,.json" onchange="restorePick(this)">
-    <button class="small secondary" onclick="showScreen('restore')">Automatic snapshots…</button>
+    <span class="btn-like restore-btn file-btn">⤓ Restore from backup…<input id="quickRestore" type="file" aria-label="Restore from backup file" onchange="restorePick(this)"></span>
+    <button class="small secondary" onclick="showScreen('restore')">Paste backup text / snapshots…</button>
     <p class="muted">Save writes a full backup file (on iPhone choose “Save to Files”). Restore shows a preview and asks before replacing anything; a snapshot is taken first.</p>
   </div>
 
@@ -773,7 +778,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
     <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -782,9 +787,13 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
   <p class="muted">Restoring replaces all data on this device. A snapshot of the current data is taken first, so you can undo. Hopp backups are accepted (work days, checklist, meters and AOCs are imported; everything else is ignored).</p>
   <div class="card">
     <h3>From a backup file</h3>
-    <label class="btn-like restore-btn" for="restorePickFile">⤓ Restore from backup…</label><input id="restorePickFile" class="vh-file" type="file" accept="application/json,.json" onchange="restorePick(this)">
+    <span class="btn-like restore-btn file-btn">⤓ Restore from backup…<input id="restorePickFile" type="file" aria-label="Restore from backup file" onchange="restorePick(this)"></span>
+    <details class="paste-box"><summary><b>📋 Paste backup text</b> (if the file picker won't work)</summary>
+      <p class="muted">Open the backup file (Files, Notes, Mail…), Select All → Copy, then paste here.</p>
+      <textarea id="pasteText" placeholder='{"app":"nwh-boiler-log", ...}' aria-label="Backup text" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <button type="button" onclick="restorePaste()">Check &amp; restore pasted text</button></details>
     <p class="muted">Or choose a file and use the classic button:</p>
-    <input id="restoreFile" type="file" accept="application/json,.json">
+    <input id="restoreFile" type="file">
     <button class="danger" onclick="restoreFromFile('restoreFile','restoreMsg')">Restore from File</button>
     <p id="restoreMsg" class="muted"></p>
   </div>
@@ -2608,7 +2617,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.2';
+const APP_VER = '2.2.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3580,6 +3589,70 @@ async function restoreConfirm() { const r = restorePending; if (!r) return; awai
 const _renderScreen22 = renderScreen;
 renderScreen = function (id) { _renderScreen22(id); if (id === 'report') { const h = document.querySelector('#report h2'); if (h) h.textContent = '📄 Daily status readout'; } };
 const _refreshDayCell22 = refreshDayCell;
+
+/* ===================== v2.2.1: robust restore (any file type, paste fallback, clear errors) + prompt updates ===================== */
+function parseBackupText(txt) {
+  if (txt == null) throw new Error('The file was empty or could not be read.');
+  let t = String(txt).replace(/^\uFEFF/, '').replace(/\u0000/g, '').trim();
+  if (!t) throw new Error('The file is empty (0 bytes). Re-save the backup and try again.');
+  let p; try { p = JSON.parse(t); } catch (e) { const a = t.indexOf('{'), b = t.lastIndexOf('}'); if (a >= 0 && b > a) { try { p = JSON.parse(t.slice(a, b + 1)); } catch (e2) {} } }
+  if (p === undefined) throw new Error(/^\{\\rtf/.test(t) ? 'This file was saved as rich text (RTF), not the original backup. Use the backup file itself or paste its text.' : `This doesn't look like a backup (not valid JSON). It starts with: “${t.slice(0, 40)}”`);
+  if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) {} }
+  if (!p || typeof p !== 'object' || Array.isArray(p)) throw new Error('The JSON is not a backup object.');
+  const isHoppRaw = o => o && typeof o === 'object' && Object.keys(o).some(k => /^hopps/.test(k));
+  const isNwhRaw = o => o && typeof o === 'object' && Object.keys(o).some(k => /^nwh/.test(k));
+  let data, kind;
+  if (p.data && typeof p.data === 'object' && (p.app === 'hopps-invoices' || (!p.app && isHoppRaw(p.data) && !isNwhRaw(p.data)))) { data = fromHopp(p.data); kind = 'Hopp (work data only)'; }
+  else if (p.data && typeof p.data === 'object' && (p.app === APP_ID || isNwhRaw(p.data))) { data = p.data; kind = 'NWH Log'; }
+  else if (isNwhRaw(p)) { data = p; kind = 'NWH Log (raw data)'; }
+  else if (isHoppRaw(p)) { data = fromHopp(p); kind = 'Hopp (raw data)'; }
+  else if (p.app && p.app !== APP_ID) throw new Error(`This backup is from a different app (“${p.app}”).`);
+  else throw new Error('No NWH Log or Hopp data found in this file.');
+  data = JSON.parse(JSON.stringify(data)); // deep copy; keys are stored as JSON strings by applyData
+  Object.keys(data).forEach(k => { if (typeof data[k] === 'string' && /^nwh/.test(k) && /^[\[{]/.test(data[k].trim())) { try { data[k] = JSON.parse(data[k]); } catch (e) {} } });
+  return { data, kind, exported: p.exported || '' };
+}
+function restoreError(msg) { padClose && document.getElementById('mpad') && (document.getElementById('mpad').hidden || padClose());
+  const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open');
+  m.innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>Couldn't restore</b><button class="small secondary" onclick="padClose()">✕</button></div>
+    <p class="rs-err" role="alert">! ${esc(msg)}</p><p class="muted">Nothing was changed. You can also open the backup in Files/Notes, Copy all its text, and use “Paste backup text”.</p>
+    <div class="pad-nav"><button type="button" class="secondary" onclick="padClose()">Close</button><button type="button" class="pad-next" onclick="padClose();showScreen('restore');setTimeout(()=>{const t=document.getElementById('pasteText');t&&t.scrollIntoView({block:'center'})},50)">Paste backup text</button></div></div>`; }
+function restorePreviewShow(res, name) {
+  const { data, kind, exported } = res, W = data.nwhWork || {}, days = Object.keys(W).filter(k => /^\d{4}-\d\d-\d\d$/.test(k)).sort(), c = countsOf(data);
+  const vals = Object.values(W).reduce((a, w) => a + Object.values((w && w.checklist) || {}).reduce((b, r) => b + Object.keys((r && r.values) || {}).length, 0), 0);
+  restorePending = { data, fromH: /Hopp/.test(kind), name };
+  const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open');
+  m.innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>Restore from backup</b><button class="small secondary" onclick="restorePending=null;padClose()">✕</button></div>
+    <div class="card rs-prev"><div class="kv"><span>File</span><b>${esc(name)}</b></div><div class="kv"><span>Type</span><b>${kind}</b></div>
+      <div class="kv"><span>Exported</span><b>${exported ? new Date(exported).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) : '—'}</b></div>
+      <div class="kv"><span>Date range</span><b>${days.length ? mdy(days[0]) + ' – ' + mdy(days[days.length - 1]) : '—'}</b></div><div class="kv"><span>Days logged</span><b>${days.length}</b></div>
+      <div class="kv"><span>Readings / values</span><b>${vals}</b></div><div class="kv"><span>AOCs & history</span><b>${c.aocs}</b></div></div>
+    ${days.length ? '' : '<p class="rs-warn">! This backup has no logged days.</p>'}
+    <p class="rs-warn">! This replaces ALL data on this device. A snapshot of the current data is saved first (More → Restore → snapshots to undo).</p>
+    <div class="pad-nav"><button type="button" class="secondary" onclick="restorePending=null;padClose()">Cancel</button><button type="button" class="pad-next danger-btn" onclick="restoreConfirm()">Restore ${days.length} days</button></div></div>`;
+}
+function readFileText(file) { return new Promise((ok, no) => { if (file.text) { file.text().then(ok, () => fallback()); } else fallback();
+  function fallback() { const rd = new FileReader(); rd.onload = () => ok(rd.result); rd.onerror = () => no(new Error('iOS could not read this file' + (rd.error ? ' (' + rd.error.name + ')' : '') + '. If it is in iCloud, download it first, or use “Paste backup text”.')); rd.readAsText(file); } }); }
+restorePick = async function (input) {
+  const file = input && input.files && input.files[0]; if (input) setTimeout(() => { input.value = ''; }, 0); // allow picking the same file again
+  if (!file) { toast('No file selected'); return; }
+  try { if (file.size > 50 * 1024 * 1024) throw new Error('That file is too large to be a backup.'); const res = parseBackupText(await readFileText(file)); restorePreviewShow(res, file.name || 'backup'); }
+  catch (e) { restoreError(e.message || String(e)); }
+};
+function restorePaste() { const t = document.getElementById('pasteText'); try { const res = parseBackupText(t.value); restorePreviewShow(res, 'Pasted text'); } catch (e) { restoreError(e.message); } }
+restoreFromFile = function (inputId) { const i = document.getElementById(inputId); if (!i.files || !i.files[0]) { restoreError('Choose a backup file first.'); return; } restorePick(i); };
+const _restoreConfirm23 = restoreConfirm;
+restoreConfirm = async function () { try { await _restoreConfirm23(); const t = document.getElementById('pasteText'); if (t) t.value = ''; } catch (e) { restoreError('Restore failed: ' + (e.message || e) + '. Your previous data was snapshotted.'); } };
+/* service worker: show "Update available" and reload into the new version */
+function swBanner(reg) { if (document.getElementById('updBar')) return; const d = document.createElement('button'); d.id = 'updBar'; d.type = 'button'; d.className = 'upd-bar'; d.textContent = '⟳ Update available — tap to reload';
+  d.onclick = () => { const w = reg && reg.waiting; if (w) w.postMessage('skipWaiting'); else location.reload(); setTimeout(() => location.reload(), 1500); }; document.body.appendChild(d); }
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  let reloading = false, hadCtl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadCtl && !reloading) { reloading = true; swBanner(null); } hadCtl = true; });
+  navigator.serviceWorker.getRegistration().then(reg => { if (!reg) return; if (reg.waiting && navigator.serviceWorker.controller) swBanner(reg);
+    reg.addEventListener('updatefound', () => { const n = reg.installing; n && n.addEventListener('statechange', () => { if (n.state === 'installed' && navigator.serviceWorker.controller) swBanner(reg); }); });
+    reg.update().catch(() => {}); document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
+}
 
 /* ---------- Startup ---------- */
 migrateData();
