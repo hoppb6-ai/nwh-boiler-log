@@ -661,6 +661,7 @@ html.dark .info-btn { color: var(--head) !important; background: transparent !im
 .badge.ok { background: #E3F1E4; color: #1B5E20; } html.dark .badge.ok { background: #183A1E; color: #8FD694; }
 html.dark #tabBar button:not(.on) span, html.dark #tabBar button:not(.on) b { color: #BAC5D3 !important; }
 .ssc-at { font-size: 13px; color: var(--text2); font-variant-numeric: tabular-nums; }
+.ph-sheet { display: block; max-width: 100%; height: auto; margin: 0 auto 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
 </style>
 </head>
 <body class="locked">
@@ -898,7 +899,7 @@ html.dark #tabBar button:not(.on) span, html.dark #tabBar button:not(.on) b { co
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.0.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.0.2 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2743,7 +2744,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.0.1';
+const APP_VER = '3.0.2';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3949,6 +3950,123 @@ const _renderSheet31 = renderSheet;
 renderSheet = function (scr) { const st = ssSt(scr); if (st.layout !== 'fit' && st.layout !== 'cards') st.layout = 'cards'; _renderSheet31(scr);
   const box = document.querySelector(`#${scr} .ss-pane`), fb = box.querySelector('.ssLayout button[data-l="fit"]'); if (fb) fb.textContent = '🖼 Sheet preview'; const cb = box.querySelector('.ssLayout button[data-l="cards"]'); if (cb) cb.textContent = '▤ Cards';
   if (st.layout === 'fit') { const [f, t] = rangeDates(st), sp = buildSheet(scr, f, t, st.desc); if (sp.rows.length) box.querySelector('.ssOut').innerHTML = sheetPreviewHtml(scr, sp); } };
+
+/* ===================== v3.0.2: every export is exactly ONE landscape page ===================== */
+const ONE_MIN_FS = 22, ONE_MAX_FS = 34;
+function compactCols(sp) { // merge each column group into one stacked column (e.g. meter: reading on top, used/ran beneath)
+  const out = []; sp.cols.forEach((c, i) => { if (i === 0) { out.push({ h: c.h, kind: 'text', idx: [0], key: true }); return; } const last = out[out.length - 1];
+    if (c.g && last && last.g === c.g) last.idx.push(i); else out.push({ h: c.g || c.h, g: c.g || '', kind: c.kind, idx: [i] }); });
+  out.forEach(o => { if (o.idx.length > 1) { o.kind = 'stack'; o.sub = o.idx.map(i => sp.cols[i].h).join(' / '); } }); return out;
+}
+function cellLines(sp, col, r) { const lines = []; let bg = null, color = null, bold = false;
+  col.idx.forEach((i, j) => { const c = r.cells[i] || { t: '' }; if (c.bg) bg = c.bg; if (c.color && !color) color = c.color; if (c.bold) bold = true; if (c.t === '' || c.t == null) return;
+    const h = sp.cols[i].h.replace(/\s*\(.*?\)/g, ''), t = String(c.t), m = /^(.*?) @ (.+)$/.exec(t);
+    if (m) { lines.push(m[1]); lines.push('@ ' + m[2]); return; }
+    lines.push(j && col.idx.length > 1 && !/^(Used|Ran|!|@|Total|Avg)/.test(t) && !/read at/i.test(h) ? `${h} ${t}` : /read at/i.test(h) ? '@ ' + t : t); });
+  return { lines, bg, color, bold };
+}
+sheetCanvases = function (sp) {
+  const cols = compactCols(sp), probe = document.createElement('canvas').getContext('2d'), W = PAGE_W - MARGIN * 2, H = PAGE_H - MARGIN * 2 - 360;
+  const rows = sp.rows.map(r => ({ r, c: cols.map(col => cellLines(sp, col, r)) })), foot = (sp.foot || []).map(r => ({ r, c: cols.map(col => cellLines(sp, col, r)), foot: true }));
+  const wrap = (s, w, f) => { probe.font = f; if (probe.measureText(s).width <= w) return [s]; const out = []; let cur = ''; String(s).split(/\s+/).forEach(x => { const t = cur ? cur + ' ' + x : x; if (probe.measureText(t).width > w && cur) { out.push(cur); cur = x; } else cur = t; }); out.push(cur); return out; };
+  const ell = (s, w, f) => { probe.font = f; if (probe.measureText(s).width <= w) return s; while (s.length > 1 && probe.measureText(s + '…').width > w) s = s.slice(0, -1); return s + '…'; };
+  let plan = null;
+  for (let fs = ONE_MAX_FS; fs >= ONE_MIN_FS; fs--) {
+    const pad = Math.round(fs * .45), f = FONT(fs), fb = FONT(fs, true), hf = FONT(Math.round(fs * .92), true), sf = FONT(Math.round(fs * .72));
+    const nat = cols.map(col => { probe.font = hf; let w = Math.max(...String(col.h).split(' ').map(x => probe.measureText(x).width), col.h.length < 18 ? probe.measureText(col.h).width : 0);
+      probe.font = f; [...rows, ...foot].forEach(x => x.c[cols.indexOf(col)].lines.forEach(l => { w = Math.max(w, probe.measureText(l).width * (!col.key && (col.kind === 'wrap' || col.kind === 'text') ? .6 : 1)); })); return Math.min(w + pad * 2, W * .34); });
+    const tot = nat.reduce((a, b) => a + b, 0); if (tot > W && fs > ONE_MIN_FS) continue;
+    const cw = nat.map(w => w * W / tot);
+    const lay = x => { const cl = x.c.map((c, i) => c.lines.flatMap(l => cols[i].kind === 'num' ? [ell(l, cw[i] - pad * 2, f)] : wrap(l, cw[i] - pad * 2, f).slice(0, 3))); return { x, cl, h: Math.max(1, ...cl.map(l => l.length)) * Math.round(fs * 1.22) + pad * 2 }; };
+    const hh = Math.round(fs * 1.12) * 2 + pad * 2 + (cols.some(c => c.sub) ? Math.round(fs * .8) : 0);
+    const L = rows.map(lay), F = foot.map(lay); const need = hh + L.reduce((a, b) => a + b.h, 0) + F.reduce((a, b) => a + b.h, 0);
+    plan = { fs, pad, f, fb, hf, sf, cw, hh, L, F, need }; if (need <= H) break;
+  }
+  // condense: keep what fits, then a "+N more" line (never a second page)
+  let more = 0; const lineH = plan.fs * 1.22 + plan.pad * 2;
+  if (plan.need > H) { const avail = H - plan.hh - plan.F.reduce((a, b) => a + b.h, 0) - lineH; let used = 0, k = 0; while (k < plan.L.length && used + plan.L[k].h <= avail) used += plan.L[k++].h; more = plan.L.length - k; plan.L = plan.L.slice(0, k); }
+  const cv = exportPage(sp.title.replace(/^NWH /, ''), sp.from, sp.to, (ctx, x0, y0) => { const { fs, pad, f, fb, hf, sf, cw, hh } = plan; let y = y0; const W2 = cw.reduce((a, b) => a + b, 0);
+    ctx.fillStyle = NAVY; ctx.fillRect(x0, y, W2, hh); let x = x0; ctx.fillStyle = '#fff'; ctx.textBaseline = 'top';
+    cols.forEach((c, i) => { const hl = wrap(c.h, cw[i] - pad * 2, hf).slice(0, 2); ctx.font = hf; ctx.textAlign = c.kind === 'num' || c.kind === 'stack' ? 'right' : 'left'; const tx = ctx.textAlign === 'right' ? x + cw[i] - pad : x + pad;
+      hl.forEach((l, j) => ctx.fillText(l, tx, y + pad + j * Math.round(fs * 1.12))); if (c.sub) { ctx.font = sf; ctx.fillStyle = '#D5DDE8'; ctx.fillText(ell(c.sub, cw[i] - pad * 2, sf), tx, y + pad + 2 * Math.round(fs * 1.12)); ctx.fillStyle = '#fff'; } x += cw[i]; });
+    y += hh;
+    const drawRow = (row, ri, isFoot) => { ctx.fillStyle = isFoot ? '#E4E8EE' : ri % 2 ? ALT : '#fff'; ctx.fillRect(x0, y, W2, row.h); let x = x0;
+      row.cl.forEach((ls, i) => { const c = row.x.c[i], col = cols[i]; if (c.bg) { ctx.fillStyle = c.bg; ctx.fillRect(x + 2, y + 2, cw[i] - 4, row.h - 4); }
+        ctx.textAlign = col.kind === 'num' || col.kind === 'stack' ? 'right' : 'left'; const tx = ctx.textAlign === 'right' ? x + cw[i] - pad : x + pad;
+        ls.forEach((l, j) => { ctx.font = (j === 0 && (col.key || c.bold || isFoot)) || (col.kind === 'stack' && j === 0) ? fb : (col.kind === 'stack' && j > 0 ? FONT(Math.round(fs * .9)) : f); ctx.fillStyle = c.color && (j === 0 || /^!/.test(l)) ? c.color : col.kind === 'stack' && j > 0 ? '#3C4654' : INK; ctx.fillText(l, tx, y + pad + j * Math.round(fs * 1.22)); });
+        ctx.fillStyle = GRID; ctx.fillRect(x + cw[i] - 1, y, 2, row.h); x += cw[i]; });
+      ctx.fillStyle = GRID; ctx.fillRect(x0, y + row.h - 2, W2, 2); y += row.h; };
+    plan.L.forEach((row, ri) => drawRow(row, ri, false));
+    if (more) { ctx.fillStyle = AMBER_BG; ctx.fillRect(x0, y, W2, lineH); ctx.fillStyle = INK; ctx.font = FONT(plan.fs, true); ctx.textAlign = 'left';
+      const rest = sp.rows.slice(sp.rows.length - more), d = rest.map(r => r.day).filter(Boolean).sort();
+      ctx.fillText(`+${more} more row${more > 1 ? 's' : ''}${d.length ? ` (${sDate(d[0])} – ${sDate(d[d.length - 1])})` : ''} not shown to keep one page — full detail in the CSV export or a shorter range.`, x0 + pad, y + pad); y += lineH; }
+    ctx.fillStyle = HEAVY; ctx.fillRect(x0, y, W2, 4); y += 4; plan.F.forEach((row, ri) => drawRow(row, ri, true)); });
+  const ctx = cv.getContext('2d'); ctx.font = FONT(34, true); ctx.fillStyle = INK; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText('Page 1 of 1', PAGE_W - MARGIN, PAGE_H - MARGIN + 10);
+  cv.fontPx = plan.fs; cv.more = more; cv.colCount = cols.length; return [cv];
+};
+// daily status readout: one page; condense the timeline with "+N more" instead of paginating
+const _readoutEvents32 = readoutEvents, _readoutCanvases32 = readoutCanvases; let _roCap = null;
+readoutEvents = function (day) { const e = _readoutEvents32(day); if (_roCap == null || e.length <= _roCap) return e; const n = e.length - _roCap; return e.slice(0, _roCap).concat([{ t: '', cat: '…', what: `+${n} more entries`, det: 'Not shown to keep one page — see the CSV export or the Day status view.', flag: false }]); };
+readoutCanvases = function (day) { _roCap = null; let c = _readoutCanvases32(day); if (c.length === 1) return c;
+  const n = _readoutEvents32(day).length; let lo = 1, hi = n - 1, best = 1; while (lo <= hi) { const m = (lo + hi) >> 1; _roCap = m; if (_readoutCanvases32(day).length === 1) { best = m; lo = m + 1; } else hi = m - 1; }
+  _roCap = best; c = _readoutCanvases32(day); _roCap = null; return c; };
+reportCanvases = readoutCanvases;
+
+/* ===================== v3.0.2b: phone-first sheet (in-app + portrait "Phone" PNG, default share) ===================== */
+const PH_W = 780, PH_S = 2; // 390 CSS px × 2; every font size below is CSS px × 2
+const shortStamp = s => String(s).replace(/(\d\d\/\d\d)\/\d{4}/g, '$1');
+function phoneBlocksFromSheet(sp) {
+  const cols = compactCols(sp);
+  const toBlock = (r, foot) => ({ title: r.cells[0].t, foot, cells: cols.slice(1).map(col => { const cl = cellLines(sp, col, r); if (!cl.lines.length) return null;
+    return { k: col.h.replace(/\s*\(.*?\)/g, ''), v: cl.lines[0], subs: cl.lines.slice(1).map(shortStamp).map(x => x.replace(/ over (\d+(\.\d+)?) hrs?/, ' / $1 h')), flag: !!cl.bg, bad: cl.color && /C62828/i.test(cl.color) }; }).filter(Boolean) });
+  return [...sp.rows.map(r => toBlock(r, false)), ...(sp.foot || []).map(r => toBlock(r, true))];
+}
+function phoneCanvas(title, range, blocks, opts) {
+  opts = opts || {}; const S = getSettings(), pad = 14 * PH_S, gap = 6 * PH_S, ncol = opts.cols || 2, cw = (PH_W - pad * 2 - gap * (ncol - 1)) / ncol;
+  const F = (px, b) => FONT(px * PH_S, b), probe = document.createElement('canvas').getContext('2d');
+  const fit = (s, w, f) => { probe.font = f; s = String(s); if (probe.measureText(s).width <= w) return s; while (s.length > 1 && probe.measureText(s + '…').width > w) s = s.slice(0, -1); return s + '…'; };
+  const wrap = (s, w, f, max) => { probe.font = f; const out = []; let cur = ''; String(s).split(/\s+/).forEach(x => { const t = cur ? cur + ' ' + x : x; if (probe.measureText(t).width > w && cur) { out.push(cur); cur = x; } else cur = t; }); out.push(cur); return out.slice(0, max || 4); };
+  const HEAD = 96 * PH_S, BH = 34 * PH_S; const cellH = c => 16 * PH_S + 24 * PH_S + (c.subs || []).length * 19 * PH_S + 12 * PH_S;
+  const lay = blocks.map(b => { if (b.list) { const lines = b.items.map(it => ({ it, w: wrap(it.text, PH_W - pad * 2 - 20 * PH_S, F(16, true), 4) })); return { b, lines, h: BH + lines.reduce((a, l) => a + l.w.length * 22 * PH_S + 10 * PH_S, 0) + gap }; }
+    const rows = []; for (let i = 0; i < b.cells.length; i += ncol) rows.push(b.cells.slice(i, i + ncol)); const rh = rows.map(r => Math.max(...r.map(cellH))); return { b, rows, rh, h: BH + rh.reduce((a, x) => a + x, 0) + gap * (rows.length + 1) }; });
+  const MAXH = 20000; let total = HEAD + pad + lay.reduce((a, l) => a + l.h, 0) + 40 * PH_S, keep = lay, more = 0;
+  if (total > MAXH) { let h = HEAD + pad + 80 * PH_S; const fixed = lay.filter(l => l.b.foot); h += fixed.reduce((a, l) => a + l.h, 0); keep = []; for (const l of lay) { if (l.b.foot) continue; if (h + l.h > MAXH) break; keep.push(l); h += l.h; } more = lay.filter(l => !l.b.foot).length - keep.length; keep = keep.concat(fixed); total = h + 40 * PH_S; }
+  const cv = document.createElement('canvas'); cv.width = PH_W; cv.height = Math.ceil(total); const ctx = cv.getContext('2d'); ctx.textBaseline = 'top';
+  const T = (s, x, y, f, c, a) => { ctx.font = f; ctx.fillStyle = c; ctx.textAlign = a || 'left'; ctx.fillText(s, x, y); };
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.fillStyle = NAVY; ctx.fillRect(0, 0, PH_W, HEAD);
+  T(fit(`${S.abbr || 'NWH'} — ${title}`, PH_W - pad * 2, F(22, true)), pad, 14 * PH_S, F(22, true), '#fff'); T(fit(range, PH_W - pad * 2, F(16)), pad, 44 * PH_S, F(16), '#fff');
+  T(fit(`${S.employer} · ${S.title}${S.operator ? ' · ' + S.operator : ''}`, PH_W - pad * 2, F(13)), pad, 68 * PH_S, F(13), '#D5DDE8');
+  let y = HEAD + pad;
+  keep.forEach(l => { const b = l.b; ctx.fillStyle = b.foot ? '#3C4654' : NAVY; ctx.fillRect(pad, y, PH_W - pad * 2, BH); T(fit(b.title, PH_W - pad * 4, F(17, true)), pad + 10 * PH_S, y + 7 * PH_S, F(17, true), '#fff'); y += BH;
+    if (b.list) { l.lines.forEach((ln, i) => { const h = ln.w.length * 22 * PH_S + 10 * PH_S; ctx.fillStyle = ln.it.flag ? AMBER_BG : i % 2 ? ALT : '#fff'; ctx.fillRect(pad, y, PH_W - pad * 2, h); ln.w.forEach((s, j) => T(s, pad + 10 * PH_S, y + 5 * PH_S + j * 22 * PH_S, F(16, j === 0 && ln.it.bold), INK)); y += h; }); y += gap; return; }
+    y += gap; l.rows.forEach((r, ri) => { r.forEach((c, ci) => { const x = pad + ci * (cw + gap), h = l.rh[ri]; ctx.fillStyle = c.flag ? AMBER_BG : b.foot ? '#E4E8EE' : ALT; ctx.fillRect(x, y, cw, h); ctx.fillStyle = GRID; ctx.fillRect(x, y, cw, 2);
+        const w = cw - 16 * PH_S; T(fit(c.k, w, F(13, true)), x + 8 * PH_S, y + 6 * PH_S, F(13, true), '#3C4654'); T(fit((c.flag && !/^!/.test(c.v) ? '! ' : '') + c.v, w, F(19, true)), x + 8 * PH_S, y + 23 * PH_S, F(19, true), c.bad ? RED : INK);
+        (c.subs || []).forEach((s, j) => T(fit(s, w, F(15)), x + 8 * PH_S, y + 49 * PH_S + j * 19 * PH_S, F(15), /^!/.test(s) ? '#8A5300' : '#3C4654')); }); y += l.rh[ri] + gap; }); });
+  if (more) { ctx.fillStyle = AMBER_BG; ctx.fillRect(pad, y, PH_W - pad * 2, 50 * PH_S); wrap(`+${more} more not shown to keep one image — use a shorter range or the CSV.`, PH_W - pad * 4, F(14, true), 2).forEach((s, j) => T(s, pad + 10 * PH_S, y + 8 * PH_S + j * 18 * PH_S, F(14, true), INK)); y += 56 * PH_S; }
+  T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) + ' · NWH Log', PH_W / 2, cv.height - 28 * PH_S, F(12), '#555', 'center');
+  cv.more = more; cv.phone = true; return cv;
+}
+const sheetPhoneCanvas = sp => phoneCanvas(sp.title.replace(/^NWH /, ''), sp.from === sp.to ? sDate(sp.from, true) : `${sDate(sp.from, true)} – ${sDate(sp.to, true)}`, phoneBlocksFromSheet(sp));
+function readoutPhoneCanvas(day) {
+  const blocks = readoutSections(day).map(sec => ({ title: sec.title, list: true, items: sec.rows.map(r => ({ text: r.cells.filter(x => x !== '' && x != null).join(' · '), flag: r.flag, bold: true })) }));
+  return phoneCanvas('Daily status', sDate(day, true), blocks);
+}
+// in-app "Sheet" = the phone sheet image at 1 image px : 1/3 CSS px (text ≥ 15px), vertical scroll only
+sheetPreviewHtml = function (scr, sp) { const pc = sheetPhoneCanvas(sp); window._prevCvs = sheetCanvases(sp);
+  return `<img class="ph-sheet" alt="${esc(sp.title)} sheet" src="${pc.toDataURL('image/png')}" style="width:${pc.width / PH_S}px"><button type="button" class="small secondary" onclick="sheetPreviewOpen(0)">Letter page preview</button>`; };
+const _renderSheet33 = renderSheet;
+renderSheet = function (scr) { _renderSheet33(scr); const box = document.querySelector(`#${scr} .ss-pane`), fb = box.querySelector('.ssLayout button[data-l="fit"]'); if (fb) fb.textContent = '📱 Sheet';
+  const br = box.querySelector('.btn-row'); if (br && !br.dataset.v33) { br.dataset.v33 = 1; br.innerHTML = `<button class="small" onclick="exportSheet('${scr}','png')">📱 PNG</button><button class="small secondary" onclick="exportSheet('${scr}','png-letter')">🖼️ Letter PNG</button><button class="small secondary" onclick="exportSheet('${scr}','pdf')">📄 PDF</button><button class="small secondary" onclick="exportSheet('${scr}','csv')">CSV</button>`; }
+  const n = br && br.nextElementSibling; if (n && /landscape US Letter/.test(n.textContent)) n.textContent = '📱 PNG is a tall phone image (default). Letter PNG / PDF are one landscape 11 × 8.5 in page.'; };
+const _exportSheet33 = exportSheet;
+exportSheet = async function (scr, kind) { if (kind === 'png-letter') return _exportSheet33(scr, 'png');
+  if (kind !== 'png') return _exportSheet33(scr, kind); const sp = sheetFor(scr); if (!sp.rows.length) { toast('Nothing to export in this range'); return; }
+  return shareCanvases([sheetPhoneCanvas(sp)], `NWH-${sp.slug}-${sp.from}_to_${sp.to}-phone`, 'png'); };
+const _readoutExport33 = readoutExport;
+readoutExport = async function (kind) { const day = reportDay || ymd(new Date()); if (kind === 'png') return shareCanvases([readoutPhoneCanvas(day)], `NWH-Daily-Status-${day}-phone`, 'png'); if (kind === 'png-letter') return _readoutExport33('png'); return _readoutExport33(kind); };
+renderReport = function () { document.getElementById('reportDate').value = reportDay; const box = document.getElementById('reportPrev'); const pc = readoutPhoneCanvas(reportDay);
+  box.innerHTML = `<img class="ph-sheet" alt="Daily status sheet" src="${pc.toDataURL('image/png')}" style="width:${pc.width / PH_S}px">`; window._prevCvs = readoutCanvases(reportDay);
+  const br = document.querySelector('#report .btn-row'); if (br && !br.dataset.v33) { br.dataset.v33 = 1; br.innerHTML = `<button class="small" onclick="readoutExport('png')">📱 PNG</button><button class="small secondary" onclick="readoutExport('png-letter')">🖼️ Letter PNG</button><button class="small secondary" onclick="readoutExport('pdf')">📄 PDF</button><button class="small secondary" onclick="readoutExport('csv')">CSV</button><button class="small secondary" onclick="readoutExport('print')">🖨️ Print</button><button class="small secondary" onclick="sheetPreviewOpen(0)">Letter preview</button>`; } };
 
 /* ---------- Startup ---------- */
 migrateData();
