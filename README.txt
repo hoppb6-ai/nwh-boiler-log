@@ -54,3 +54,12 @@ v2.0 polish and power features
 - Each meter reading has a "Read on" date (log day by default, Next day, or another date), so a 01:30 read logged on the previous shift day is stamped correctly. Readings show as MM/DD/YYYY HH:MM.
 - Elapsed time comes from the full stamps, so midnight and multi-day gaps are handled. Hour meters show "Ran X hrs over Y hrs between reads" and are flagged only when Ran > elapsed + 0.1 hr. Without both times: "Ran X hrs (add read time to compare)", no flag. Resource meters show "Used N over Y hrs between reads".
 - Auto check stamps are never used as read times. A one-time cleanup removes times that came from a bulk import.
+
+v2.1
+- Home: the calendar is home again, with no dashboard tiles. The Boiler status panel sits below the calendar. The slim backup reminder only appears when a backup is overdue.
+- Checklist: "Meter readings" is a single step (step 3) showing n/7. Tapping it opens a rapid-entry keypad: an on-screen number pad (reliable on iOS), Next ↵ or Enter to advance, the previous reading with its stamp, and a live Used/Ran preview with the lower-than-previous warning. Each reading is auto-stamped (date + 24h time) and can be edited in the summary that appears after the last meter.
+- Operations timeline (AOCs tab): newest first, grouped by month, covering AOCs, quick "History entry" operation notes and procedure runs, with search and filters. The Library view is a toggle. The spreadsheet/export is a landscape timeline sheet.
+- Weekly tasks (default Monday, editable): Scrubber fan cleaning (LOTO note, sub-checklist LOTO applied / Cleaned / LOTO removed), Low water alarm test, Day bin greasing, Trash can emptying. Added once, never duplicated.
+- Operating procedures: an editable step library with cautions. Running one is a tap-through with a time stamp per step, saved to the timeline. A starter TEMPLATE is included for sawdust boiler start-up; edit it to match the NWH written procedure.
+- Boiler status: for each boiler (names, fuel and units editable): status, blowdown valve Open/Closed with a five-spoke handwheel (the marked spoke's clock position rotates the wheel), current temp, pressure and feed rate with sparklines, and the last 5 stamped readings. Log reading uses the same fast keypad. It has its own spreadsheet with PNG/PDF/CSV export.
+- A snapshot is taken automatically before the v2.1 additions are applied.

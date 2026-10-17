@@ -448,6 +448,71 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
 .readon { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: #3C4654; margin: 2px 0 4px; min-width: 0; } .readon span { white-space: nowrap; }
 .readon select, .readon input { width: auto; max-width: 100%; margin: 0; padding: 4px 6px; font-size: 13px; min-height: 32px; }
 .round-time .now-btn { height: 44px; padding: 0 12px !important; font-size: 15px !important; }
+/* ---- v2.1 ---- */
+.mstep .cl-top { align-items: center; }
+.mstep-open { background: none !important; color: inherit !important; border: 0 !important; padding: 0 !important; margin: 0 !important; width: auto !important; min-height: 0 !important; font: inherit; font-weight: 700; text-align: left; display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; }
+.mchk { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 2px solid #8792A2; border-radius: 6px; font-weight: 800; color: #fff; flex: 0 0 auto; font-size: 14px; }
+.mstep.done .mchk, .sop-step.done .mchk { background: #2E7D32; border-color: #2E7D32; }
+.mprog { font-weight: 800; font-variant-numeric: tabular-nums; padding: 2px 8px; border-radius: 999px; background: #F2F4F7; border: 1px solid #C9CED6; white-space: nowrap; } .mprog.ok { background: #E3F1E4; color: #2E7D32; border-color: #2E7D32; }
+.mstep-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin: 8px 0; }
+.ms-cell { display: flex !important; flex-direction: column; align-items: flex-start; gap: 0; margin: 0 !important; padding: 5px 8px !important; min-height: 0 !important; width: auto !important; background: #F2F4F7 !important; color: #222 !important; border: 1px solid #C9CED6 !important; border-radius: 8px; text-align: left; min-width: 0; }
+.ms-cell span { font-size: 11px; color: #3C4654; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; } .ms-cell b { font-size: 15px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; } .ms-cell small { font-size: 11px; color: #555; }
+.ms-cell.ok { border-left: 4px solid #2E7D32 !important; }
+.mstep-go { min-height: 52px; font-size: 17px; }
+body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !important; }
+.mpad { position: fixed; inset: 0; z-index: 200; background: #EEF1F5; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+.pad-wrap { max-width: 480px; margin: 0 auto; padding: 10px 12px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pad-head { display: flex; align-items: center; gap: 8px; min-width: 0; } .pad-head b { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pad-head button { width: auto; margin: 0; flex: 0 0 auto; }
+.pad-step { font-weight: 800; color: #1F3A5F; font-variant-numeric: tabular-nums; }
+.pad-dots { display: flex; gap: 6px; justify-content: center; } .pad-dots i { width: 12px; height: 12px; border-radius: 50%; background: #C9CED6; cursor: pointer; } .pad-dots i.ok { background: #2E7D32; } .pad-dots i.on { background: #1F3A5F; transform: scale(1.3); }
+.pad-name { font-size: 26px; font-weight: 800; color: #1F3A5F; text-align: center; line-height: 1.15; overflow-wrap: anywhere; }
+.pad-last { text-align: center; font-size: 14px; color: #3C4654; min-height: 18px; }
+.pad-disp { background: #fff; border: 3px solid #1F3A5F; border-radius: 12px; font-size: 38px; font-weight: 800; text-align: right; padding: 8px 14px; min-height: 66px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; }
+.pad-disp.fresh { color: #8792A2; } .pad-disp .ph { color: #C9CED6; } .pad-disp small { font-size: 16px; color: #555; }
+.pad-prev { text-align: center; font-weight: 700; min-height: 22px; } .pad-prev .ok { color: #2E7D32; } .pad-prev .neg, .neg { color: #C62828; }
+.pad-keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pk { margin: 0 !important; min-height: 60px; font-size: 28px !important; font-weight: 700; background: #fff !important; color: #222 !important; border: 1px solid #C9CED6 !important; border-radius: 12px; width: auto !important; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.pk:active { background: #DCE1E8 !important; } .pk.fn { background: #E4E8EE !important; } .pk.dis { opacity: .3; pointer-events: none; }
+.pad-nav { display: grid; grid-template-columns: 1fr 1.8fr; gap: 8px; margin-top: 4px; } .pad-nav button { margin: 0; min-height: 60px; font-size: 19px; }
+.pad-next { background: #1F3A5F !important; color: #fff !important; font-weight: 800; }
+.pad-sum-h { font-weight: 800; font-size: 17px; } .pad-sum-row { background: #fff; border: 1px solid #C9CED6; border-radius: 10px; padding: 8px 10px; min-width: 0; }
+.ps-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .ps-top .link-btn { width: auto; margin: 0; }
+.ps-val { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; } .ps-cmp { font-size: 14px; color: #2E7D32; font-weight: 700; } .ps-stamp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+/* timeline */
+#aocModeSeg { margin-bottom: 8px; }
+.tl-month { margin: 14px 0 6px; border-bottom: 2px solid #3C4654; padding-bottom: 2px; color: #1F3A5F; }
+.tl-entry { display: flex; gap: 10px; background: #fff; border: 1px solid #C9CED6; border-left: 5px solid #8792A2; border-radius: 10px; padding: 8px 10px; margin: 0 0 8px; min-width: 0; }
+.tl-entry.kind-aoc { border-left-color: #F2A900; } .tl-entry.kind-aoc.sev-High { border-left-color: #C62828; } .tl-entry.kind-note { border-left-color: #1F3A5F; } .tl-entry.kind-proc { border-left-color: #2E7D32; }
+.tl-when { flex: 0 0 48px; display: flex; flex-direction: column; align-items: center; font-variant-numeric: tabular-nums; } .tl-when b { font-size: 15px; } .tl-when span { font-size: 12px; color: #555; }
+.tl-body { flex: 1 1 auto; min-width: 0; cursor: pointer; overflow-wrap: anywhere; } .tl-type { font-size: 12px; font-weight: 700; color: #3C4654; } .tl-title { font-weight: 800; } .tl-note { white-space: pre-wrap; }
+.tl-steps { margin: 4px 0 0; padding-left: 20px; font-size: 13px; } .tl-steps small { color: #555; }
+/* SOPs */
+.sop-tpl { background: #FFF1C2; border-left: 4px solid #F2A900; padding: 4px 8px; font-weight: 700; font-size: 13px; margin: 4px 0; }
+.sop-step { background: #fff; border: 1px solid #C9CED6; border-radius: 10px; margin: 0 0 6px; overflow: hidden; } .sop-step.cur { border: 2px solid #1F3A5F; } .sop-step.done { background: #F3F8F3; }
+.sop-tap { display: flex !important; align-items: flex-start; gap: 10px; width: 100% !important; margin: 0 !important; padding: 12px !important; background: none !important; color: #222 !important; border: 0 !important; text-align: left; min-height: 56px; font-size: 16px; }
+.sop-tap .mchk { color: #1F3A5F; } .sop-step.done .sop-tap .mchk { color: #fff; } .sop-txt { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; } .sop-t { flex: 0 0 auto; font-weight: 800; font-variant-numeric: tabular-nums; color: #2E7D32; }
+.sop-caution { background: #FFF1C2; border-top: 1px solid #F2A900; padding: 6px 12px; font-weight: 700; font-size: 14px; }
+.sop-step-ed .row2 { align-items: flex-start; } .sop-n { padding-top: 10px; }
+/* boiler status */
+.bs-ph { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .bs-ph h3 { margin: 10px 0 6px; } .bs-ph button { width: auto; margin: 0; }
+.bs-card { min-width: 0; } .bs-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; } .bs-head b { font-size: 18px; }
+.bs-st { margin-left: auto; font-weight: 800; padding: 2px 10px; border-radius: 999px; background: #E4E8EE; font-size: 13px; }
+.bs-st.st-Running { background: #E3F1E4; color: #2E7D32; } .bs-st.st-Banked { background: #FFF1C2; color: #6B4E00; } .bs-st.st-Off { background: #E4E8EE; color: #3C4654; } .bs-st.st-Alarm { background: #C62828; color: #fff; }
+.bs-valve { display: flex; gap: 12px; align-items: center; margin: 8px 0; min-width: 0; }
+.bs-wheel { width: auto !important; margin: 0 !important; padding: 0 !important; background: none !important; border: 0 !important; min-height: 0 !important; flex: 0 0 auto; }
+.bs-vinfo { display: flex; flex-direction: column; gap: 2px; min-width: 0; } .bs-vinfo button { width: auto; align-self: flex-start; margin-top: 4px; }
+.bs-vstate { font-weight: 800; font-size: 17px; } .bs-vstate.v-Open { color: #C62828; } .bs-vstate.v-Closed { color: #2E7D32; }
+.bs-vals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.bs-val { background: #F2F4F7; border: 1px solid #C9CED6; border-radius: 8px; padding: 5px 6px; min-width: 0; display: flex; flex-direction: column; }
+.bs-val small { font-size: 11px; color: #3C4654; } .bs-val b { font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bs-val .u { font-size: 11px; font-weight: 600; margin-left: 2px; color: #555; } .spark { max-width: 100%; }
+.bs-hist { margin-top: 6px; } .bs-hist summary { font-weight: 700; cursor: pointer; }
+.bs-row { display: flex; flex-direction: column; padding: 4px 6px; border-bottom: 1px solid #C9CED6; font-size: 13px; font-variant-numeric: tabular-nums; } .bs-row:nth-child(even) { background: #F2F4F7; } .bs-t { font-weight: 700; }
+.bs-log { margin-top: 8px; }
+.bs-choice { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; } .bs-choice.two { grid-template-columns: 1fr 1fr; }
+.bs-choice button, .bs-clock button { margin: 0 !important; width: auto !important; min-height: 50px; background: #fff !important; color: #222 !important; border: 1px solid #C9CED6 !important; font-weight: 700; padding: 0 2px !important; }
+.bs-choice button.on, .bs-clock button.on { background: #1F3A5F !important; color: #fff !important; border-color: #1F3A5F !important; }
+.bs-clock { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.bs-vedit { display: flex; justify-content: center; } .wheel-rot { transition: transform .3s ease; }
 </style>
 </head>
 <body class="locked">
@@ -474,17 +539,17 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
 <div id="home" class="screen">
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
   <div class="ex-banner save-banner" id="saveReminder"><span>💾 Save a backup file</span><button class="small" onclick="saveFile()">Save</button><button class="small secondary" onclick="dismissSaveReminder()" aria-label="Dismiss">✕</button></div>
-  <div class="card" id="homeDash"></div>
   <div class="card">
     <div class="cal-head"><button class="small secondary" onclick="calMove(-1)" aria-label="Previous month">‹</button><h3 id="calTitle"></h3><button class="small secondary" onclick="calMove(1)" aria-label="Next month">›</button></div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="legend"><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot chem"></i> chemical</span><span><i class="dot pm"></i> PM done</span><span><i class="dot pmdue"></i> PM due</span><span><i class="dot note"></i> notes</span></div>
     <div class="cal-tools"><button class="small secondary" onclick="calToday()">Today</button><button class="small" onclick="openDay(ymd(new Date()))">＋ Log today</button></div>
   </div>
+  <div id="homeBoilers"></div>
   <div class="stats-row wrap" id="homeStats"></div>
   <div class="card" id="homeChecklist"></div>
   <div class="card" id="homeAocs"></div>
-  <div class="btn-row"><button class="small secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="small secondary" onclick="showScreen('pm')">🛠️ PM</button><button class="small secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
+  <div class="btn-row"><button class="small secondary" onclick="showScreen('sops')">📋 Procedures</button><button class="small secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="small secondary" onclick="showScreen('pm')">🛠️ PM</button><button class="small secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
 </div>
 
 <!-- Day editor -->
@@ -535,11 +600,19 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
 <!-- AOCs -->
 <div id="aocs" class="screen">
   <div class="scr-head"><h2>AOCs</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('aocs','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('aocs','sheet')">📊 Spreadsheet</button></div></div>
-  <p class="muted" style="margin-top:-4px">Abnormal Operating Conditions · reference library</p>
+  <p class="muted" style="margin-top:-4px">Operations history · AOCs, notes and procedure runs</p>
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
   <div class="ed-pane">
-    <button class="danger" onclick="openAoc(null, null, 'aocs')">＋ New AOC</button>
-    <div id="aocDayChip"></div>
+    <div class="seg mini" id="aocModeSeg"><button data-m="timeline" onclick="setAocMode('timeline')">🕘 Timeline</button><button data-m="library" onclick="setAocMode('library')">📚 Library</button></div>
+    <div class="btn-row"><button class="small" onclick="histFormToggle()">＋ History entry</button><button class="small danger" onclick="openAoc(null, null, 'aocs')">＋ New AOC</button></div>
+    <div id="histForm" class="card" hidden><h3>📝 Add history entry</h3><p class="muted">A running log of operations (doesn't have to be abnormal).</p>
+      <div class="row2"><label>Date <input type="date" id="hDate"></label><label class="cl-time-l"><span class="tl">🕒 Time</span><span class="tbox"><input type="time" id="hTime"></span></label></div>
+      <label>Equipment</label><select id="hEquip"><option>Both</option><option>Boiler 1</option><option>Boiler 2</option><option>Other</option></select>
+      <label>Title</label><input id="hTitle" placeholder="e.g. Switched to Boiler 2, B1 banked for cleaning">
+      <label>Note</label><textarea id="hNote" rows="3" placeholder="What happened, readings, who was notified..."></textarea>
+      <label>Tags</label><input id="hTags" value="Operation note">
+      <div class="btn-row"><button onclick="saveHistEntry()">Save entry</button><button class="secondary" onclick="histFormToggle(false)">Cancel</button></div></div>
+    <div id="aocDayChip" class="lib-only"></div>
     <input id="aocSearch" type="search" placeholder="Search title, cause, findings, actions, tags..." oninput="renderAocList()">
     <div class="row2">
       <select id="aocFCat" onchange="renderAocList()"><option value="all">All categories</option></select>
@@ -547,11 +620,13 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
     </div>
     <div class="row2">
       <select id="aocFEquip" onchange="renderAocList()"><option value="all">All equipment</option><option>Boiler 1</option><option>Boiler 2</option><option>Both</option><option>Other</option></select>
-      <select id="aocFStatus" onchange="renderAocList()"><option value="all">All statuses</option><option value="active">Open + Monitoring</option><option>Open</option><option>Monitoring</option><option>Resolved</option></select>
-      <select id="aocFSev" onchange="renderAocList()"><option value="all">All severity</option><option>High</option><option>Med</option><option>Low</option></select>
+      <select id="aocFStatus" class="lib-only" onchange="renderAocList()"><option value="all">All statuses</option><option value="active">Open + Monitoring</option><option>Open</option><option>Monitoring</option><option>Resolved</option></select>
+      <select id="aocFSev" class="lib-only" onchange="renderAocList()"><option value="all">All severity</option><option>High</option><option>Med</option><option>Low</option></select>
     </div>
     <p class="muted" id="aocCount"></p>
-    <div id="aocList"></div>
+    <div id="aocList" class="lib-only"></div>
+    <select id="tlType" class="tl-only" onchange="renderAocList()" aria-label="Entry type"><option value="all">All entry types</option><option value="aoc">AOCs</option><option value="note">Operation notes</option><option value="proc">Procedure runs</option></select>
+    <div id="aocTimeline" class="tl-only"></div>
   </div>
   <div class="ss-pane"></div>
 </div>
@@ -627,7 +702,7 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
 <!-- More -->
 <div id="more" class="screen">
   <h2>More</h2>
-  <div class="btn-row"><button class="secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="secondary" onclick="showScreen('pm')">🛠️ Scheduled tasks / PM</button><button class="secondary" onclick="showScreen('pmTasks')">⚙️ Manage scheduled tasks</button><button class="secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
+  <div class="btn-row"><button class="secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="secondary" onclick="showScreen('pm')">🛠️ Scheduled tasks / PM</button><button class="secondary" onclick="showScreen('sops')">📋 Procedures</button><button class="secondary" onclick="showScreen('bstat')">🔥 Boiler status</button><button class="secondary" onclick="showScreen('pmTasks')">⚙️ Manage scheduled tasks</button><button class="secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
   <div class="card">
     <h3>💼 Job</h3>
     <div class="row2">
@@ -667,7 +742,7 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
     <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily report</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.0 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -714,6 +789,25 @@ html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
   <div id="roundBody"></div>
   <div class="round-nav"><button class="secondary" onclick="roundBack()">‹ Back</button><button class="secondary" onclick="roundNext()">Skip</button><button onclick="roundNext()">Next ›</button></div>
 </div>
+<!-- Boiler status -->
+<div id="bstat" class="screen">
+  <div class="scr-head"><h2>🔥 Boiler status</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('bstat','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('bstat','sheet')">📊 Spreadsheet</button></div></div>
+  <div class="ed-pane"><div id="bstatPanel"></div><details class="card"><summary><b>Boiler setup</b> (names, fuel, units)</summary><div id="bsSetup"></div></details></div>
+  <div class="ss-pane"></div>
+</div>
+<!-- Operating procedures -->
+<div id="sops" class="screen">
+  <div class="scr-head"><h2>📋 Operating procedures</h2></div>
+  <p class="muted">Step-by-step procedures. Running one is a tap-through checklist with a time stamp per step, saved to the Operations timeline.</p>
+  <div id="sopList"></div>
+  <button class="secondary" onclick="sopEditOpen(null)">＋ New procedure</button>
+</div>
+<div id="sopEdit" class="screen">
+  <div class="scr-head"><h2>✎ Edit procedure</h2></div>
+  <div id="sopEdBody"></div>
+  <div class="btn-row"><button onclick="sopSave()">Save procedure</button><button class="secondary" onclick="sopDraft=null;showScreen('sops')">Cancel</button><button class="small danger" onclick="sopDelete()">Delete</button></div>
+</div>
+<div id="sopRun" class="screen"><div id="sopRunBody"></div></div>
 <nav id="tabBar">
   <button data-tab="home" onclick="calFocus=new Date();showScreen('home')"><span>📅</span><b>Home</b></button>
   <button data-tab="daily" onclick="edDay=ymd(new Date());showScreen('daily')"><span>✅</span><b>Checklist</b></button>
@@ -796,7 +890,7 @@ const toMin = t => { const [h, m] = String(t).split(':').map(Number); return h *
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 const fmtTime = t => t && /^\d{1,2}:\d{2}/.test(t) ? String(t).padStart(5, '0').slice(0, 5) : ''; // 24-hour HH:MM everywhere
 // A day counts as logged when it has checklist, boiler log or note data (AOCs are stored separately). Old shift/hours fields are ignored.
-const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()) || (w.chem || []).length > 0 || Object.keys(w.pm || {}).length > 0);
+const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()) || (w.chem || []).length > 0 || Object.keys(w.pm || {}).length > 0 || (w.bstat || []).length > 0);
 const subtitle = () => { const S = getSettings(); return `${S.employer} — ${S.title}`; };
 
 /* ---------- Screens & navigation ---------- */
@@ -1787,6 +1881,7 @@ function renderAocList() {
   tSel.innerHTML = '<option value="all">All tags</option>' + tags.map(t => `<option value="${esc(t)}"${t === ft ? ' selected' : ''}>#${esc(t)}</option>`).join('');
   document.getElementById('aocDayChip').innerHTML = aocDayFilter ? `<div class="chip">AOCs logged ${mdy(aocDayFilter)} <button type="button" class="link-btn" onclick="aocDayFilter='';renderAocList()">✕ show all</button> <button type="button" class="small danger" onclick="openAoc(null,'${aocDayFilter}','aocs')">＋ New AOC for this day</button></div>` : '';
   const list = aocSort(all).filter(a => {
+    if (a.kind) return false;
     if (aocDayFilter && !aocOccs(a).some(o => o.date === aocDayFilter)) return false;
     if (fe !== 'all' && a.equipment !== fe) return false;
     if (fc !== 'all' && cSel.value !== 'all' && a.category !== cSel.value) return false;
@@ -1797,7 +1892,7 @@ function renderAocList() {
     if (!q) return true;
     return [a.title, a.category, a.probable, a.actual, a.actions, aocEquip(a), a.status, a.severity, ...aocOccs(a).map(o => o.date + ' ' + mdy(o.date) + ' ' + (o.note || '')), (a.tags || []).join(' ')].join(' ').toLowerCase().includes(q);
   });
-  const open = all.filter(a => a.status !== 'Resolved').length;
+  const open = all.filter(a => !a.kind && a.status !== 'Resolved').length;
   document.getElementById('aocCount').textContent = `${list.length} shown · ${open} open/monitoring`;
   const groups = {}; list.forEach(a => (groups[aocEquip(a)] = groups[aocEquip(a)] || []).push(a));
   document.getElementById('aocList').innerHTML = list.length ? Object.entries(groups).map(([g, l]) => `<h3 class="aoc-group">${esc(g)} <small class="muted">(${l.length})</small></h3>${l.map(a => aocCard(a, aocDayFilter)).join('')}`).join('') : '<p class="muted">No AOCs match.</p>';
@@ -2480,7 +2575,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.0';
+const APP_VER = '2.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -2752,7 +2847,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 const _renderScreen = renderScreen;
 renderScreen = function (id) {
   _renderScreen(id);
-  if (id === 'home') { const d = document.getElementById('homeDash'); if (d) d.innerHTML = homeDashHtml(); }
+  
   if (id === 'trends') renderTrends();
   if (id === 'report') renderReport();
   if (id === 'round') renderRound();
@@ -2858,6 +2953,382 @@ document.addEventListener('change', e => { const t = e.target; if (!t.classList 
   if (v === null) { e.stopImmediatePropagation(); e.stopPropagation(); t.value = t.dataset.prev || ''; t.classList.add('bad'); toast('Use 24-hour time HH:MM (00:00–23:59)'); setTimeout(() => t.classList.remove('bad'), 1500); return; }
   t.value = v; t.dataset.prev = v; t.classList.remove('bad'); }, true);
 
+/* ===================== v2.1: meter step + rapid pad, operations timeline, weekly tasks, SOPs, boiler status ===================== */
+const APP_VER21 = '2.1';
+const n21 = s => String(s || '').trim().toLowerCase();
+const nextDow = (dow, from) => { const d = parseYmd(from || ymd(new Date())); while (d.getDay() !== dow) d.setDate(d.getDate() + 1); return ymd(d); };
+
+/* ---------- Seeds (additive only; recorded in settings so they travel with backups and never duplicate) ---------- */
+const WEEKLY_DEFAULTS = [
+  { name: 'Scrubber fan cleaning', equipment: 'Other', equipOther: 'Scrubber', info: 'Lock out/tag out before work. Pressure washer and scissor lift required.', subs: ['LOTO applied', 'Cleaned', 'LOTO removed'] },
+  { name: 'Low water alarm test', equipment: 'Both', info: "Test per NWH's procedure; record the result and any issue." },
+  { name: 'Day bin greasing', equipment: 'Other', equipOther: 'Day bin', info: "Grease points per NWH's lubrication procedure." },
+  { name: 'Trash can emptying', equipment: 'Other', equipOther: 'Boiler house', info: 'Empty boiler house trash cans.' }
+];
+const SOP_TEMPLATE = { id: 'sop-startup-sawdust', template: true, name: 'Start up sawdust-fired boiler (wood byproduct from mill)', equipment: 'Boiler 1',
+  note: 'Template, edit to match the NWH written procedure. Generic placeholder steps only: always follow the NWH written procedure, lockout rules and the manufacturer instructions.',
+  steps: [
+    { text: 'Review the NWH written start-up procedure, shift notes and any open AOCs.' },
+    { text: 'Walk down the boiler: nobody working on it, lockout/tagout removed per procedure, access doors closed.', caution: 'Confirm all LOTO is cleared per procedure before starting.' },
+    { text: 'Verify a safe water level in the gauge glass and that the low-water cutoff is in service.', caution: 'Never fire a boiler without a confirmed safe water level.' },
+    { text: 'Verify feedwater supply and chemical feed are available.' },
+    { text: 'Verify the scrubber is running (fan on, flow established).', caution: 'Do not fire with the scrubber offline.' },
+    { text: 'Verify the sawdust grinder is in operation and fuel is available to the day bin / metering.' },
+    { text: 'Set blowdown and drain valves to their start-up positions per procedure.' },
+    { text: 'Start draft fans and purge the furnace per procedure.', caution: 'Complete the full purge before ignition.' },
+    { text: 'Light off and confirm a stable flame per procedure.' },
+    { text: 'Bring up pressure gradually at the rate in the written procedure; watch water level, pressure and the scrubber.' },
+    { text: 'Record start-up readings in the Boiler status panel (temp, pressure, feed rate, status).' },
+    { text: 'Notify the shift lead and note completion.' }
+  ] };
+const DEFAULT_BOILERS = [{ id: 'b1', name: 'Boiler 1', fuel: 'Sawdust' }, { id: 'b2', name: 'Boiler 2', fuel: 'Gas' }];
+const DEFAULT_BS_UNITS = { temp: '°F', press: 'psi', feed: '%' };
+function v21Seed() {
+  const s = load('nwhSettings', null); if (!s || typeof s !== 'object' || s.seed21) return false;
+  try { takeSnapshot('before v2.1 update', true); } catch (e) {}
+  s.pmTasks = Array.isArray(s.pmTasks) ? s.pmTasks : [];
+  const have = new Set(s.pmTasks.map(t => n21(t.name)));
+  WEEKLY_DEFAULTS.forEach((x, k) => { if (have.has(n21(x.name))) return; s.pmTasks.push(Object.assign({ id: 'pmw' + Date.now().toString(36) + k, freq: { type: 'weekly', dow: 1 }, anchor: ymd(new Date()), sched: 'fixed', value: { on: false }, active: true }, JSON.parse(JSON.stringify(x)))); });
+  if (!Array.isArray(s.sops)) s.sops = [JSON.parse(JSON.stringify(SOP_TEMPLATE))];
+  if (!Array.isArray(s.boilers)) s.boilers = JSON.parse(JSON.stringify(DEFAULT_BOILERS));
+  if (!s.bsUnits) s.bsUnits = Object.assign({}, DEFAULT_BS_UNITS);
+  s.seed21 = 1; store('nwhSettings', s); return true;
+}
+const _migrateData21 = migrateData;
+migrateData = function () { _migrateData21(); if (localStorage.getItem('nwhSettings') === null && (localStorage.getItem('nwhWork') !== null)) store('nwhSettings', {}); v21Seed(); };
+
+/* ---------- Generic rapid numeric pad (custom on-screen keypad: reliable on iOS, no native keyboard) ---------- */
+let PAD = null;
+function padOpen(cfg) { PAD = Object.assign({ i: 0, buf: '', fresh: true, mode: 'pad' }, cfg); padLoad(); document.getElementById('mpad').hidden = false; document.body.classList.add('pad-open'); padRender(); }
+function padClose() { PAD = null; const m = document.getElementById('mpad'); m.hidden = true; m.innerHTML = ''; document.body.classList.remove('pad-open'); }
+function padLoad() { if (!PAD || PAD.mode !== 'pad') return; const st = PAD.steps[PAD.i]; const v = st.value(); PAD.buf = v == null || v === '' ? '' : String(v); PAD.fresh = true; }
+function padKey(k) {
+  if (!PAD || PAD.mode !== 'pad') return; const st = PAD.steps[PAD.i];
+  if (k === 'back') { PAD.buf = PAD.fresh ? '' : PAD.buf.slice(0, -1); PAD.fresh = false; }
+  else if (k === 'clear') { PAD.buf = ''; PAD.fresh = false; }
+  else if (k === '.') { if (!st.dec) return; if (PAD.fresh) { PAD.buf = '0.'; PAD.fresh = false; } else if (!PAD.buf.includes('.')) PAD.buf = (PAD.buf || '0') + '.'; }
+  else if (/^\d$/.test(k)) { if (PAD.fresh) { PAD.buf = ''; PAD.fresh = false; } const dp = PAD.buf.split('.')[1]; if (dp != null && dp.length >= (st.maxDec != null ? st.maxDec : 2)) return; if (PAD.buf.replace('.', '').length >= 12) return; PAD.buf = PAD.buf === '0' ? k : PAD.buf + k; }
+  padRender(true);
+}
+function padNext() {
+  if (!PAD) return; const st = PAD.steps[PAD.i];
+  if (PAD.buf !== '' && PAD.buf !== '.' && !PAD.fresh) { if (st.commit(Number(PAD.buf)) === false) return; }
+  haptic(document.querySelector('#mpad .pad-disp'));
+  if (PAD.i + 1 >= PAD.steps.length) { PAD.mode = 'done'; padRender(); return; }
+  PAD.i++; padLoad(); padRender();
+}
+function padPrev() { if (!PAD) return; if (PAD.mode !== 'pad') { PAD.mode = 'pad'; PAD.i = PAD.steps.length - 1; } else if (PAD.i > 0) PAD.i--; padLoad(); padRender(); }
+function padGo(i) { PAD.mode = 'pad'; PAD.i = i; padLoad(); padRender(); }
+function padRender(light) {
+  const m = document.getElementById('mpad'); if (!PAD) return;
+  if (PAD.mode === 'done') { m.innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>${esc(PAD.title)}</b><button class="small secondary" onclick="padFinish()">✕</button></div>${PAD.summary()}</div>`; return; }
+  const st = PAD.steps[PAD.i], n = PAD.steps.length, shown = PAD.buf === '' ? '' : PAD.buf;
+  const disp = `<div class="pad-disp${PAD.fresh && shown ? ' fresh' : ''}" aria-live="polite">${shown ? esc(shown) : '<span class="ph">—</span>'}${st.unit ? `<small>${esc(st.unit)}</small>` : ''}</div>`;
+  const pv = st.preview ? st.preview(PAD.buf === '' || PAD.buf === '.' ? null : Number(PAD.buf)) : '';
+  if (light) { const d = m.querySelector('.pad-disp'); if (d) { d.outerHTML = disp; m.querySelector('.pad-prev').innerHTML = pv; return; } }
+  const key = (k, l, c) => `<button type="button" class="pk${c ? ' ' + c : ''}" data-k="${k}" onpointerdown="event.preventDefault();padKey('${k}')" onclick="if(event.detail===0)padKey('${k}')">${l}</button>`;
+  m.innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>${esc(PAD.title)}</b><span class="pad-step">${PAD.i + 1}/${n}</span><button class="small secondary" aria-label="Close" onclick="padFinish()">✕</button></div>
+    <div class="pad-dots">${PAD.steps.map((s, j) => `<i class="${j === PAD.i ? 'on' : s.filled && s.filled() ? 'ok' : ''}" onclick="padGo(${j})"></i>`).join('')}</div>
+    <div class="pad-name">${esc(st.label)}</div><div class="pad-last">${st.prevText ? st.prevText() : ''}</div>
+    ${disp}<div class="pad-prev">${pv}</div>
+    <div class="pad-keys">${['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(k => key(k, k)).join('')}${key('.', '.', st.dec ? '' : 'dis')}${key('0', '0')}${key('back', '⌫', 'fn')}</div>
+    <div class="pad-nav"><button type="button" class="secondary" onclick="padPrev()" ${PAD.i ? '' : 'disabled'}>‹ Back</button><button type="button" class="pad-next" onclick="padNext()">${PAD.i + 1 >= n ? 'Done ↵' : 'Next ↵'}</button></div></div>`;
+}
+function padFinish() { const f = PAD && PAD.onClose; padClose(); if (f) f(); }
+document.addEventListener('keydown', e => {
+  if (!PAD || PAD.mode !== 'pad' || (e.target.matches && e.target.matches('input, textarea, select'))) return;
+  if (/^\d$/.test(e.key) || e.key === '.') { e.preventDefault(); padKey(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); padKey('back'); }
+  else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); padNext(); } else if (e.key === 'Escape') padFinish();
+});
+
+/* ---------- Checklist: 'Meter readings' as one step ---------- */
+const meterItems = () => getChecklist().filter(isMeter);
+const meterFilled = (r, it) => !!r && ((r.values && r.values[meterKey(it)] != null && r.values[meterKey(it)] !== '') || !!r.done);
+checklistProgress = function (day, W) {
+  const items = getChecklist(), cl = ((W || getWork())[day] || {}).checklist || {}, ms = items.filter(isMeter), rest = items.filter(i => !isMeter(i));
+  const mDone = ms.length && ms.every(it => meterFilled(cl[it.id], it));
+  return { done: rest.filter(it => cl[it.id] && cl[it.id].done).length + (mDone ? 1 : 0), total: rest.length + (ms.length ? 1 : 0) };
+};
+function meterStepHtml(day) {
+  const W = getWork(), cl = ((W[day] || {}).checklist) || {}, ms = meterItems(), f = ms.filter(it => meterFilled(cl[it.id], it)).length, done = f === ms.length;
+  return `<div class="cl-item mstep${done ? ' done' : ''}" data-item="meters" data-step="meters">
+    <div class="cl-top"><button type="button" class="mstep-open" onclick="openMeterPad('${day}')"><span class="mchk" aria-hidden="true">${done ? '✓' : ''}</span><span class="cl-n"></span> Meter readings</button><span class="mprog${done ? ' ok' : ''}">${f}/${ms.length}</span></div>
+    <div class="mstep-grid">${ms.map(it => { const r = cl[it.id] || {}, v = (r.values || {})[meterKey(it)]; const st = readStamp(it.id, day, W);
+      return `<button type="button" class="ms-cell${v != null ? ' ok' : r.done ? ' ok' : ''}" onclick="openMeterPad('${day}','${it.id}')"><span>${esc(it.label.replace(/ ?meter( reading)?$/i, ''))}</span><b>${v != null ? fmtM(it, v) : r.done ? '✓' : '—'}</b>${v != null && st.time ? `<small>${st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : ''}${st.time}</small>` : ''}</button>`; }).join('')}</div>
+    <button type="button" class="mstep-go" onclick="openMeterPad('${day}')">${f ? (done ? '✎ Review / edit readings' : '▶ Continue readings') : '▶ Enter meter readings'}</button></div>`;
+}
+const _checklistHtml21 = checklistHtml;
+checklistHtml = function (day) {
+  const html = _checklistHtml21(day), ms = meterItems(); if (!ms.length) return html;
+  const t = document.createElement('template'); t.innerHTML = html; let first = null;
+  ms.forEach(it => { const el = t.content.querySelector(`.cl-item[data-item="${it.id}"]`); if (!el) return; if (!first) first = el; else el.remove(); });
+  if (first) { const d = document.createElement('div'); d.innerHTML = meterStepHtml(day); first.replaceWith(d.firstElementChild); }
+  [...t.content.querySelectorAll('.cl > .cl-item .cl-n')].forEach((s, i) => s.textContent = (i + 1) + '.');
+  const p = checklistProgress(day), pr = t.content.querySelector('.cl-prog'), bar = t.content.querySelector('.progress i');
+  if (pr) pr.textContent = `${p.done}/${p.total}`; if (bar) bar.style.width = (p.total ? Math.round(p.done / p.total * 100) : 0) + '%';
+  return t.innerHTML;
+};
+function refreshMeterStep(day) { document.querySelectorAll(`.cl[data-cl="${day}"] .mstep`).forEach(el => { const d = document.createElement('div'); d.innerHTML = meterStepHtml(day); el.replaceWith(d.firstElementChild); }); document.querySelectorAll(`.cl[data-cl="${day}"]`).forEach(box => { [...box.querySelectorAll(':scope > .cl-item .cl-n')].forEach((s, i) => s.textContent = (i + 1) + '.'); const p = checklistProgress(day); const pr = box.querySelector('.cl-prog'); if (pr) pr.textContent = `${p.done}/${p.total}`; const b = box.querySelector('.progress i'); if (b) b.style.width = (p.total ? Math.round(p.done / p.total * 100) : 0) + '%'; }); refreshDayCell(day); }
+function saveMeterValue(day, id, val) {
+  const it = meterDefById(id), key = meterKey(it), W = getWork(), e = W[day] = W[day] || {}; e.checklist = e.checklist || {};
+  const r = e.checklist[id] = e.checklist[id] || {}; r.values = Object.assign(r.values || {}, { [key]: val }); r.done = true; r.at = new Date().toISOString(); r.time = nowHM();
+  const td = ymd(new Date()); if (td !== day) r.date = td; else delete r.date;
+  delete e.isExample; store('nwhWork', W); scheduleSnapshot && scheduleSnapshot();
+}
+function openMeterPad(day, startId) {
+  const ms = meterItems(), W0 = getWork(), cl0 = ((W0[day] || {}).checklist) || {};
+  let start = startId ? ms.findIndex(it => it.id === startId) : ms.findIndex(it => !meterFilled(cl0[it.id], it));
+  const all = start < 0;
+  padOpen({ title: `Meter readings · ${mdy(day)}`, i: Math.max(0, start), mode: all && !startId ? 'done' : 'pad', onClose: () => { refreshMeterStep(day); if (document.getElementById('meters').classList.contains('active')) renderScreen('meters'); },
+    steps: ms.map(it => { const key = meterKey(it), dec = !!(it.fields.find(f => f.type === 'meter') || {}).dec;
+      return { label: it.label, dec, maxDec: 2, unit: '',
+        value: () => ((((getWork()[day] || {}).checklist || {})[it.id] || {}).values || {})[key],
+        filled: () => meterFilled((((getWork()[day] || {}).checklist || {})[it.id]), it),
+        prevText: () => { const inf = meterInfo(it.id, day, null, key); return inf.prevDay ? `Previous · ${stampText(readStamp(it.id, inf.prevDay, getWork()))}: <b>${fmtM(it, inf.prev)}</b>` : '<span class="muted">No earlier reading</span>'; },
+        preview: v => { const inf = meterInfo(it.id, day, null, key); if (v == null || inf.prev == null) return '&nbsp;'; const u = Math.round((v - inf.prev) * 100) / 100;
+          return u < 0 ? `<span class="neg">⚠ ${fmtM(it, v)} is lower than previous (${fmtM(it, u)})</span>` : `<span class="ok">${isHourMeter(it) ? `Ran ${fmtM(it, u)} hrs` : `Used ${fmtM(it, u)}`}${inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : ''}</span>`; },
+        commit: v => { const inf = meterInfo(it.id, day, null, key);
+          if (inf.prev != null && v < inf.prev && !confirm(`${it.label}: ${fmtM(it, v)} is LOWER than the previous reading (${mdy(inf.prevDay)}: ${fmtM(it, inf.prev)}).\n\nSave anyway? (Meter rollover or replacement)`)) return false;
+          const cur = ((((getWork()[day] || {}).checklist || {})[it.id] || {}).values || {})[key]; if (cur === v) return true; saveMeterValue(day, it.id, v); return true; } }; }),
+    summary: () => { const W = getWork(), cl = ((W[day] || {}).checklist) || {}, f = ms.filter(it => meterFilled(cl[it.id], it)).length;
+      return `<p class="pad-sum-h">${f === ms.length ? '✓' : '!'} ${f}/${ms.length} meters recorded</p>
+        ${ms.map((it, j) => { const r = cl[it.id] || {}, v = (r.values || {})[meterKey(it)], c = v != null ? meterCompare(it.id, day, W) : null;
+          return `<div class="pad-sum-row" data-sum="${it.id}"><div class="ps-top"><b>${esc(it.label)}</b><button type="button" class="link-btn" onclick="padGo(${j})">✎ Edit</button></div>
+            <div class="ps-val">${v != null ? fmtM(it, v) : r.done ? '✓ ' + esc(r.note || 'checked') : '<span class="neg">— not recorded</span>'}</div>
+            ${c ? `<div class="ps-cmp${c.flag || c.inf.usage < 0 ? ' neg' : ''}">${esc(c.text)}</div>` : ''}
+            ${v != null ? `<div class="ps-stamp"><label class="cl-time-l"><span class="tl">🕒 Read at</span><span class="tbox"><input type="time" value="${taskTime(r)}" aria-label="${esc(it.label)} read time" onchange="clSet(this,'${day}','${it.id}','time');padRender()"></span></label>${readOnHtml(day, it.id, r)}</div>` : ''}</div>`; }).join('')}
+        <div class="pad-nav"><button type="button" class="secondary" onclick="padPrev()">‹ Back</button><button type="button" class="pad-next" onclick="padFinish()">✓ Done</button></div>`; } });
+}
+const _readOnSet21 = readOnSet;
+readOnSet = function (el, day, id) { _readOnSet21(el, day, id); if (PAD && PAD.mode === 'done') setTimeout(padRender, 0); };
+
+/* ---------- PM: sub-checklists ---------- */
+const _pmDueHtml21 = pmDueHtml;
+pmDueHtml = function (day) {
+  const html = _pmDueHtml21(day), tasks = getPmTasks().filter(t => (t.subs || []).length); if (!tasks.length) return html;
+  const t = document.createElement('template'); t.innerHTML = html; const rec = ((getWork()[day] || {}).pm) || {};
+  tasks.forEach(tk => { const el = t.content.querySelector(`.pm-item[data-task="${tk.id}"]`); if (!el) return; const r = rec[tk.id] || {}, s = r.subs || [];
+    const d = document.createElement('div'); d.className = 'pm-subs'; d.innerHTML = tk.subs.map((x, i) => `<label class="check"><input type="checkbox" ${s[i] ? 'checked' : ''} onchange="pmSub('${day}','${tk.id}',${i},this.checked)"> ${esc(x)}${s[i] && typeof s[i] === 'string' ? ` <small class="muted">${esc(s[i])}</small>` : ''}</label>`).join('');
+    const top = el.querySelector('.cl-top'); top.insertAdjacentElement('afterend', d); });
+  return t.innerHTML;
+};
+function pmSub(day, id, i, on) {
+  const W = getWork(), e = W[day] = W[day] || {}; e.pm = e.pm || {}; const r = e.pm[id] = e.pm[id] || {}; const tk = getPmTasks().find(t => t.id === id) || { subs: [] };
+  r.subs = tk.subs.map((_, j) => (r.subs || [])[j] || false); r.subs[i] = on ? nowHM() : false;
+  if (r.subs.every(Boolean) && !r.done) { r.done = true; if (!r.time) r.time = nowHM(); }
+  if (!r.subs.some(Boolean)) delete r.subs;
+  if (!Object.keys(r).length) delete e.pm[id]; if (!Object.keys(e.pm).length) delete e.pm;
+  if (hasWork(e)) W[day] = e; else delete W[day]; store('nwhWork', W); refreshDayCell(day);
+  setTimeout(() => document.querySelectorAll(`.pm-box[data-pm="${day}"]`).forEach(b => { if (b.isConnected) b.outerHTML = pmDueHtml(day); }), 0);
+}
+const _renderPmTasks21 = renderPmTasks;
+renderPmTasks = function () { _renderPmTasks21(); document.querySelectorAll('#pmTaskEd .pm-ed[data-i]').forEach(c => { const i = Number(c.dataset.i), t = pmDraft[i]; c.insertAdjacentHTML('beforeend', `<label>Sub-checklist (one step per line, optional)</label><textarea rows="3" class="pm-subs-ed" aria-label="Sub-checklist" onchange="pmDraft[${i}].subs=this.value.split('\\n').map(s=>s.trim()).filter(Boolean)">${esc((t.subs || []).join('\n'))}</textarea>`); }); };
+
+/* ---------- Operations timeline (AOCs + history notes + procedure runs) ---------- */
+const AOC_KIND = { aoc: '⚠️ AOC', note: '📝 Operation note', proc: '📋 Procedure' };
+const kindOf = a => a.kind === 'note' ? 'note' : a.kind === 'proc' ? 'proc' : 'aoc';
+let aocMode = localStorage.getItem('nwhAocMode') || 'timeline';
+function setAocMode(m) { aocMode = m; localStorage.setItem('nwhAocMode', m); renderAocList(); }
+function tlEntries() { return getAocs().flatMap(a => aocOccs(a).filter(o => o.date).map(o => ({ a, o, k: o.date + ' ' + (o.time || '') }))).sort((x, y) => y.k.localeCompare(x.k)); }
+function tlEntryHtml({ a, o }) {
+  const k = kindOf(a), stp = a.steps || [];
+  return `<div class="tl-entry kind-${k}${k === 'aoc' ? ' sev-' + a.severity : ''}" data-aoc="${a.id}">
+    <div class="tl-when"><b>${mdy(o.date).slice(0, 5)}</b><span>${o.time || '--:--'}</span></div>
+    <div class="tl-body" onclick="${k === 'proc' ? `this.querySelector('.tl-steps')&&(this.querySelector('.tl-steps').hidden=!this.querySelector('.tl-steps').hidden)` : `openAoc('${a.id}')`}">
+      <div class="tl-type">${AOC_KIND[k]}${k === 'aoc' ? ` <span class="badge" style="background:${SEV_COLORS[a.severity] || '#888'}">${esc(a.severity || '')}</span> <span class="badge" style="background:${STATUS_COLORS[a.status] || '#888'}">${esc(a.status || '')}</span>` : ''}${aocOccs(a).length > 1 ? ` <span class="badge seen">Seen ${aocOccs(a).length}×</span>` : ''}</div>
+      <div class="tl-title">${esc(a.title || 'Untitled')}</div>
+      <div class="muted">${esc(aocEquip(a) || '')}${a.category && k === 'aoc' ? ' · ' + esc(a.category) : ''}</div>
+      ${k === 'aoc' ? `<div class="pa-grid"><div><small>Probable</small><div>${esc(a.probable || '—')}</div></div><div><small>Actual</small><div>${esc(a.actual || '—')}</div></div></div>${a.actions ? `<div class="muted"><b>Actions:</b> ${esc(a.actions)}</div>` : ''}` : a.actions ? `<div class="tl-note">${esc(a.actions)}</div>` : ''}
+      ${o.note ? `<div class="muted">↳ ${esc(o.note)}</div>` : ''}
+      ${k === 'proc' ? `<div class="muted">${stp.filter(s => s.time).length}/${stp.length} steps · tap for steps</div><ol class="tl-steps" hidden>${stp.map(s => `<li>${s.time ? '✓' : '✗'} ${esc(s.text)} <small>${s.time ? (s.date && s.date !== o.date ? mdy(s.date) + ' ' : '') + s.time : 'not done'}</small></li>`).join('')}</ol>` : ''}
+      ${(a.tags || []).length ? `<div>${a.tags.map(t => `<span class="tag">#${esc(t)}</span>`).join(' ')}</div>` : ''}
+    </div></div>`;
+}
+function renderTimeline() {
+  const q = n21(document.getElementById('aocSearch').value), fe = document.getElementById('aocFEquip').value, fc = document.getElementById('aocFCat').value, ft = document.getElementById('aocFTag').value, ty = document.getElementById('tlType').value;
+  const list = tlEntries().filter(({ a, o }) => (ty === 'all' || kindOf(a) === ty) && (fe === 'all' || a.equipment === fe) && (fc === 'all' || a.category === fc) && (ft === 'all' || (a.tags || []).includes(ft))
+    && (!q || [a.title, a.category, a.probable, a.actual, a.actions, aocEquip(a), o.note, mdy(o.date), (a.tags || []).join(' '), ...(a.steps || []).map(s => s.text)].join(' ').toLowerCase().includes(q)));
+  const months = {}; list.forEach(e => { const m = parseYmd(e.o.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); (months[m] = months[m] || []).push(e); });
+  document.getElementById('aocCount').textContent = `${list.length} entr${list.length === 1 ? 'y' : 'ies'} · newest first`;
+  document.getElementById('aocTimeline').innerHTML = list.length ? Object.entries(months).map(([m, l]) => `<h3 class="tl-month">${esc(m)} <small class="muted">(${l.length})</small></h3>${l.map(tlEntryHtml).join('')}`).join('') : '<p class="muted">No history yet. Add an operation note or an AOC.</p>';
+}
+const _renderAocList21 = renderAocList;
+renderAocList = function () {
+  const tl = aocMode === 'timeline';
+  document.querySelectorAll('#aocModeSeg button').forEach(b => b.classList.toggle('on', b.dataset.m === aocMode));
+  document.querySelectorAll('#aocs .lib-only').forEach(e => e.style.display = tl ? 'none' : '');
+  document.querySelectorAll('#aocs .tl-only').forEach(e => e.style.display = tl ? '' : 'none');
+  _renderAocList21();
+  if (tl) renderTimeline();
+};
+function histFormToggle(show) { const f = document.getElementById('histForm'); f.hidden = show === undefined ? !f.hidden : !show; if (!f.hidden) { document.getElementById('hDate').value = ymd(new Date()); const t = document.getElementById('hTime'); t.value = nowHM(); document.getElementById('hTitle').focus(); } }
+function saveHistEntry() {
+  const v = id => document.getElementById(id).value.trim(), title = v('hTitle'); if (!title) { toast('Add a short title'); return; }
+  const date = v('hDate') || ymd(new Date()), time = normHM(v('hTime')) || '', id = 'H-' + Date.now().toString(36);
+  const list = getAocs(); list.push({ id, kind: 'note', created: new Date().toISOString(), date, time, occ: [{ id: 'o0', date, time }], equipment: v('hEquip') || 'Both', equipOther: '', category: 'Operation note', title, probable: '', actual: '', severity: 'Low', actions: v('hNote'), status: 'Resolved', resolved: '', tags: parseTags(v('hTags') || 'Operation note'), related: [] });
+  store('nwhAocs', list); ['hTitle', 'hNote'].forEach(i => document.getElementById(i).value = ''); histFormToggle(false); toast('History entry added'); renderAocList(); refreshDayCell(date);
+}
+// Library/AOC counts and the calendar AOC marker only count real AOCs; history notes show as a note dot
+const _aocsByDay21 = aocsByDay;
+aocsByDay = function () { const m = _aocsByDay21(); Object.keys(m).forEach(k => { m[k] = m[k].filter(a => !a.kind); if (!m[k].length) delete m[k]; }); return m; };
+const _dayDots21 = dayDots;
+dayDots = function (key, ctx) { let h = _dayDots21(key, ctx); if (!/dot note/.test(h) && getAocs().some(a => a.kind && aocOccs(a).some(o => o.date === key))) h += '<i class="dot note"></i>'; return h; };
+
+/* ---------- SOPs ---------- */
+const getSops = () => { const s = load('nwhSettings', {}).sops; return Array.isArray(s) ? s : []; };
+function saveSops(list) { const s = load('nwhSettings', {}); s.sops = list; store('nwhSettings', s); }
+function renderSops() {
+  const runs = getAocs().filter(a => a.kind === 'proc');
+  document.getElementById('sopList').innerHTML = getSops().length ? getSops().map(p => { const r = runs.filter(x => x.sopId === p.id).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+    return `<div class="card sop-card" data-sop="${p.id}"><div class="cl-top"><b>${esc(p.name)}</b>${p.template ? '<span class="pm-tag due">Template</span>' : ''}</div>
+      ${p.template ? '<p class="sop-tpl">Template, edit to match the NWH written procedure.</p>' : ''}
+      <div class="muted">${p.steps.length} steps${p.equipment ? ' · ' + esc(p.equipment) : ''} · ${r.length ? `run ${r.length}× · last ${mdy(r[0].date)} ${r[0].time || ''}` : 'never run'}</div>
+      <div class="btn-row"><button class="small" onclick="sopRunStart('${p.id}')">▶ Run</button><button class="small secondary" onclick="sopEditOpen('${p.id}')">✎ Edit</button></div></div>`; }).join('') : '<p class="muted">No procedures yet.</p>';
+}
+let sopDraft = null;
+function sopEditOpen(id) { const p = getSops().find(x => x.id === id); sopDraft = p ? JSON.parse(JSON.stringify(p)) : { id: 'sop-' + Date.now().toString(36), name: '', equipment: '', note: '', steps: [{ text: '' }] }; showScreen('sopEdit'); }
+function renderSopEdit() {
+  const d = sopDraft; if (!d) return; const R = i => `sopDraft.steps[${i}]`;
+  document.getElementById('sopEdBody').innerHTML = `<label>Name</label><input value="${esc(d.name)}" onchange="sopDraft.name=this.value" aria-label="Procedure name">
+    <label>Equipment</label><input value="${esc(d.equipment || '')}" onchange="sopDraft.equipment=this.value" placeholder="e.g. Boiler 1">
+    <label>ⓘ Note / scope</label><textarea rows="2" onchange="sopDraft.note=this.value">${esc(d.note || '')}</textarea>
+    ${d.template ? `<label class="check"><input type="checkbox" checked onchange="sopDraft.template=this.checked"> Still a template (shows the 'edit to match the NWH written procedure' label)</label>` : ''}
+    <h3>Steps</h3>${d.steps.map((s, i) => `<div class="card sop-step-ed" data-i="${i}"><div class="row2"><b class="sop-n">${i + 1}.</b><textarea rows="2" aria-label="Step ${i + 1}" onchange="${R(i)}.text=this.value" style="flex:4">${esc(s.text)}</textarea></div>
+      <input value="${esc(s.caution || '')}" placeholder="⚠ Caution / ⓘ note (optional)" aria-label="Step ${i + 1} caution" onchange="${R(i)}.caution=this.value">
+      <div class="btn-row"><button class="small secondary" onclick="sopStepMove(${i},-1)" aria-label="Move up">↑</button><button class="small secondary" onclick="sopStepMove(${i},1)" aria-label="Move down">↓</button><button class="small danger" onclick="sopDraft.steps.splice(${i},1);renderSopEdit()" aria-label="Delete step">✕</button></div></div>`).join('')}
+    <button class="secondary" onclick="sopDraft.steps.push({text:''});renderSopEdit()">＋ Add step</button>`;
+}
+function sopStepMove(i, d) { const s = sopDraft.steps, j = i + d; if (j < 0 || j >= s.length) return; [s[i], s[j]] = [s[j], s[i]]; renderSopEdit(); }
+function sopSave() { const d = sopDraft; d.name = String(d.name || '').trim() || 'Procedure'; d.steps = d.steps.map(s => Object.assign(s, { text: String(s.text || '').trim(), caution: String(s.caution || '').trim() })).filter(s => s.text); s0 = getSops(); const i = s0.findIndex(x => x.id === d.id); if (i >= 0) s0[i] = d; else s0.push(d); saveSops(s0); sopDraft = null; toast('Procedure saved'); showScreen('sops'); }
+var s0;
+function sopDelete() { if (!sopDraft || !confirm('Delete this procedure? Past runs stay in the timeline.')) return; saveSops(getSops().filter(x => x.id !== sopDraft.id)); sopDraft = null; showScreen('sops'); }
+let sopRun = null;
+function sopRunStart(id) { const p = getSops().find(x => x.id === id); if (!p) return; sopRun = { p: JSON.parse(JSON.stringify(p)), started: { date: ymd(new Date()), time: nowHM() }, steps: p.steps.map(s => ({ text: s.text, caution: s.caution || '', time: '', date: '' })) }; showScreen('sopRun'); }
+function renderSopRun() {
+  const r = sopRun; if (!r) return; const cur = r.steps.findIndex(s => !s.time), done = r.steps.filter(s => s.time).length;
+  document.getElementById('sopRunBody').innerHTML = `<h2>${esc(r.p.name)}</h2>${r.p.template ? '<p class="sop-tpl">Template, edit to match the NWH written procedure.</p>' : ''}${r.p.note ? `<p class="muted">${esc(r.p.note)}</p>` : ''}
+    <div class="progress"><i style="width:${Math.round(done / r.steps.length * 100)}%"></i></div><p class="muted">Started ${mdy(r.started.date)} ${r.started.time} · ${done}/${r.steps.length} steps</p>
+    ${r.steps.map((s, i) => `<div class="sop-step${s.time ? ' done' : ''}${i === cur ? ' cur' : ''}" data-i="${i}"><button type="button" class="sop-tap" onclick="sopTap(${i})"><span class="mchk">${s.time ? '✓' : i + 1}</span><span class="sop-txt">${esc(s.text)}</span><span class="sop-t">${s.time ? (s.date !== r.started.date ? mdy(s.date).slice(0, 5) + ' ' : '') + s.time : ''}</span></button>${s.caution ? `<div class="sop-caution">⚠ ${esc(s.caution)}</div>` : ''}</div>`).join('')}
+    <div class="btn-row"><button onclick="sopFinish()">✓ Finish & save to history</button><button class="secondary" onclick="confirm('Discard this run?')&&(sopRun=null,showScreen('sops'))">Discard</button></div>`;
+}
+function sopTap(i) { const s = sopRun.steps[i]; if (s.time) { if (!confirm('Un-check this step?')) return; s.time = ''; s.date = ''; } else { s.time = nowHM(); s.date = ymd(new Date()); haptic(document.querySelector(`.sop-step[data-i="${i}"]`)); } renderSopRun(); const n = document.querySelector('.sop-step.cur'); if (n) n.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+function sopFinish() {
+  const r = sopRun, done = r.steps.filter(s => s.time).length; if (done < r.steps.length && !confirm(`${r.steps.length - done} step(s) not checked. Save the run anyway?`)) return;
+  const list = getAocs(); list.push({ id: 'P-' + Date.now().toString(36), kind: 'proc', sopId: r.p.id, created: new Date().toISOString(), date: r.started.date, time: r.started.time, occ: [{ id: 'o0', date: r.started.date, time: r.started.time }],
+    equipment: r.p.equipment || 'Both', equipOther: '', category: 'Procedure', title: 'Procedure: ' + r.p.name, probable: '', actual: '', severity: 'Low', status: 'Resolved', resolved: '',
+    actions: `${done}/${r.steps.length} steps completed`, steps: r.steps.map(s => ({ text: s.text, time: s.time, date: s.date })), tags: ['Procedure'], related: [] });
+  store('nwhAocs', list); sopRun = null; toast('Procedure run saved to history'); refreshDayCell(r.started.date); showScreen('sops');
+}
+
+/* ---------- Boiler status panel ---------- */
+const getBoilers = () => { const s = load('nwhSettings', {}); return Array.isArray(s.boilers) && s.boilers.length ? s.boilers : DEFAULT_BOILERS; };
+const bsUnits = () => Object.assign({}, DEFAULT_BS_UNITS, load('nwhSettings', {}).bsUnits || {});
+const BS_FIELDS = [{ k: 'temp', l: 'Temp' }, { k: 'press', l: 'Pressure' }, { k: 'feed', l: 'Feed rate' }];
+const BS_STATUS = ['Running', 'Banked', 'Off', 'Alarm'];
+function bsReadings(b) { const W = getWork(); return Object.keys(W).sort().flatMap(k => (W[k].bstat || []).filter(r => !b || r.b === b).map(r => Object.assign({ day: k }, r))).sort((x, y) => ((x.date || x.day) + ' ' + (x.time || '')).localeCompare((y.date || y.day) + ' ' + (y.time || ''))); }
+const bsLatest = (b, f) => { const l = bsReadings(b).filter(r => r[f] != null && r[f] !== ''); return l[l.length - 1] || null; };
+const bsStamp = r => `${mdy(r.date || r.day)}${r.time ? ' ' + r.time : ''}`;
+function wheelSvg(clock, valve, size) {
+  const rot = ((Number(clock) || 12) % 12) * 30, spokes = [0, 72, 144, 216, 288];
+  return `<svg class="wheel" width="${size}" height="${size}" viewBox="-60 -60 120 120" role="img" aria-label="Handwheel, marked spoke at ${clock || 12} o'clock, valve ${valve || 'unknown'}">
+    ${[...Array(12)].map((_, i) => { const a = i * 30 * Math.PI / 180, r1 = 54, r2 = i % 3 ? 51 : 48; return `<line x1="${Math.sin(a) * r1}" y1="${-Math.cos(a) * r1}" x2="${Math.sin(a) * r2}" y2="${-Math.cos(a) * r2}" stroke="#8792A2" stroke-width="${i % 3 ? 1 : 2}"/>`; }).join('')}
+    <text x="0" y="-41" font-size="8" text-anchor="middle" fill="#3C4654">12</text><text x="42" y="3" font-size="8" text-anchor="middle" fill="#3C4654">3</text><text x="0" y="47" font-size="8" text-anchor="middle" fill="#3C4654">6</text><text x="-42" y="3" font-size="8" text-anchor="middle" fill="#3C4654">9</text>
+    <g class="wheel-rot" transform="rotate(${rot})"><circle r="33" fill="none" stroke="#1F3A5F" stroke-width="7"/>
+    ${spokes.map((a, i) => `<line x1="0" y1="0" x2="${Math.sin(a * Math.PI / 180) * 31}" y2="${-Math.cos(a * Math.PI / 180) * 31}" stroke="${i ? '#1F3A5F' : '#F2A900'}" stroke-width="${i ? 5 : 7}" stroke-linecap="round"/>`).join('')}
+    <circle cx="0" cy="-33" r="7" fill="#F2A900" stroke="#222" stroke-width="1.5"/><text x="0" y="-30" font-size="8" font-weight="800" text-anchor="middle" fill="#222">M</text>
+    <circle r="8" fill="#1F3A5F"/><circle r="3" fill="#fff"/></g></svg>`;
+}
+function sparkSvg(vals) { if (vals.length < 2) return '<svg class="spark" width="70" height="20"></svg>'; const lo = Math.min(...vals), hi = Math.max(...vals), sp = hi - lo || 1;
+  const pts = vals.map((v, i) => `${(i / (vals.length - 1) * 66 + 2).toFixed(1)},${(18 - (v - lo) / sp * 16).toFixed(1)}`).join(' '); const last = pts.split(' ').pop().split(',');
+  return `<svg class="spark" width="70" height="20" viewBox="0 0 70 20" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#1F3A5F" stroke-width="1.6"/><circle cx="${last[0]}" cy="${last[1]}" r="2.2" fill="#F2A900"/></svg>`; }
+function boilerCardHtml(b, compact) {
+  const U = bsUnits(), all = bsReadings(b.id), st = bsLatest(b.id, 'status'), vl = bsLatest(b.id, 'valve'), ck = bsLatest(b.id, 'clock');
+  const nf = v => v == null || v === '' ? '—' : Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  const rows = all.filter(r => BS_FIELDS.some(f => r[f.k] != null && r[f.k] !== '') || r.status).slice(-5).reverse();
+  return `<div class="card bs-card" data-boiler="${b.id}"><div class="bs-head"><b>${esc(b.name)}</b><span class="muted">${esc(b.fuel || '')}</span>${st ? `<span class="bs-st st-${st.status}">${st.status === 'Alarm' ? '! ' : ''}${esc(st.status)}</span>` : '<span class="bs-st">—</span>'}</div>
+    <div class="bs-valve"><button type="button" class="bs-wheel" onclick="bsValveEdit('${b.id}')" aria-label="Set blowdown valve and marked spoke">${wheelSvg(ck ? ck.clock : 12, vl ? vl.valve : '', 92)}</button>
+      <div class="bs-vinfo"><small>Blowdown / blow-off valve</small><span class="bs-vstate v-${vl ? vl.valve : 'unk'}">${vl ? (vl.valve === 'Open' ? '◯ OPEN' : '● CLOSED') : '— not set'}</span>
+        <small>Marked spoke at <b>${ck ? ck.clock : '—'}</b> o'clock</small>${vl ? `<small class="muted">${bsStamp(vl)}</small>` : ''}<button type="button" class="small secondary" onclick="bsValveEdit('${b.id}')">Set valve</button></div></div>
+    <div class="bs-vals">${BS_FIELDS.map(f => { const l = bsLatest(b.id, f.k), ser = all.filter(r => r[f.k] != null && r[f.k] !== '').slice(-10).map(r => Number(r[f.k]));
+      return `<div class="bs-val"><small>${f.l}</small><b>${l ? nf(l[f.k]) : '—'}<span class="u">${esc(U[f.k] || '')}</span></b>${sparkSvg(ser)}</div>`; }).join('')}</div>
+    ${rows.length ? `<details class="bs-hist"${compact ? '' : ' open'}><summary>Last ${rows.length} readings</summary><div class="bs-rows">${rows.map(r => `<div class="bs-row"><span class="bs-t">${bsStamp(r)}</span><span>${BS_FIELDS.map(f => r[f.k] != null && r[f.k] !== '' ? `${f.l[0]} ${nf(r[f.k])}` : '').filter(Boolean).join(' · ')}${r.status ? ` · ${esc(r.status)}` : ''}</span></div>`).join('')}</div></details>` : '<p class="muted">No readings yet.</p>'}
+    <button type="button" class="bs-log" onclick="bsLogOpen('${b.id}')">＋ Log reading</button></div>`;
+}
+function boilerPanelHtml(compact) { return `<div class="bs-panel"><div class="bs-ph"><h3>🔥 Boiler status</h3>${compact ? `<button class="small secondary" onclick="showScreen('bstat')">All readings ›</button>` : ''}</div>${getBoilers().map(b => boilerCardHtml(b, compact)).join('')}</div>`; }
+function bsAdd(b, rec) { const d = rec.date || ymd(new Date()), W = getWork(), e = W[d] = W[d] || {}; e.bstat = e.bstat || []; e.bstat.push(Object.assign({ id: 'bs' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), b, date: d, time: nowHM() }, rec)); delete e.isExample; store('nwhWork', W); refreshDayCell(d); }
+function bsRefresh() { const h = document.getElementById('homeBoilers'); if (h && document.getElementById('home').classList.contains('active')) h.innerHTML = boilerPanelHtml(true); const p = document.getElementById('bstatPanel'); if (p && document.getElementById('bstat').classList.contains('active')) p.innerHTML = boilerPanelHtml(false); }
+function bsLogOpen(bid) {
+  const b = getBoilers().find(x => x.id === bid), U = bsUnits(), draft = {};
+  padOpen({ title: `${b.name} · log reading`, onClose: () => bsRefresh(),
+    steps: BS_FIELDS.map(f => ({ label: f.l, unit: U[f.k], dec: true, maxDec: 2, value: () => draft[f.k], filled: () => draft[f.k] != null,
+      prevText: () => { const l = bsLatest(bid, f.k); return l ? `Last · ${bsStamp(l)}: <b>${Number(l[f.k]).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${esc(U[f.k])}</b>` : '<span class="muted">No earlier reading</span>'; },
+      preview: v => { const l = bsLatest(bid, f.k); if (v == null || !l) return '&nbsp;'; const d = Math.round((v - Number(l[f.k])) * 100) / 100; return `<span class="ok">${d >= 0 ? '+' : ''}${d.toLocaleString('en-US')} ${esc(U[f.k])} vs last</span>`; },
+      commit: v => { draft[f.k] = v; return true; } })),
+    summary: () => { const s0b = bsLatest(bid, 'status'), v0 = bsLatest(bid, 'valve'), c0 = bsLatest(bid, 'clock'); if (draft.status === undefined) draft.status = s0b ? s0b.status : 'Running';
+      return `<p class="pad-sum-h">${BS_FIELDS.map(f => `${f.l}: <b>${draft[f.k] != null ? Number(draft[f.k]).toLocaleString('en-US') + ' ' + esc(U[f.k]) : '—'}</b>`).join(' · ')}</p>
+        <label>Status</label><div class="bs-choice">${BS_STATUS.map(s => `<button type="button" class="${draft.status === s ? 'on' : ''} st-${s}" onclick="PAD.draft.status='${s}';padRender()">${s}</button>`).join('')}</div>
+        <label class="cl-time-l"><span class="tl">🕒 Time</span><span class="tbox"><input type="time" id="bsTime" value="${draft.time || nowHM()}" onchange="PAD.draft.time=this.value"></span></label>
+        <label>Date</label><input type="date" id="bsDate" value="${draft.date || ymd(new Date())}" onchange="PAD.draft.date=this.value">
+        <p class="muted">Valve: ${v0 ? v0.valve : '—'} · spoke ${c0 ? c0.clock : '—'} o'clock (change with “Set valve”).</p>
+        <div class="pad-nav"><button type="button" class="secondary" onclick="padPrev()">‹ Back</button><button type="button" class="pad-next" onclick="bsLogSave('${bid}')">✓ Save reading</button></div>`; } });
+  PAD.draft = draft;
+}
+function bsLogSave(bid) { const d = PAD.draft, t = document.getElementById('bsTime'), dt = document.getElementById('bsDate'); const time = normHM(t ? t.value : '') || nowHM(), date = (dt && dt.value) || ymd(new Date());
+  const rec = { date, time, status: d.status }; BS_FIELDS.forEach(f => { if (d[f.k] != null) rec[f.k] = d[f.k]; }); bsAdd(bid, rec); toast('Reading saved'); padFinish(); }
+let bsVal = null;
+function bsValveEdit(bid) { const v0 = bsLatest(bid, 'valve'), c0 = bsLatest(bid, 'clock'); bsVal = { b: bid, valve: v0 ? v0.valve : 'Closed', clock: c0 ? c0.clock : 12 }; bsValveRender(); document.getElementById('mpad').hidden = false; document.body.classList.add('pad-open'); }
+function bsValveRender() { const b = getBoilers().find(x => x.id === bsVal.b), m = document.getElementById('mpad');
+  m.innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>${esc(b.name)} · blowdown valve</b><button class="small secondary" onclick="bsVal=null;padClose()">✕</button></div>
+    <div class="bs-vedit">${wheelSvg(bsVal.clock, bsVal.valve, 170)}</div>
+    <label>Valve</label><div class="bs-choice two">${['Closed', 'Open'].map(s => `<button type="button" class="${bsVal.valve === s ? 'on' : ''}" onclick="bsVal.valve='${s}';bsValveRender()">${s === 'Open' ? '◯ Open' : '● Closed'}</button>`).join('')}</div>
+    <label>Marked spoke (M) points to</label><div class="bs-clock">${[...Array(12)].map((_, i) => { const h = i + 1; return `<button type="button" class="${Number(bsVal.clock) === h ? 'on' : ''}" onclick="bsVal.clock=${h};bsValveRender()">${h}</button>`; }).join('')}</div>
+    <div class="pad-nav"><button type="button" class="secondary" onclick="bsVal=null;padClose()">Cancel</button><button type="button" class="pad-next" onclick="bsValveSave()">✓ Save</button></div></div>`; }
+function bsValveSave() { bsAdd(bsVal.b, { valve: bsVal.valve, clock: bsVal.clock }); bsVal = null; padClose(); toast('Valve position saved'); bsRefresh(); }
+function renderBstatSetup() { const U = bsUnits(); document.getElementById('bsSetup').innerHTML = `${getBoilers().map((b, i) => `<div class="row2"><input value="${esc(b.name)}" aria-label="Boiler ${i + 1} name" onchange="bsSetBoiler(${i},'name',this.value)"><input value="${esc(b.fuel || '')}" aria-label="Boiler ${i + 1} fuel" placeholder="Fuel" onchange="bsSetBoiler(${i},'fuel',this.value)"></div>`).join('')}
+  <div class="row2">${BS_FIELDS.map(f => `<label>${f.l} unit<input value="${esc(U[f.k])}" aria-label="${f.l} unit" onchange="bsSetUnit('${f.k}',this.value)"></label>`).join('')}</div>`; }
+function bsSetBoiler(i, k, v) { const s = load('nwhSettings', {}); s.boilers = JSON.parse(JSON.stringify(getBoilers())); s.boilers[i][k] = v.trim() || s.boilers[i][k]; store('nwhSettings', s); bsRefresh(); }
+function bsSetUnit(k, v) { const s = load('nwhSettings', {}); s.bsUnits = Object.assign(bsUnits(), { [k]: v.trim() }); store('nwhSettings', s); bsRefresh(); }
+const _hasWork21 = hasWork;
+
+/* ---------- Sheets: timeline + boiler status ---------- */
+SHEETS.aocs.title = 'NWH Operations Timeline'; SHEETS.aocs.slug = 'Timeline';
+SHEETS.bstat = { title: 'NWH Boiler Status', slug: 'Boiler-Status' };
+const _buildSheet21 = buildSheet;
+buildSheet = function (scr, from, to, desc) {
+  if (scr !== 'aocs' && scr !== 'bstat') return _buildSheet21(scr, from, to, desc);
+  const sp = { ...SHEETS[scr], from, to, cols: [], rows: [], foot: [] }, dateCol = { h: 'Date', kind: 'text', key: true, g: '' };
+  if (scr === 'aocs') {
+    sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Type', kind: 'text' }, { h: 'Equipment', kind: 'text' }, { h: 'Title', kind: 'wrap' }, { h: 'Severity', kind: 'text' }, { h: 'Status', kind: 'text' },
+      { h: 'Probable', kind: 'wrap' }, { h: 'Actual', kind: 'wrap' }, { h: 'Actions / note', kind: 'wrap' }, { h: 'Occurrence note', kind: 'wrap' }, { h: 'Tags', kind: 'text' }].map(c => Object.assign({ g: '' }, c));
+    tlEntries().filter(e => e.o.date >= from && e.o.date <= to).reverse().forEach(({ a, o }) => { const k = kindOf(a);
+      const sev = k !== 'aoc' ? C('') : a.severity === 'High' && a.status !== 'Resolved' ? C('‼ High', { color: RED, bold: true }) : a.severity === 'Med' && a.status !== 'Resolved' ? C('! Med', { bg: AMBER_BG, bold: true }) : C(a.severity);
+      const stat = k !== 'aoc' ? C('') : a.status === 'Resolved' ? C('✓ Resolved', { color: GREEN, bold: true }) : a.status === 'Open' ? C('● Open', { bold: true }) : C('◐ Monitoring', { bold: true });
+      const act = k === 'proc' ? (a.actions || '') + ': ' + (a.steps || []).map((s, i) => `${i + 1}. ${s.time ? '✓ ' + s.time : '✗'} ${s.text}`).join(' ; ') : a.actions;
+      sp.rows.push({ day: o.date, id: k === 'proc' ? null : a.id, cells: [C(sDate(o.date)), C(o.time || ''), C(AOC_KIND[k].replace(/^\S+ /, '')), C(aocEquip(a)), C(a.title, { bold: true }), sev, stat, C(a.probable || ''), C(a.actual || ''), C(act || ''), C(o.note || ''), C((a.tags || []).map(t => '#' + t).join(' '))] }); });
+  } else {
+    const U = bsUnits(), names = Object.fromEntries(getBoilers().map(b => [b.id, b.name]));
+    sp.cols = [dateCol, { h: 'Time', kind: 'text' }, { h: 'Boiler', kind: 'text' }, { h: 'Status', kind: 'text' }, { h: `Temp (${U.temp})`, kind: 'num' }, { h: `Pressure (${U.press})`, kind: 'num' }, { h: `Feed rate (${U.feed})`, kind: 'num' }, { h: 'Blowdown valve', kind: 'text' }, { h: 'Marked spoke (o\'clock)', kind: 'num' }].map(c => Object.assign({ g: '' }, c));
+    const nf = v => v == null || v === '' ? C('') : C(Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 }), { raw: String(v) });
+    bsReadings().filter(r => (r.date || r.day) >= from && (r.date || r.day) <= to).forEach(r => sp.rows.push({ day: r.date || r.day, cells: [C(sDate(r.date || r.day)), C(r.time || ''), C(names[r.b] || r.b), r.status === 'Alarm' ? C('! Alarm', { bg: AMBER_BG, bold: true }) : C(r.status || ''), nf(r.temp), nf(r.press), nf(r.feed), C(r.valve || ''), C(r.clock != null ? String(r.clock) : '')] }));
+  }
+  if (desc) sp.rows.reverse(); return sp;
+};
+VIEW_SCREENS.push('bstat');
+
+/* ---------- Screen hooks ---------- */
+const _renderScreen21 = renderScreen;
+renderScreen = function (id) {
+  v21Seed();
+  _renderScreen21(id);
+  if (id === 'home') { const h = document.getElementById('homeBoilers'); if (h) h.innerHTML = boilerPanelHtml(true); }
+  if (id === 'bstat') { if (viewOf('bstat') === 'editor') document.getElementById('bstatPanel').innerHTML = boilerPanelHtml(false); renderBstatSetup(); }
+  if (id === 'sops') renderSops();
+  if (id === 'sopEdit') renderSopEdit();
+  if (id === 'sopRun') renderSopRun();
+  const tabFor = { bstat: 'home', sops: 'more', sopEdit: 'more', sopRun: 'more' };
+  if (tabFor[id]) document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === tabFor[id]));
+};
+
 /* ---------- Startup ---------- */
 migrateData();
 cleanImportStamps();
@@ -2868,5 +3339,6 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 
 document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#boilerBox') && e.target.id !== 'bTime') { const t = document.getElementById('bTime'); if (!t.value && e.target.value.trim()) t.value = nowHM(); } });
 </script>
+<div id="mpad" class="mpad" hidden></div>
 </body>
 </html>
