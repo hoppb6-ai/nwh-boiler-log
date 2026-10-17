@@ -513,6 +513,35 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .bs-choice button.on, .bs-clock button.on { background: #1F3A5F !important; color: #fff !important; border-color: #1F3A5F !important; }
 .bs-clock { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
 .bs-vedit { display: flex; justify-content: center; } .wheel-rot { transition: transform .3s ease; }
+/* ---- v2.2 ---- */
+.vh-file { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; pointer-events: none; }
+.btn-like { display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; font-weight: 800; cursor: pointer; margin: 8px 0; padding: 0 12px; text-align: center; }
+.restore-btn { background: #fff; color: #1F3A5F; border: 2px solid #1F3A5F; font-size: 17px; }
+.rs-prev .kv { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid #C9CED6; } .rs-prev .kv b { text-align: right; overflow-wrap: anywhere; min-width: 0; }
+.rs-warn { background: #FFF1C2; border-left: 4px solid #F2A900; padding: 8px; font-weight: 700; }
+.danger-btn { background: #C62828 !important; }
+/* live strip */
+.live-strip { margin-bottom: 6px; } .live-row { margin: 4px 0 8px; } .live-b { font-weight: 800; color: #1F3A5F; font-size: 14px; margin-bottom: 3px; }
+.live-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.live-t { display: flex !important; flex-direction: column; align-items: flex-start; gap: 1px; margin: 0 !important; width: auto !important; min-width: 0; min-height: 0 !important; padding: 7px 7px 5px !important; background: #fff !important; color: #222 !important; border: 1px solid #C9CED6 !important; border-top: 4px solid #2E7D32 !important; border-radius: 10px; text-align: left; }
+.live-t.stale { border-top-color: #F2A900 !important; background: #FFFBEF !important; }
+.live-t small { font-size: 11px; color: #3C4654; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.live-t b { font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; } .live-t .u { font-size: 11px; color: #555; margin-left: 2px; font-weight: 600; } .live-t .arr { font-style: normal; font-size: 13px; margin-left: 3px; color: #1F3A5F; }
+.live-when { font-size: 10.5px; color: #555; line-height: 1.2; } .stale-tag { font-size: 10.5px; font-weight: 800; color: #6B4E00; background: #FFF1C2; border-radius: 4px; padding: 0 4px; }
+.bo-card { border-left: 5px solid #1F3A5F; }
+.bs-st { border: 0; cursor: pointer; width: auto !important; min-height: 0 !important; margin: 0 0 0 auto !important; } .bs-st.st-none { background: #F2F4F7; color: #1F3A5F; }
+.st-big { grid-template-columns: 1fr 1fr !important; } .st-big button { min-height: 72px; font-size: 19px; }
+/* clock-face dial */
+.dial { position: relative; width: min(320px, 86vw); aspect-ratio: 1; margin: 6px auto; border-radius: 50%; background: radial-gradient(circle, #fff 0 58%, #F2F4F7 58% 100%); border: 3px solid #1F3A5F; }
+.dial-wheel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 47%; } .dial-wheel svg { width: 100%; height: auto; display: block; }
+.dial-n { position: absolute; transform: translate(-50%, -50%); width: 52px !important; height: 52px; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border-radius: 50%; background: #fff !important; color: #1F3A5F !important; border: 2px solid #1F3A5F !important; font-size: 20px; font-weight: 800; touch-action: manipulation; }
+.dial-n.on { background: #F2A900 !important; color: #222 !important; border-color: #222 !important; transform: translate(-50%, -50%) scale(1.12); }
+.dial-lbl { text-align: center; font-weight: 800; font-size: 18px; margin: 4px 0 0; }
+.wheel-rot { transition: transform .45s cubic-bezier(.3, 1.4, .5, 1); transform-box: view-box; transform-origin: 50% 50%; }
+.bs-row.lh { flex-direction: row; justify-content: space-between; gap: 8px; }
+.bk-card { border-left: 5px solid #1F3A5F; }
+#printArea { display: none; }
+@media print { @page { size: letter landscape; margin: 0; } body.printing > *:not(#printArea) { display: none !important; } body.printing #printArea { display: block; } #printArea img { width: 100%; display: block; page-break-after: always; } html.dark { filter: none !important; } }
 </style>
 </head>
 <body class="locked">
@@ -554,7 +583,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 
 <!-- Day editor -->
 <div id="dayEditor" class="screen">
-  <h2 id="dayTitle">Day</h2>
+  <div class="scr-head"><h2 id="dayTitle">Day</h2><button class="small" onclick="openReport(editingDay)">📄 Daily status</button></div>
   <div id="dayCards">
   <div id="dChecklist" class="card"></div>
   <div id="dAocs" class="card aoc-box"></div>
@@ -585,7 +614,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 <div id="daily" class="screen">
   <div class="scr-head"><h2>Daily checklist</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('daily','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('daily','sheet')">📊 Spreadsheet</button></div></div>
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
-  <div class="ed-pane"><div class="btn-row"><button class="small" onclick="startRound(edDay)">▶ Round mode</button><button class="small secondary" onclick="openReport(edDay)">📄 Daily report</button></div><div id="dailyNav"></div><div class="card" id="dailyBody"></div><div class="card" id="dailyAocs"></div></div>
+  <div class="ed-pane"><div class="btn-row"><button class="small" onclick="startRound(edDay)">▶ Round mode</button><button class="small secondary" onclick="openReport(edDay)">📄 Daily status</button></div><div id="dailyNav"></div><div class="card" id="dailyBody"></div><div class="card" id="dailyAocs"></div></div>
   <div class="ss-pane"></div>
 </div>
 
@@ -702,6 +731,15 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 <!-- More -->
 <div id="more" class="screen">
   <h2>More</h2>
+  <div class="card bk-card">
+    <h3>💾 Backup &amp; restore</h3>
+    <p class="muted" id="lastSaveInfo"></p>
+    <div class="row2"><button onclick="saveFile()">💾 Save backup</button><button class="secondary" onclick="saveFile(true)">Save As…</button></div>
+    <label class="btn-like restore-btn" for="quickRestore">⤓ Restore from backup…</label><input id="quickRestore" class="vh-file" type="file" accept="application/json,.json" onchange="restorePick(this)">
+    <button class="small secondary" onclick="showScreen('restore')">Automatic snapshots…</button>
+    <p class="muted">Save writes a full backup file (on iPhone choose “Save to Files”). Restore shows a preview and asks before replacing anything; a snapshot is taken first.</p>
+  </div>
+
   <div class="btn-row"><button class="secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="secondary" onclick="showScreen('pm')">🛠️ Scheduled tasks / PM</button><button class="secondary" onclick="showScreen('sops')">📋 Procedures</button><button class="secondary" onclick="showScreen('bstat')">🔥 Boiler status</button><button class="secondary" onclick="showScreen('pmTasks')">⚙️ Manage scheduled tasks</button><button class="secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
   <div class="card">
     <h3>💼 Job</h3>
@@ -718,13 +756,6 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
     <button onclick="saveSettings()">Save Settings</button>
   </div>
   <div class="card">
-    <h3>💾 Save &amp; Restore</h3>
-    <p class="muted" id="lastSaveInfo"></p>
-    <div class="row2"><button onclick="saveFile()">Save</button><button class="secondary" onclick="saveFile(true)">Save As…</button></div>
-    <button class="secondary" onclick="showScreen('restore')">Restore… (NWH Log or Hopp backup)</button>
-    <p class="muted">Save writes a full backup file (on iPhone choose “Save to Files”; same name + Replace updates it). Automatic snapshots: the last 10 plus one per day for 7 days.</p>
-  </div>
-  <div class="card">
     <h3>✅ Daily checklist</h3>
     <p class="muted">Reorder, rename, add or remove items. Value fields can have a unit and an optional normal range (min/max); readings outside it show in red.</p>
     <div id="clEditor"></div>
@@ -739,19 +770,21 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
     <div class="row2"><button class="olive" onclick="loadExamples()">Load example data</button><button class="secondary" onclick="removeExamples()">Remove examples</button></div>
   </div>
   <div class="card"><h3>Display</h3><div class="seg mini" id="themeSeg"><button data-m="auto" onclick="setTheme('auto')">Auto</button><button data-m="light" onclick="setTheme('light')">☀️ Light</button><button data-m="dark" onclick="setTheme('dark')">🌙 Dark</button></div><p class="muted">Auto follows the phone's dark mode. Exports are always printed light.</p>
-    <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily report</button></div></div>
+    <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
 <div id="restore" class="screen">
-  <h2>Restore</h2>
+  <h2>⤓ Restore from backup</h2>
   <p class="muted">Restoring replaces all data on this device. A snapshot of the current data is taken first, so you can undo. Hopp backups are accepted (work days, checklist, meters and AOCs are imported; everything else is ignored).</p>
   <div class="card">
     <h3>From a backup file</h3>
-    <input id="restoreFile" type="file" accept=".json,application/json">
+    <label class="btn-like restore-btn" for="restorePickFile">⤓ Restore from backup…</label><input id="restorePickFile" class="vh-file" type="file" accept="application/json,.json" onchange="restorePick(this)">
+    <p class="muted">Or choose a file and use the classic button:</p>
+    <input id="restoreFile" type="file" accept="application/json,.json">
     <button class="danger" onclick="restoreFromFile('restoreFile','restoreMsg')">Restore from File</button>
     <p id="restoreMsg" class="muted"></p>
   </div>
@@ -775,11 +808,11 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 </div>
 <!-- Daily report -->
 <div id="report" class="screen">
-  <div class="scr-head"><h2>📄 Daily report</h2></div>
+  <div class="scr-head"><h2>📄 Daily status readout</h2></div>
   <div class="card">
     <label>Day <input type="date" id="reportDate" onchange="if(this.value){reportDay=this.value;renderReport()}"></label>
-    <p class="muted">Shift handoff sheet: checklist with times, meters with used/ran, water tests with flags, chemical additions, PM and AOCs. Landscape letter.</p>
-    <div class="btn-row"><button class="small" onclick="exportReport('png')">🖼️ PNG</button><button class="small" onclick="exportReport('pdf')">📄 PDF</button></div>
+    <p class="muted">One landscape letter sheet: a time-stamped timeline of everything that day, plus meters (Used/Ran), water tests, boilers, blow-off changes, checklist, tasks and AOCs.</p>
+    <div class="btn-row"><button class="small" onclick="readoutExport('png')">🖼️ PNG</button><button class="small" onclick="readoutExport('pdf')">📄 PDF</button><button class="small secondary" onclick="readoutExport('csv')">CSV</button><button class="small secondary" onclick="readoutExport('print')">🖨️ Print</button></div>
   </div>
   <div id="reportPrev"></div>
 </div>
@@ -890,7 +923,7 @@ const toMin = t => { const [h, m] = String(t).split(':').map(Number); return h *
 const nowHM = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 const fmtTime = t => t && /^\d{1,2}:\d{2}/.test(t) ? String(t).padStart(5, '0').slice(0, 5) : ''; // 24-hour HH:MM everywhere
 // A day counts as logged when it has checklist, boiler log or note data (AOCs are stored separately). Old shift/hours fields are ignored.
-const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()) || (w.chem || []).length > 0 || Object.keys(w.pm || {}).length > 0 || (w.bstat || []).length > 0);
+const hasWork = w => !!w && (Object.keys(w.checklist || {}).length > 0 || !!(w.notes || '').trim() || !!w.pinned || (w.tags || []).length > 0 || Object.entries(w.boiler || {}).some(([k, v]) => k !== 'time' && String(v).trim()) || (w.chem || []).length > 0 || Object.keys(w.pm || {}).length > 0 || (w.bstat || []).length > 0 || (w.blowoff || []).length > 0);
 const subtitle = () => { const S = getSettings(); return `${S.employer} — ${S.title}`; };
 
 /* ---------- Screens & navigation ---------- */
@@ -2575,7 +2608,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.1';
+const APP_VER = '2.2';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -2791,7 +2824,7 @@ function homeDashHtml() {
   return `<div class="dash"><div class="dash-ring" onclick="edDay='${day}';showScreen('daily')">${ringSvg(p.done, p.total, 76)}<div><b>Today</b><span class="muted">${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span><button class="small" onclick="event.stopPropagation();startRound()">▶ Start round</button></div></div>
     <div class="dash-tiles">${tile(fl.length ? 'warn' : 'ok', (fl.length ? '! ' : '✓ ') + fl.length, 'flags today', `edDay='${day}';showScreen('daily')`)}${tile(od.length ? 'alarm' : over.length ? 'warn' : 'ok', (od.length ? '! ' : '') + over.length, od.length ? `PM due (${od.length} overdue)` : 'PM due', "showScreen('pm')")}${tile(hiOpen.length ? 'alarm' : open.length ? 'warn' : 'ok', (hiOpen.length ? '! ' : '') + open.length, 'open AOCs', "showScreen('aocs')")}${tile(age == null || age >= 3 ? 'warn' : 'ok', age == null ? '!' : age + 'd', age == null ? 'no backup yet' : 'since backup', 'saveFile()')}</div>
     ${fl.length ? `<div class="dash-flags">${fl.slice(0, 4).map(f => `<span>! ${esc(f)}</span>`).join('')}</div>` : ''}
-    <div class="btn-row"><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily report</button><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button></div></div>`;
+    <div class="btn-row"><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button></div></div>`;
 }
 
 /* ---------- 5. Round mode ---------- */
@@ -2805,7 +2838,7 @@ function renderRound() {
     box.innerHTML = `<div class="round-card"><h2>${miss.length ? 'Round finished' : '✓ Round complete'}</h2><div class="round-ring">${ringSvg(p.done, p.total, 120)}</div>
       ${miss.length ? `<h3>Not done (${miss.length})</h3>${miss.map(it => `<button class="link-btn round-miss" onclick="roundI=${items.indexOf(it)};renderRound()">✗ ${esc(it.label)}</button>`).join('')}` : ''}
       ${fl.length ? `<h3>Flags</h3>${fl.map(f => `<div class="round-flag">! ${esc(f)}</div>`).join('')}` : '<p class="muted">No flags.</p>'}
-      <div class="btn-row"><button onclick="openReport(roundDay)">📄 Daily report</button><button class="secondary" onclick="edDay=roundDay;showScreen('daily')">Open checklist</button></div></div>`;
+      <div class="btn-row"><button onclick="openReport(roundDay)">📄 Daily status</button><button class="secondary" onclick="edDay=roundDay;showScreen('daily')">Open checklist</button></div></div>`;
     return;
   }
   const it = items[roundI], r = cl[it.id] || {}, vals = r.values || {};
@@ -3328,6 +3361,225 @@ renderScreen = function (id) {
   const tabFor = { bstat: 'home', sops: 'more', sopEdit: 'more', sopRun: 'more' };
   if (tabFor[id]) document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === tabFor[id]));
 };
+
+/* ===================== v2.2: blow-off status, clock-face spoke dial, live status strip, daily status readout, restore preview ===================== */
+const _wheelSvg22 = wheelSvg;
+wheelSvg = function (clock, valve, size) { return _wheelSvg22(clock, valve, size).replace(/<g class="wheel-rot" transform="rotate\((\d+)\)">/, '<g class="wheel-rot" data-rot="$1" style="transform:rotate($1deg)">'); };
+/* ---------- Blow-off (system-wide; W[day].blowoff = [{id,date,time,valve,clock}]) ---------- */
+function migrateBlowoff() { // move any per-boiler valve/clock data (v2.1) into the system blow-off log; nothing is discarded
+  const W = load('nwhWork', null); if (!W || typeof W !== 'object') return 0; let n = 0;
+  Object.entries(W).forEach(([k, w]) => { if (!w || !Array.isArray(w.bstat)) return;
+    w.bstat = w.bstat.filter(r => { if (r.valve == null && r.clock == null) return true; w.blowoff = w.blowoff || [];
+      w.blowoff.push({ id: 'bo-' + (r.id || Date.now().toString(36)), date: r.date || k, time: r.time || '', valve: r.valve || '', clock: r.clock != null ? r.clock : '', from: r.b }); n++;
+      const rest = BS_FIELDS.some(f => r[f.k] != null && r[f.k] !== '') || r.status; if (rest) { delete r.valve; delete r.clock; return true; } return false; });
+    if (!w.bstat.length) delete w.bstat; });
+  if (n) store('nwhWork', W); return n;
+}
+const _migrateData22 = migrateData;
+migrateData = function () { _migrateData22(); migrateBlowoff(); };
+const blowLog = () => { const W = getWork(); return Object.keys(W).flatMap(k => (W[k].blowoff || []).map(r => Object.assign({ day: k }, r))).sort((a, b) => ((a.date || a.day) + ' ' + (a.time || '')).localeCompare((b.date || b.day) + ' ' + (b.time || ''))); };
+const blowNow = () => { const l = blowLog(); return l[l.length - 1] || null; };
+function blowCardHtml() {
+  const cur = blowNow(), last = blowLog().slice(-5).reverse();
+  return `<div class="card bo-card"><div class="bs-head"><b>🔧 Blow-off status</b><span class="muted">pressure system</span></div>
+    <div class="bs-valve"><button type="button" class="bs-wheel" onclick="blowEdit()" aria-label="Change blow-off valve">${wheelSvg(cur ? cur.clock || 12 : 12, cur ? cur.valve : '', 104)}</button>
+      <div class="bs-vinfo"><span class="bs-vstate v-${cur ? cur.valve : 'unk'}">${cur ? (cur.valve === 'Open' ? '◯ OPEN' : '● CLOSED') : '— not set'}</span>
+        <small>Marked spoke at <b>${cur && cur.clock ? cur.clock : '—'}</b> o'clock</small>${cur ? `<small class="muted">${bsStamp(cur)} · ${agoText(cur)}</small>` : ''}
+        <button type="button" class="small" onclick="blowEdit()">Change</button></div></div>
+    ${last.length ? `<details class="bs-hist"><summary>Last ${last.length} changes</summary><div class="bs-rows">${last.map(r => `<div class="bs-row"><span class="bs-t">${bsStamp(r)}</span><span>${r.valve === 'Open' ? '◯ Open' : '● Closed'} · spoke ${r.clock || '—'} o'clock</span></div>`).join('')}</div></details>` : ''}</div>`;
+}
+let blowDraft = null;
+function blowEdit() { const c = blowNow(); blowDraft = { valve: c ? c.valve || 'Closed' : 'Closed', clock: c && c.clock ? Number(c.clock) : 12 }; document.getElementById('mpad').hidden = false; document.body.classList.add('pad-open'); blowRender(); }
+bsValveEdit = function () { blowEdit(); };
+function dialHtml(clock) { // clock face: tap a number; the wheel in the middle animates to it
+  return `<div class="dial" role="group" aria-label="Marked spoke clock position"><div class="dial-wheel">${wheelSvg(clock, blowDraft.valve, 150)}</div>
+    ${[...Array(12)].map((_, i) => { const h = i + 1, a = h * 30 * Math.PI / 180; return `<button type="button" class="dial-n${Number(clock) === h ? ' on' : ''}" data-h="${h}" style="left:${(50 + Math.sin(a) * 42).toFixed(2)}%;top:${(50 - Math.cos(a) * 42).toFixed(2)}%" aria-label="${h} o'clock" onclick="blowClock(${h})">${h}</button>`; }).join('')}</div>`;
+}
+function blowClock(h) { blowDraft.clock = h; const w = document.querySelector('#mpad .dial-wheel .wheel-rot'); if (w) { w.style.transform = `rotate(${(h % 12) * 30}deg)`; w.dataset.rot = (h % 12) * 30; } document.querySelectorAll('#mpad .dial-n').forEach(b => b.classList.toggle('on', Number(b.dataset.h) === h)); haptic(document.querySelector(`#mpad .dial-n[data-h="${h}"]`)); const l = document.getElementById('dialLbl'); if (l) l.textContent = `Marked spoke → ${h} o'clock`; }
+function blowRender() {
+  document.getElementById('mpad').innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>Blow-off status</b><button class="small secondary" aria-label="Close" onclick="blowDraft=null;padClose()">✕</button></div>
+    <div class="bs-choice two">${['Closed', 'Open'].map(s => `<button type="button" class="${blowDraft.valve === s ? 'on' : ''}" onclick="blowDraft.valve='${s}';blowRender()">${s === 'Open' ? '◯ Open' : '● Closed'}</button>`).join('')}</div>
+    <p class="dial-lbl" id="dialLbl">Marked spoke → ${blowDraft.clock} o'clock</p>${dialHtml(blowDraft.clock)}
+    <p class="muted" style="text-align:center">Tap the number the marked spoke (M) points to. Saved with the current date and time.</p>
+    <div class="pad-nav"><button type="button" class="secondary" onclick="blowDraft=null;padClose()">Cancel</button><button type="button" class="pad-next" onclick="blowSave()">✓ Save</button></div></div>`;
+}
+function blowSave() { const d = ymd(new Date()), W = getWork(), e = W[d] = W[d] || {}; e.blowoff = e.blowoff || []; e.blowoff.push({ id: 'bo' + Date.now().toString(36), date: d, time: nowHM(), valve: blowDraft.valve, clock: blowDraft.clock }); delete e.isExample; store('nwhWork', W); blowDraft = null; padClose(); toast('Blow-off status saved'); refreshDayCell(d); bsRefresh(); }
+const _hasWork22 = hasWork;
+
+/* ---------- Live status strip + boiler cards (no valve) ---------- */
+const bsFieldLabel = (b, k) => k === 'feed' ? (b && b.feedLabel ? b.feedLabel : b && /sawdust|wood/i.test((b.fuel || '') + ' ' + (b.name || '')) ? 'Wood feed' : 'Feed rate') : (BS_FIELDS.find(f => f.k === k) || {}).l;
+const staleMin = () => Number(load('nwhSettings', {}).bsStaleMin) || 120;
+const stampMs = r => r && r.time ? new Date((r.date || r.day) + 'T' + r.time + ':00').getTime() : null;
+function agoText(r) { const ms = stampMs(r); if (ms == null) return ''; const m = Math.round((Date.now() - ms) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 600 ? `${Math.floor(m / 60)} h ${m % 60} min ago` : m < 48 * 60 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} d ago`; }
+function fieldSeries(b, k) { return bsReadings(b).filter(r => r[k] != null && r[k] !== ''); }
+function liveTile(b, k) {
+  const U = bsUnits(), s = fieldSeries(b.id, k), l = s[s.length - 1], p = s[s.length - 2], ms = stampMs(l), stale = !l || ms == null || (Date.now() - ms) / 60000 > staleMin();
+  const arrow = l && p ? (Number(l[k]) > Number(p[k]) ? '▲' : Number(l[k]) < Number(p[k]) ? '▼' : '▶') : '';
+  return `<button type="button" class="live-t${stale ? ' stale' : ''}" data-live="${b.id}:${k}" onclick="liveLog('${b.id}','${k}')"><small>${esc(bsFieldLabel(b, k))}</small>
+    <b>${l ? Number(l[k]).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '—'}<span class="u">${esc(U[k] || '')}</span>${arrow ? `<i class="arr" aria-label="trend">${arrow}</i>` : ''}</b>
+    <span class="live-when">${l ? `${bsStamp(l).slice(0, 5)} ${l.time || ''} · ${agoText(l)}` : 'not logged'}</span>${stale ? `<span class="stale-tag">! ${l ? 'stale' : 'no reading'}</span>` : ''}${sparkSvg(s.slice(-10).map(r => Number(r[k])))}</button>`;
+}
+function liveStripHtml() { return `<div class="live-strip"><div class="bs-ph"><h3>📡 Live status</h3><small class="muted">latest logged · tap to update · stale after ${staleMin() >= 60 ? (staleMin() / 60) + ' h' : staleMin() + ' min'}</small></div>
+  ${getBoilers().map(b => `<div class="live-row"><div class="live-b">${esc(b.name)}</div><div class="live-tiles">${['press', 'feed', 'temp'].map(k => liveTile(b, k)).join('')}</div></div>`).join('')}</div>`; }
+function liveLog(bid, k) {
+  const b = getBoilers().find(x => x.id === bid), U = bsUnits(), lab = bsFieldLabel(b, k); let val = null;
+  padOpen({ title: `${b.name} · ${lab}`, onClose: () => bsRefresh(), steps: [{ label: lab, unit: U[k], dec: true, maxDec: 2, value: () => val, filled: () => val != null,
+    prevText: () => { const s = fieldSeries(bid, k), l = s[s.length - 1]; return l ? `Last · ${bsStamp(l)} (${agoText(l)}): <b>${Number(l[k]).toLocaleString('en-US')} ${esc(U[k])}</b>` : '<span class="muted">No earlier reading</span>'; },
+    preview: v => { const s = fieldSeries(bid, k), l = s[s.length - 1]; if (v == null || !l) return '&nbsp;'; const d = Math.round((v - Number(l[k])) * 100) / 100; return `<span class="ok">${d > 0 ? '▲ +' : d < 0 ? '▼ ' : '▶ '}${d.toLocaleString('en-US')} ${esc(U[k])} vs last</span>`; },
+    commit: v => { val = v; bsAdd(bid, { [k]: v }); return true; } }],
+    summary: () => { setTimeout(padFinish, 0); return ''; } });
+  toastLater = true;
+}
+var toastLater = false;
+boilerCardHtml = function (b, compact) {
+  const U = bsUnits(), all = bsReadings(b.id), st = bsLatest(b.id, 'status');
+  const nf = v => v == null || v === '' ? '—' : Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  const rows = all.filter(r => BS_FIELDS.some(f => r[f.k] != null && r[f.k] !== '') || r.status).slice(-5).reverse();
+  return `<div class="card bs-card" data-boiler="${b.id}"><div class="bs-head"><b>${esc(b.name)}</b><span class="muted">${esc(b.fuel || '')}</span>
+      <button type="button" class="bs-st st-${st ? st.status : 'none'}" onclick="bsStatusQuick('${b.id}')" aria-label="Set status">${st ? (st.status === 'Alarm' ? '! ' : '') + esc(st.status) : 'Set status'}</button></div>
+    ${rows.length ? `<details class="bs-hist"${compact ? '' : ' open'}><summary>Last ${rows.length} readings</summary><div class="bs-rows">${rows.map(r => `<div class="bs-row"><span class="bs-t">${bsStamp(r)}</span><span>${BS_FIELDS.map(f => r[f.k] != null && r[f.k] !== '' ? `${bsFieldLabel(b, f.k)} ${nf(r[f.k])}${U[f.k] ? ' ' + esc(U[f.k]) : ''}` : '').filter(Boolean).join(' · ')}${r.status ? ` · ${esc(r.status)}` : ''}</span></div>`).join('')}</div></details>` : '<p class="muted">No readings yet.</p>'}
+    <button type="button" class="bs-log small" onclick="bsLogOpen('${b.id}')">＋ Log all readings</button></div>`;
+};
+function bsStatusQuick(bid) { const b = getBoilers().find(x => x.id === bid), cur = bsLatest(bid, 'status');
+  document.getElementById('mpad').hidden = false; document.body.classList.add('pad-open');
+  document.getElementById('mpad').innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>${esc(b.name)} · status</b><button class="small secondary" onclick="padClose()">✕</button></div>
+    <div class="bs-choice st-big">${BS_STATUS.map(s => `<button type="button" class="${cur && cur.status === s ? 'on' : ''} st-${s}" onclick="bsAdd('${bid}',{status:'${s}'});padClose();toast('Status saved');bsRefresh()">${s}</button>`).join('')}</div><p class="muted">Saved with the current date and 24h time.</p></div>`; }
+boilerPanelHtml = function (compact) { return `<div class="bs-panel">${liveStripHtml()}${blowCardHtml()}<div class="bs-ph"><h3>🔥 Boilers</h3>${compact ? `<button class="small secondary" onclick="showScreen('bstat')">History ›</button>` : ''}</div>${getBoilers().map(b => boilerCardHtml(b, compact)).join('')}</div>`; };
+// rename the feed step in the full log flow per boiler
+const _bsLogOpen22 = bsLogOpen;
+bsLogOpen = function (bid) { _bsLogOpen22(bid); const b = getBoilers().find(x => x.id === bid); PAD.steps.forEach((s, i) => { s.label = bsFieldLabel(b, BS_FIELDS[i].k); }); padRender(); };
+// running history on the Boiler status screen: graph + list per value
+let liveHistKey = 'b1:press';
+function liveHistHtml() {
+  const opts = getBoilers().flatMap(b => ['press', 'feed', 'temp'].map(k => ({ v: b.id + ':' + k, l: `${b.name} — ${bsFieldLabel(b, k)}` })));
+  if (!opts.some(o => o.v === liveHistKey)) liveHistKey = opts[0].v; const [bid, k] = liveHistKey.split(':'), U = bsUnits(), s = fieldSeries(bid, k).slice().reverse();
+  return `<div class="card"><h3>📈 Value history</h3><select aria-label="Value" onchange="liveHistKey=this.value;document.getElementById('liveHist').innerHTML=liveHistHtml();liveHistDraw()">${opts.map(o => `<option value="${o.v}"${o.v === liveHistKey ? ' selected' : ''}>${esc(o.l)}</option>`).join('')}</select>
+    <div class="trend-wrap"><canvas id="liveCv"></canvas></div>
+    <div class="bs-rows">${s.length ? s.slice(0, 50).map((r, i) => { const p = s[i + 1]; const a = p ? (Number(r[k]) > Number(p[k]) ? '▲' : Number(r[k]) < Number(p[k]) ? '▼' : '▶') : ''; return `<div class="bs-row lh"><span class="bs-t">${bsStamp(r)}</span><span><b>${Number(r[k]).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${esc(U[k])}</b> ${a}</span></div>`; }).join('') : '<p class="muted">No readings yet.</p>'}</div></div>`;
+}
+function liveHistDraw() { const cv = document.getElementById('liveCv'); if (!cv) return; const [bid, k] = liveHistKey.split(':'), s = fieldSeries(bid, k).slice(-60), w = Math.max(200, cv.parentElement.clientWidth), h = 200, dpr = window.devicePixelRatio || 1;
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px'; const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+  if (s.length < 1) return; const xs = s.map(stampMs).map((m, i) => m == null ? i : m), lo = Math.min(...s.map(r => Number(r[k]))), hi = Math.max(...s.map(r => Number(r[k]))), x0 = Math.min(...xs), x1 = Math.max(...xs) || x0 + 1;
+  const X = v => 46 + (x1 === x0 ? 0.5 : (v - x0) / (x1 - x0)) * (w - 56), Y = v => 10 + (1 - (hi === lo ? 0.5 : (v - lo) / (hi - lo))) * (h - 34);
+  ctx.strokeStyle = '#C9CED6'; ctx.fillStyle = '#222'; ctx.font = '11px system-ui'; ctx.textAlign = 'right';[lo, (lo + hi) / 2, hi].forEach(v => { ctx.beginPath(); ctx.moveTo(46, Y(v)); ctx.lineTo(w - 10, Y(v)); ctx.stroke(); ctx.fillText(Number(v.toFixed(1)).toLocaleString('en-US'), 42, Y(v) + 4); });
+  ctx.strokeStyle = '#1F3A5F'; ctx.lineWidth = 2.5; ctx.beginPath(); s.forEach((r, i) => { const x = X(xs[i]), y = Y(Number(r[k])); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+  s.forEach((r, i) => { ctx.beginPath(); ctx.arc(X(xs[i]), Y(Number(r[k])), 3.5, 0, 7); ctx.fillStyle = '#1F3A5F'; ctx.fill(); });
+  ctx.textAlign = 'left'; ctx.fillStyle = '#555'; ctx.fillText(bsStamp(s[0]), 46, h - 6); ctx.textAlign = 'right'; ctx.fillText(bsStamp(s[s.length - 1]), w - 10, h - 6); }
+const _renderBstatSetup22 = renderBstatSetup;
+renderBstatSetup = function () { _renderBstatSetup22(); document.getElementById('bsSetup').insertAdjacentHTML('beforeend', `${getBoilers().map((b, i) => `<label>${esc(b.name)} feed label<input value="${esc(bsFieldLabel(b, 'feed'))}" aria-label="Boiler ${i + 1} feed label" onchange="bsSetBoiler(${i},'feedLabel',this.value)"></label>`).join('')}
+  <label>Mark live values stale after (minutes)<input type="number" min="5" inputmode="numeric" value="${staleMin()}" aria-label="Stale interval minutes" onchange="(s=>{s.bsStaleMin=Math.max(5,Number(this.value)||120);store('nwhSettings',s);bsRefresh()})(load('nwhSettings',{}))"></label>`);
+  let lh = document.getElementById('liveHist'); if (!lh) { document.getElementById('bstatPanel').insertAdjacentHTML('afterend', '<div id="liveHist"></div>'); lh = document.getElementById('liveHist'); } lh.innerHTML = liveHistHtml(); liveHistDraw(); };
+setInterval(() => { if (document.getElementById('home').classList.contains('active') && !PAD) { const s = document.querySelector('#homeBoilers .live-strip'); if (s) s.outerHTML = liveStripHtml(); } }, 60000);
+
+/* ---------- Boiler status sheet: readings + blow-off changes ---------- */
+const _buildSheet22 = buildSheet;
+buildSheet = function (scr, from, to, desc) {
+  if (scr !== 'bstat') return _buildSheet22(scr, from, to, desc);
+  const sp = { ...SHEETS[scr], from, to, cols: [], rows: [], foot: [] }, U = bsUnits(), B = getBoilers(), names = Object.fromEntries(B.map(b => [b.id, b.name]));
+  const feedH = [...new Set(B.map(b => bsFieldLabel(b, 'feed')))].join(' / ');
+  sp.cols = [{ h: 'Date', kind: 'text', key: true }, { h: 'Time', kind: 'text' }, { h: 'Boiler / system', kind: 'text' }, { h: 'Status', kind: 'text' }, { h: `Temp (${U.temp})`, kind: 'num' }, { h: `Pressure (${U.press})`, kind: 'num' }, { h: `${feedH} (${U.feed})`, kind: 'num' }, { h: 'Blow-off valve', kind: 'text' }, { h: "Marked spoke (o'clock)", kind: 'num' }].map(c => Object.assign({ g: '' }, c));
+  const nf = v => v == null || v === '' ? C('') : C(Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 }), { raw: String(v) });
+  const rows = [...bsReadings().map(r => ({ r, k: (r.date || r.day) + ' ' + (r.time || ''), t: 'b' })), ...blowLog().map(r => ({ r, k: (r.date || r.day) + ' ' + (r.time || ''), t: 'o' }))].filter(x => x.k.slice(0, 10) >= from && x.k.slice(0, 10) <= to).sort((a, b) => a.k.localeCompare(b.k));
+  rows.forEach(({ r, t }) => sp.rows.push({ day: r.date || r.day, cells: t === 'b' ? [C(sDate(r.date || r.day)), C(r.time || ''), C(names[r.b] || r.b), r.status === 'Alarm' ? C('! Alarm', { bg: AMBER_BG, bold: true }) : C(r.status || ''), nf(r.temp), nf(r.press), nf(r.feed), C(''), C('')]
+    : [C(sDate(r.date || r.day)), C(r.time || ''), C('Blow-off (system)', { bold: true }), C(''), C(''), C(''), C(''), C(r.valve === 'Open' ? '◯ Open' : '● Closed', { bold: true, raw: r.valve }), C(r.clock != null ? String(r.clock) : '')] }));
+  if (desc) sp.rows.reverse(); return sp;
+};
+
+/* ---------- Daily status readout (one landscape sheet; replaces the daily report) ---------- */
+function readoutEvents(day) {
+  const W = getWork(), w = W[day] || {}, cl = w.checklist || {}, ev = [], push = (t, cat, what, det, flag) => ev.push({ t: t || '', cat, what, det: det || '', flag: !!flag });
+  getChecklist().forEach(it => { const r = cl[it.id]; if (!r) return;
+    if (isMeter(it)) { const v = (r.values || {})[meterKey(it)], st = readStamp(it.id, day, W), c = v != null ? meterCompare(it.id, day, W) : null; push((st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : '') + (st.time || ''), 'Meter', it.label, v != null ? `${fmtM(it, v)}${c ? ' · ' + (c.inf.usage < 0 ? '! ' : '') + c.text : ''}` : (r.note || 'checked'), c && (c.flag || c.inf.usage < 0)); return; }
+    if (it.sections) { const v = r.values || {}, sx = r.sec || {}; it.sections.forEach(sec => { const fs = it.fields.filter(f => f.sec === sec.id && v[f.key] != null); if (!fs.length && !(sx[sec.id] || {}).time) return;
+        push((sx[sec.id] || {}).time || r.time, 'Water test', sec.label, fs.map(f => `${f.label} ${Number(v[f.key]).toLocaleString('en-US', { maximumFractionDigits: 3 })}${f.unit ? ' ' + f.unit : ''}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · ') + ((sx[sec.id] || {}).note ? ' — ' + sx[sec.id].note : ''), fs.some(f => outOfRange(f, v[f.key]))); });
+      if (r.done) push(r.time, 'Checklist', '✓ ' + it.label, r.note); return; }
+    push(r.time, 'Checklist', (r.done ? '✓ ' : '✗ ') + it.label, r.note); });
+  (w.chem || []).forEach(e => push(e.time, 'Chemical', chemName(e.chem), [[e.amount, e.unit].filter(x => x !== '' && x != null).join(' '), e.to ? '→ ' + e.to : '', e.reason, e.note].filter(Boolean).join(' · ')));
+  Object.entries(w.pm || {}).forEach(([id, r]) => { const t = getPmTasks().find(x => x.id === id) || { name: id, subs: [] }; push(r.time, 'Task', (r.done ? '✓ ' : '○ ') + t.name, [r.value != null ? 'Value ' + r.value : '', (t.subs || []).map((s, i) => (r.subs || [])[i] ? `✓ ${s} ${typeof r.subs[i] === 'string' ? r.subs[i] : ''}` : '').filter(Boolean).join(', '), r.note].filter(Boolean).join(' · ')); });
+  getAocs().forEach(a => aocOccs(a).filter(o => o.date === day).forEach(o => { const k = kindOf(a); push(o.time, k === 'aoc' ? 'AOC' : k === 'proc' ? 'Procedure' : 'Note', a.title,
+    k === 'aoc' ? [`${a.severity} · ${a.status}`, a.probable && 'Probable: ' + a.probable, a.actual && 'Actual: ' + a.actual, a.actions && 'Actions: ' + a.actions, o.note].filter(Boolean).join(' · ') : k === 'proc' ? `${(a.steps || []).filter(s => s.time).length}/${(a.steps || []).length} steps${(a.steps || []).length ? ' · ' + a.steps.filter(s => s.time).map(s => s.time).slice(0, 1).concat(a.steps.filter(s => s.time).map(s => s.time).slice(-1)).join('–') : ''}` : [a.actions, o.note].filter(Boolean).join(' · '),
+    k === 'aoc' && a.severity === 'High' && a.status !== 'Resolved'); }));
+  const B = getBoilers(), U = bsUnits();
+  bsReadings().filter(r => (r.date || r.day) === day).forEach(r => { const b = B.find(x => x.id === r.b) || { name: r.b }; push(r.time, 'Boiler', b.name, [...BS_FIELDS.filter(f => r[f.k] != null && r[f.k] !== '').map(f => `${bsFieldLabel(b, f.k)} ${Number(r[f.k]).toLocaleString('en-US')} ${U[f.k]}`), r.status].filter(Boolean).join(' · '), r.status === 'Alarm'); });
+  blowLog().filter(r => (r.date || r.day) === day).forEach(r => push(r.time, 'Blow-off', r.valve === 'Open' ? '◯ Open' : '● Closed', `Marked spoke at ${r.clock || '—'} o'clock`));
+  const b = w.boiler || {}; const bl = [['Pressure', b.pressure], ['Water', b.water], ['Fuel', b.fuel], ['Incidents', b.incidents]].filter(x => x[1] && String(x[1]).trim()); if (bl.length) push(b.time, 'Boiler log', 'Log entry', bl.map(x => x[0] + ': ' + x[1]).join(' · '), !!b.incidents);
+  if ((w.notes || '').trim()) push('', 'Notes', 'Day notes', w.notes.trim());
+  return ev.sort((x, y) => (x.t ? 0 : 1) - (y.t ? 0 : 1) || x.t.localeCompare(y.t));
+}
+function readoutSections(day) {
+  const W = getWork(), w = W[day] || {}, cl = w.checklist || {}, S = [], items = getChecklist(), p = checklistProgress(day, W);
+  S.push({ title: `Timeline · ${readoutEvents(day).length} entries`, col: 0, cols: [{ h: 'Time', w: .1 }, { h: 'Type', w: .13 }, { h: 'Entry', w: .27 }, { h: 'Details', w: .5 }], rows: readoutEvents(day).map(e => ({ cells: [e.t || '—', e.cat, e.what, e.det], flag: e.flag })) });
+  const steps = [], ms = items.filter(isMeter); let mDone = false;
+  items.forEach(it => { if (isMeter(it)) { if (it === ms[0]) { const f = ms.filter(m => meterFilled(cl[m.id], m)).length; mDone = f === ms.length; steps.push({ cells: [(f === ms.length ? '✓ ' : '✗ ') + 'Meter readings', `${f}/${ms.length}`], flag: f < ms.length }); } return; } const r = cl[it.id] || {}; steps.push({ cells: [(r.done ? '✓ ' : '✗ ') + it.label, taskTime(r) || ''], flag: !r.done }); });
+  S.push({ title: `Checklist · ${p.done}/${p.total} steps`, col: 1, cols: [{ h: 'Step', w: .75 }, { h: 'Time', w: .25 }], rows: steps });
+  S.push({ title: 'Meters', col: 1, cols: [{ h: 'Meter', w: .34 }, { h: 'Reading @ time', w: .33 }, { h: 'Used / Ran', w: .33 }], rows: ms.map(it => { const r = cl[it.id] || {}, v = (r.values || {})[meterKey(it)], st = readStamp(it.id, day, W), c = v != null ? meterCompare(it.id, day, W) : null;
+    return { cells: [it.label, v != null ? `${fmtM(it, v)}${st.time ? ' @ ' + (st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : '') + st.time : ''}` : (r.done ? '✓ ' + (r.note || '') : '—'), c ? (c.inf.usage < 0 ? '! ' : '') + c.short : ''], flag: c && (c.flag || c.inf.usage < 0) }; }) });
+  const ws = items.find(i => i.sections); if (ws) { const r = cl[ws.id] || {}, v = r.values || {}; const rows = ws.sections.map(sec => { const fs = ws.fields.filter(f => f.sec === sec.id && v[f.key] != null); return fs.length ? { cells: [sec.label, fs.map(f => `${f.label} ${Number(v[f.key]).toLocaleString('en-US', { maximumFractionDigits: 3 })}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · '), ((r.sec || {})[sec.id] || {}).time || ''], flag: fs.some(f => outOfRange(f, v[f.key])) } : null; }).filter(Boolean);
+    S.push({ title: 'Water tests', col: 1, cols: [{ h: 'Section', w: .25 }, { h: 'Results', w: .6 }, { h: 'Time', w: .15 }], rows: rows.length ? rows : [{ cells: ['—', 'No water tests logged', ''] }] }); }
+  const B = getBoilers(), U = bsUnits(); S.push({ title: 'Boilers', col: 1, cols: [{ h: 'Boiler', w: .22 }, { h: 'Latest that day', w: .63 }, { h: 'Logs', w: .15 }], rows: B.map(b => { const l = bsReadings(b.id).filter(r => (r.date || r.day) === day); const last = {}; l.forEach(r => { BS_FIELDS.forEach(f => { if (r[f.k] != null && r[f.k] !== '') last[f.k] = r[f.k] + ' ' + U[f.k] + ' @' + (r.time || ''); }); if (r.status) last.status = r.status; });
+    return { cells: [b.name, l.length ? [...BS_FIELDS.filter(f => last[f.k]).map(f => `${bsFieldLabel(b, f.k)} ${last[f.k]}`), last.status].filter(Boolean).join(' · ') : 'No readings', String(l.length)], flag: last.status === 'Alarm' }; }) });
+  const bo = blowLog().filter(r => (r.date || r.day) === day), cur = blowLog().filter(r => (r.date || r.day) <= day).pop();
+  S.push({ title: 'Blow-off changes', col: 1, cols: [{ h: 'Time', w: .2 }, { h: 'Valve', w: .4 }, { h: 'Marked spoke', w: .4 }], rows: bo.length ? bo.map(r => ({ cells: [r.time || '', r.valve, (r.clock || '—') + " o'clock"] })) : [{ cells: ['—', cur ? `No change (${cur.valve})` : 'Not set', cur ? cur.clock + " o'clock" : ''] }] });
+  const tasks = pmActive().map(t => ({ t, st: pmStatus(t, day, W), r: (w.pm || {})[t.id] })).filter(x => (x.r && x.r.done) || !x.st.done);
+  S.push({ title: 'Tasks / PM', col: 1, cols: [{ h: 'Task', w: .6 }, { h: 'Status', w: .4 }], rows: tasks.length ? tasks.map(({ t, st, r }) => ({ cells: [t.name, r && r.done ? `✓ Done ${r.time || ''}` : st.overdue ? `! Overdue ${st.overdue}d` : 'Due'], flag: !(r && r.done) && st.overdue })) : [{ cells: ['Nothing due', ''] }] });
+  const ao = getAocs().filter(a => !a.kind && aocOccs(a).some(o => o.date === day)); const open = getAocs().filter(a => !a.kind && a.status !== 'Resolved');
+  S.push({ title: 'AOCs', col: 1, cols: [{ h: 'AOC', w: .6 }, { h: 'Severity / status', w: .4 }], rows: ao.length ? ao.map(a => ({ cells: [a.title, `${a.severity} · ${a.status}`], flag: a.severity === 'High' && a.status !== 'Resolved' })) : [{ cells: [`None logged · ${open.length} open overall`, ''] }] });
+  return S;
+}
+function readoutCanvases(day) {
+  const S = readoutSections(day), probe = document.createElement('canvas').getContext('2d'), gap = 60, colW = [(PAGE_W - MARGIN * 2 - gap) * .56, (PAGE_W - MARGIN * 2 - gap) * .44], bodyH = PAGE_H - MARGIN * 2 - 380;
+  const wrap = (s, w, f) => { probe.font = f; const out = []; String(s).split('\n').forEach(par => { let cur = ''; par.split(/\s+/).forEach(x => { const t = cur ? cur + ' ' + x : x; if (probe.measureText(t).width > w && cur) { out.push(cur); cur = x; } else cur = t; }); out.push(cur); }); return out.length ? out : ['']; };
+  const lay = fs => { const lh = Math.round(fs * 1.28), hh = Math.round(fs * 1.7), pad = Math.round(fs * .35); return S.map(sec => { const W = colW[sec.col]; const rows = sec.rows.map(r => { const lines = r.cells.map((c, i) => wrap(c, sec.cols[i].w * W - 2 * pad, FONT(fs, i === 0 && sec.col === 0))); const n = Math.max(...lines.map(l => l.length)); return { r, lines, h: n * lh + pad * 2 }; });
+    return { sec, rows, hh, lh, pad, fs, h: hh * 2 + rows.reduce((a, x) => a + x.h, 0) + Math.round(fs * .8) }; }); };
+  let fs = 30, L; for (; fs >= 17; fs -= 1) { L = lay(fs); const h0 = L.filter(x => x.sec.col === 0).reduce((a, x) => a + x.h, 0), h1 = L.filter(x => x.sec.col === 1).reduce((a, x) => a + x.h, 0); if (h0 <= bodyH && h1 <= bodyH) break; }
+  if (fs < 17) { fs = 17; L = lay(fs); }
+  // paginate: summary column on page 1; timeline rows flow across pages
+  const pages = [{ c0: [], c1: L.filter(x => x.sec.col === 1) }]; const tl = L.find(x => x.sec.col === 0); let used = tl.hh * 2, chunk = [];
+  tl.rows.forEach(r => { if (used + r.h > bodyH && chunk.length) { pages[pages.length - 1].c0.push(Object.assign({}, tl, { rows: chunk })); pages.push({ c0: [], c1: [] }); chunk = []; used = tl.hh * 2; } chunk.push(r); used += r.h; });
+  pages[pages.length - 1].c0.push(Object.assign({}, tl, { rows: chunk }));
+  return pages.map((pg, pi) => { const cv = exportPage('Daily status readout', day, day, (ctx, x, y) => {
+      [pg.c0, pg.c1].forEach((col, ci) => { let yy = y; const cx = x + (ci ? colW[0] + gap : 0), W = colW[ci];
+        col.forEach(s => { const { sec, hh, lh, pad } = s; ctx.textBaseline = 'middle';
+          ctx.fillStyle = HEAVY; ctx.fillRect(cx, yy, W, hh); ctx.fillStyle = '#fff'; ctx.font = FONT(Math.round(s.fs * 1.05), true); ctx.textAlign = 'left'; ctx.fillText(sec.title + (pi && ci === 0 ? ' (cont.)' : ''), cx + pad * 2, yy + hh / 2); yy += hh;
+          ctx.fillStyle = NAVY; ctx.fillRect(cx, yy, W, hh); ctx.fillStyle = '#fff'; ctx.font = FONT(s.fs, true); let xx = cx; sec.cols.forEach(c => { ctx.fillText(c.h, xx + pad, yy + hh / 2); xx += c.w * W; }); yy += hh;
+          s.rows.forEach((row, ri) => { ctx.fillStyle = row.r.flag ? AMBER_BG : ri % 2 ? ALT : '#fff'; ctx.fillRect(cx, yy, W, row.h); ctx.fillStyle = GRID; ctx.fillRect(cx, yy + row.h - 2, W, 2);
+            let xx = cx; row.lines.forEach((ls, i) => { ctx.fillStyle = INK; ctx.font = FONT(s.fs, (i === 0 && ci === 0) || (row.r.flag && /!/.test(ls.join(' ')))); ctx.textBaseline = 'top'; ls.forEach((l, j) => ctx.fillText(l, xx + pad, yy + pad + j * lh)); xx += sec.cols[i].w * W; }); yy += row.h; });
+          ctx.fillStyle = HEAVY; ctx.fillRect(cx, yy, W, 3); yy += Math.round(s.fs * .8); }); }); });
+    const ctx = cv.getContext('2d'); ctx.font = FONT(34, true); ctx.fillStyle = INK; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(`Page ${pi + 1} of ${pages.length}`, PAGE_W - MARGIN, PAGE_H - MARGIN + 10); cv.fontPx = fs; return cv; });
+}
+reportCanvases = readoutCanvases;
+function readoutCsv(day) { const q = s => /[",\n]/.test(String(s)) ? '"' + String(s).replace(/"/g, '""') + '"' : String(s); const lines = [['Date', 'Section', 'Col 1', 'Col 2', 'Col 3', 'Col 4', 'Flag']];
+  readoutSections(day).forEach(sec => { lines.push([day, sec.title, ...sec.cols.map(c => c.h), '', '', '', ''].slice(0, 7)); sec.rows.forEach(r => lines.push([day, sec.title.split(' ·')[0], ...r.cells, ...Array(4 - r.cells.length).fill(''), r.flag ? '!' : ''].map(x => String(x).replace(/(\d),(?=\d{3}\b)/g, '$1')))); });
+  return '\uFEFF' + lines.map(l => l.map(q).join(',')).join('\r\n'); }
+async function readoutExport(kind) { const day = reportDay || ymd(new Date()), base = `NWH-Daily-Status-${day}`;
+  if (kind === 'csv') { const f = new File([readoutCsv(day)], base + '.csv', { type: 'text/csv' }); const how = await shareOrDownload([f]); if (how !== 'cancelled') toast('CSV ' + how); return [f.name]; }
+  if (kind === 'print') { const cvs = readoutCanvases(day); let pa = document.getElementById('printArea'); if (!pa) { pa = document.createElement('div'); pa.id = 'printArea'; document.body.appendChild(pa); }
+    pa.innerHTML = cvs.map(c => `<img src="${c.toDataURL('image/png')}" alt="Daily status readout page">`).join(''); document.body.classList.add('printing'); setTimeout(() => { window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); }, 80); return; }
+  return shareCanvases(readoutCanvases(day), base, kind); }
+
+/* ---------- Restore from backup: file picker → preview → confirm (snapshot first) ---------- */
+let restorePending = null;
+function restorePick(input) { const file = input.files && input.files[0]; if (!file) return; const rd = new FileReader();
+  rd.onload = () => { let p; try { p = JSON.parse(rd.result); } catch (e) { toast('That file is not valid JSON'); input.value = ''; return; }
+    if (!p || typeof p.data !== 'object' || (p.app !== APP_ID && p.app !== 'hopps-invoices')) { toast('Not an NWH Log or Hopp backup file'); input.value = ''; return; }
+    const fromH = p.app === 'hopps-invoices', data = fromH ? fromHopp(p.data) : p.data, W = data.nwhWork || {}, days = Object.keys(W).sort(), c = countsOf(data);
+    const vals = Object.values(W).reduce((a, w) => a + Object.values(w.checklist || {}).reduce((b, r) => b + Object.keys(r.values || {}).length, 0), 0);
+    restorePending = { data, fromH, name: file.name }; input.value = '';
+    const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open');
+    m.innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>Restore from backup</b><button class="small secondary" onclick="restorePending=null;padClose()">✕</button></div>
+      <div class="card rs-prev"><div class="kv"><span>File</span><b>${esc(file.name)}</b></div><div class="kv"><span>Type</span><b>${fromH ? 'Hopp (work data only)' : 'NWH Log'}</b></div>
+        <div class="kv"><span>Exported</span><b>${p.exported ? new Date(p.exported).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) : '—'}</b></div>
+        <div class="kv"><span>Date range</span><b>${days.length ? mdy(days[0]) + ' – ' + mdy(days[days.length - 1]) : '—'}</b></div><div class="kv"><span>Days logged</span><b>${days.length}</b></div>
+        <div class="kv"><span>Readings / values</span><b>${vals}</b></div><div class="kv"><span>AOCs & history</span><b>${c.aocs}</b></div></div>
+      <p class="rs-warn">! This replaces ALL data on this device. A snapshot of the current data is saved first (More → Restore → snapshots to undo).</p>
+      <div class="pad-nav"><button type="button" class="secondary" onclick="restorePending=null;padClose()">Cancel</button><button type="button" class="pad-next danger-btn" onclick="restoreConfirm()">Restore ${days.length} days</button></div></div>`; };
+  rd.readAsText(file); }
+async function restoreConfirm() { const r = restorePending; if (!r) return; await takeSnapshot('pre-restore', true); applyData(r.data); restorePending = null; padClose(); toast(`Backup restored · ${Object.keys(r.data.nwhWork || {}).length} days`); calFocus = new Date(); showScreen('home'); }
+
+/* ---------- hooks ---------- */
+const _renderScreen22 = renderScreen;
+renderScreen = function (id) { _renderScreen22(id); if (id === 'report') { const h = document.querySelector('#report h2'); if (h) h.textContent = '📄 Daily status readout'; } };
+const _refreshDayCell22 = refreshDayCell;
 
 /* ---------- Startup ---------- */
 migrateData();
