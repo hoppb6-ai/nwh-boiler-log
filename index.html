@@ -562,6 +562,12 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 html.dark svg.wheel { filter: invert(1) hue-rotate(180deg); } /* cancel the dark-mode page inversion so the wheel keeps its exact colours */
 html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 .live-t.empty { border-top-color: #C9CED6 !important; background: #FAFBFC !important; } .live-t.empty b { color: #8792A2; } .live-t.empty .live-when { color: #1F3A5F; font-weight: 700; }
+.ver { font-size: 12px; font-weight: 700; color: #3C4654; background: #E4E8EE; border-radius: 6px; padding: 1px 6px; vertical-align: middle; }
+.save-sheet > button, .save-sheet > .file-btn { width: 100%; margin: 6px 0 !important; }
+.ss-save { min-height: 52px; font-size: 17px; }
+.file-btn input[type=file] { font-size: 16px !important; pointer-events: auto !important; }
+.load-bk { border: 2px solid #1F3A5F; background: #F5F8FC; }
+.file-btn input[type=file] { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-sizing: border-box !important; opacity: 0 !important; display: block !important; z-index: 5; cursor: pointer; -webkit-appearance: none; }
 </style>
 </head>
 <body class="locked">
@@ -569,7 +575,7 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 <header id="appHeader">
   <h1 id="appTitle">NWH Log</h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
-  <button onclick="saveFile()" aria-label="Save backup" id="hdrSave">💾 Save</button>
+  <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
 </header>
 
@@ -793,7 +799,7 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
     <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.3 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.4 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2637,7 +2643,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.2.3';
+const APP_VER = '2.2.4';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3751,6 +3757,27 @@ blowSave = function () { const prev = blowNow(), from = prev && prev.clock ? (pr
 const _liveTile25 = liveTile;
 liveTile = function (b, k) { const s = fieldSeries(b.id, k); if (s.length) return _liveTile25(b, k);
   return `<button type="button" class="live-t empty" data-live="${b.id}:${k}" onclick="liveLog('${b.id}','${k}')"><small>${esc(bsFieldLabel(b, k))}</small><b>—</b><span class="live-when">Tap to log</span></button>`; };
+
+/* ===================== v2.2.4: Save sheet with Restore, "Load your backup" card, visible version ===================== */
+const RESTORE_INPUT = id => `<span class="btn-like restore-btn file-btn">⤴ Restore from backup (JSON)<input id="${id}" type="file" aria-label="Restore from backup file" onchange="restorePick(this)"></span>`;
+function saveSheet() {
+  const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open');
+  m.innerHTML = `<div class="pad-wrap save-sheet"><div class="pad-head"><b>Backup <small class="ver">v${APP_VER}</small></b><button class="small secondary" aria-label="Close" onclick="padClose()">✕</button></div>
+    <p class="muted" style="margin:0 0 6px">${esc((document.getElementById('lastSaveInfo') || {}).textContent || '')}</p>
+    <button type="button" class="ss-save" onclick="padClose();saveFile()">💾 Save backup</button>
+    ${RESTORE_INPUT('sheetRestore')}
+    <button type="button" class="secondary" onclick="padClose();showScreen('restore');setTimeout(()=>{const d=document.querySelector('#restore .paste-box');if(d){d.open=true;d.scrollIntoView({block:'center'})}},60)">📋 Paste backup text</button>
+    <button type="button" class="small secondary" onclick="padClose();saveFile(true)">Save As…</button></div>`;
+}
+function loadBackupCardHtml() {
+  const W = getWork(), n = Object.values(W).filter(w => w && !w.isExample && hasWork(w)).length; if (n >= 3) return '';
+  return `<div class="card load-bk" id="loadBackup"><h3>📥 Load your backup</h3><p class="muted">${n ? 'Only ' + n + ' day' + (n > 1 ? 's' : '') + ' on this device.' : 'No data on this device yet.'} Restore your NWH Log backup file (.json) to bring in your logs.</p>
+    ${RESTORE_INPUT('homeRestore')}<button type="button" class="small secondary" onclick="showScreen('restore');setTimeout(()=>{const d=document.querySelector('#restore .paste-box');if(d){d.open=true;d.scrollIntoView({block:'center'})}},60)">📋 Paste backup text instead</button></div>`;
+}
+const _renderScreen26 = renderScreen;
+renderScreen = function (id) { _renderScreen26(id);
+  if (id === 'home') { const old = document.getElementById('loadBackup'); if (old) old.remove(); const h = loadBackupCardHtml(); if (h) document.querySelector('#home .cal-head, #home #calGrid').closest('.card, #home > *').insertAdjacentHTML('beforebegin', h); }
+  if (id === 'more') { const h = document.querySelector('#more h2'); if (h && !h.querySelector('.ver')) h.insertAdjacentHTML('beforeend', ` <small class="ver">v${APP_VER}</small>`); } };
 
 /* ---------- Startup ---------- */
 migrateData();
