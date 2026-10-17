@@ -547,6 +547,18 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .rs-err { background: #FDECEA; border-left: 4px solid #C62828; padding: 10px; font-weight: 700; overflow-wrap: anywhere; }
 #pasteText { width: 100%; min-height: 110px; font: 12px ui-monospace, Menlo, monospace; box-sizing: border-box; }
 .upd-bar { position: fixed; left: 8px; right: 8px; top: calc(env(safe-area-inset-top) + 8px); z-index: 9999; width: auto !important; background: #F2A900 !important; color: #222 !important; font-weight: 800; border-radius: 12px; min-height: 48px; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.ds-nav { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; gap: 6px; } .ds-nav h2 { text-align: center; margin: 0; font-size: 19px; }
+.ds-nav button { width: 48px !important; min-height: 44px !important; margin: 0 !important; padding: 0 !important; font-size: 22px; }
+.ds-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; } .ds-acts button { margin: 0 !important; min-width: 0; }
+.ds-card h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; } .ds-card.ok { border-left: 5px solid #2E7D32; } .ds-card.amber { border-left: 5px solid #F2A900; }
+.ds-badge { margin-left: auto; font-size: 14px; padding: 2px 9px; border-radius: 10px; color: #fff; } .ds-badge.ok { background: #2E7D32; } .ds-badge.amber { background: #F2A900; color: #222; } .ds-badge.bad { background: #C62828; }
+.ds-rows .ds-row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 4px; border-bottom: 1px solid #C9CED6; } .ds-rows .ds-row:nth-child(even) { background: #F2F4F7; }
+.ds-row.flag { background: #FFF1C2 !important; font-weight: 700; } .ds-k { min-width: 0; overflow-wrap: anywhere; } .ds-v { text-align: right; min-width: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; color: #3C4654; }
+.ds-meters { display: grid; grid-template-columns: 1fr; } .ds-m { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 8px; padding: 6px 4px; border-bottom: 1px solid #C9CED6; } .ds-m:nth-child(even) { background: #F2F4F7; }
+.ds-m small { grid-column: 1 / -1; color: #3C4654; } .ds-m.flag { background: #FFF1C2 !important; } .ds-m.flag small { font-weight: 800; color: #6B4E00; } .ds-m .num { text-align: right; font-variant-numeric: tabular-nums; }
+.ds-sub { font-weight: 800; margin: 10px 0 2px; color: #1F3A5F; } .ds-empty { text-align: center; padding: 18px; } .ds-empty b { font-size: 20px; }
+.dot.flag { width: auto !important; height: auto !important; background: none !important; color: #B36B00; font: 900 10px/1 system-ui; font-style: normal; }
+.dot.pmover { background: #C62828; border-radius: 50%; box-shadow: 0 0 0 2px #fff inset; }
 </style>
 </head>
 <body class="locked">
@@ -576,7 +588,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
   <div class="card">
     <div class="cal-head"><button class="small secondary" onclick="calMove(-1)" aria-label="Previous month">‹</button><h3 id="calTitle"></h3><button class="small secondary" onclick="calMove(1)" aria-label="Next month">›</button></div>
     <div class="cal-grid" id="calGrid"></div>
-    <div class="legend"><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot chem"></i> chemical</span><span><i class="dot pm"></i> PM done</span><span><i class="dot pmdue"></i> PM due</span><span><i class="dot note"></i> notes</span></div>
+    <div class="legend"><span><i class="dot ck full"></i> checklist</span><span><i class="dot aoc"></i> AOC</span><span><i class="dot chem"></i> chemical</span><span><i class="dot pm"></i> PM done</span><span><i class="dot pmdue"></i> PM due</span><span><i class="dot pmover"></i> PM overdue</span><span><i class="dot flag">!</i> flag</span><span><i class="dot note"></i> notes</span></div>
     <div class="cal-tools"><button class="small secondary" onclick="calToday()">Today</button><button class="small" onclick="openDay(ymd(new Date()))">＋ Log today</button></div>
   </div>
   <div id="homeBoilers"></div>
@@ -778,7 +790,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
     <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.2 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -816,6 +828,11 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
   </div>
 </div>
 <!-- Daily report -->
+<div id="dayStatus" class="screen">
+  <div class="ds-nav"><button class="secondary" aria-label="Previous day" onclick="statusShift(-1)">‹</button><h2 id="dsTitle">Day status</h2><button class="secondary" aria-label="Next day" onclick="statusShift(1)">›</button></div>
+  <div class="ds-acts"><button class="secondary" onclick="openReport(statusDay)">📄 Daily status sheet</button><button id="dsEdit" class="ds-edit secondary" onclick="openDay(statusDay)">✎ Edit log</button></div>
+  <div id="dsBody"></div>
+</div>
 <div id="report" class="screen">
   <div class="scr-head"><h2>📄 Daily status readout</h2></div>
   <div class="card">
@@ -949,7 +966,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
   renderScreen(id);
-  const tabFor = { home: 'home', dayEditor: 'home', daily: 'daily', meters: 'meters', aocs: 'aocs', aocEdit: 'aocs', more: 'more', restore: 'more', notes: 'more', boiler: 'more', pm: 'more', pmTasks: 'more' };
+  const tabFor = { home: 'home', dayEditor: 'home', dayStatus: 'home', daily: 'daily', meters: 'meters', aocs: 'aocs', aocEdit: 'aocs', more: 'more', restore: 'more', notes: 'more', boiler: 'more', pm: 'more', pmTasks: 'more' };
   document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === tabFor[id]));
   updateSaveUI(); updateExampleUI();
 }
@@ -1031,7 +1048,7 @@ function renderHome() {
   const days = new Date(y, m + 1, 0).getDate();
   for (let d = 1; d <= days; d++) {
     const key = ymd(new Date(y, m, d));
-    html += `<div class="cal-day${key === today ? ' today' : ''}" data-day="${key}" onclick="openDay('${key}')">${d}<div class="dots">${dayDots(key, ctx)}</div></div>`;
+    html += `<div class="cal-day${key === today ? ' today' : ''}" data-day="${key}" onclick="openStatus('${key}')">${d}<div class="dots">${dayDots(key, ctx)}</div></div>`;
   }
   document.getElementById('calGrid').innerHTML = html;
   // summaries
@@ -2617,7 +2634,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.2.1';
+const APP_VER = '2.2.2';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3653,6 +3670,55 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     reg.addEventListener('updatefound', () => { const n = reg.installing; n && n.addEventListener('statechange', () => { if (n.state === 'installed' && navigator.serviceWorker.controller) swBanner(reg); }); });
     reg.update().catch(() => {}); document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
 }
+
+/* ===================== v2.2.2: read-only Day status view (calendar tap), richer calendar markers ===================== */
+let statusDay = null;
+function openStatus(day) { statusDay = day; showScreen('dayStatus'); }
+function statusShift(n) { openStatus(ymd(addDays(parseYmd(statusDay), n))); }
+function dsRows(rows, cols) { return `<div class="ds-rows">${rows.map(r => `<div class="ds-row${r.flag ? ' flag' : ''}">${r.cells.map((c, i) => `<span class="${i ? 'ds-v' : 'ds-k'}${cols && cols[i] && cols[i].num ? ' num' : ''}">${esc(String(c))}</span>`).join('')}</div>`).join('')}</div>`; }
+function dsCard(title, body, cls) { return `<div class="card ds-card ${cls || ''}"><h3>${title}</h3>${body}</div>`; }
+function dsPm(day) {
+  const W = getWork(), w = W[day] || {}, rec = w.pm || {}, rows = [], up = [];
+  pmActive().forEach(t => { const r = rec[t.id], st = pmStatus(t, day, W);
+    if (r && r.done) rows.push({ cells: [t.name, `✓ Done ${r.time || ''}${r.value != null && r.value !== '' ? ' · ' + r.value + (t.value && t.value.unit ? ' ' + t.value.unit : '') : ''}`], cls: 'ok' });
+    else if (!st.done) rows.push({ cells: [t.name, st.overdue ? `! Overdue ${st.overdue}d` : 'Due'], flag: st.overdue > 0, cls: st.overdue ? 'bad' : 'due' });
+    else if (st.next && st.next > day && dDiff(day, st.next) <= 7) up.push({ cells: [t.name, `${mdy(st.next).slice(0, 5)} · in ${dDiff(day, st.next)}d`] }); });
+  up.sort((a, b) => a.cells[1].localeCompare(b.cells[1]));
+  return { html: (rows.length ? dsRows(rows) : '<p class="muted">Nothing due.</p>') + (up.length ? `<p class="ds-sub">Upcoming (next 7 days)</p>${dsRows(up)}` : ''), any: rows.length };
+}
+function renderDayStatus() {
+  const day = statusDay || ymd(new Date()), today = ymd(new Date()), W = getWork(), w = W[day], ev = readoutEvents(day);
+  document.getElementById('dsTitle').textContent = niceDate(day);
+  document.getElementById('dsEdit').className = day === today ? 'ds-edit primary' : 'ds-edit secondary';
+  document.getElementById('dsEdit').textContent = day === today ? '✎ Edit today’s log' : '✎ Edit log';
+  const S = readoutSections(day), sec = t => S.find(s => s.title.startsWith(t)), pm = dsPm(day), out = [];
+  const logged = ev.length > 0 || (w && hasWork(w));
+  if (!logged) { out.push(`<div class="card ds-empty"><b>Nothing logged</b><p class="muted">${day > today ? 'Future day.' : 'No checklist, readings or notes for this day.'}</p></div>`); out.push(dsCard('🛠️ Tasks / PM', pm.html)); }
+  else {
+    const p = checklistProgress(day, W), ck = sec('Checklist');
+    out.push(dsCard(`✅ Checklist <span class="ds-badge ${p.done >= p.total ? 'ok' : p.done ? 'amber' : 'bad'}">${p.done}/${p.total}</span>`, dsRows(ck.rows), p.done >= p.total ? 'ok' : 'amber'));
+    const m = sec('Meters'); if (m.rows.some(r => r.cells[1] !== '—')) out.push(dsCard('📟 Meters', `<div class="ds-meters">${m.rows.map(r => `<div class="ds-m${r.flag ? ' flag' : ''}"><b>${esc(r.cells[0])}</b><span class="num">${esc(r.cells[1])}</span><small>${r.flag ? '! ' : ''}${esc(((ev.find(e => e.cat === 'Meter' && e.what === r.cells[0]) || {}).det || '').split(' · ').slice(1).join(' · ').replace(/^! /, '') || r.cells[2])}</small></div>`).join('')}</div>`));
+    const ws = sec('Water tests'); if (ws && ws.rows.some(r => r.cells[0] !== '—')) out.push(dsCard('💧 Water tests', dsRows(ws.rows)));
+    const ch = ev.filter(e => e.cat === 'Chemical'); if (ch.length) out.push(dsCard('🧪 Chemical additions', dsRows(ch.map(e => ({ cells: [`${e.t} ${e.what}`, e.det] })))));
+    const br = ev.filter(e => e.cat === 'Boiler'); if (br.length) out.push(dsCard('🔥 Boiler readings & live values', dsRows(br.map(e => ({ cells: [`${e.t} ${e.what}`, e.det], flag: e.flag })))));
+    const bo = ev.filter(e => e.cat === 'Blow-off'); if (bo.length) out.push(dsCard('🔧 Blow-off changes', dsRows(bo.map(e => ({ cells: [e.t, `${e.what} · ${e.det}`] })))));
+    out.push(dsCard('🛠️ Tasks / PM', pm.html));
+    const ao = ev.filter(e => e.cat === 'AOC' || e.cat === 'Note'); if (ao.length) out.push(dsCard('⚠️ AOCs & history', dsRows(ao.map(e => ({ cells: [`${e.t} ${e.cat === 'AOC' ? 'AOC' : 'Note'}: ${e.what}`, e.det], flag: e.flag })))));
+    const pr = ev.filter(e => e.cat === 'Procedure'); if (pr.length) out.push(dsCard('📋 Procedure runs', dsRows(pr.map(e => ({ cells: [`${e.t} ${e.what}`, e.det] })))));
+    const bl = ev.filter(e => e.cat === 'Boiler log' || e.cat === 'Notes'); if (bl.length) out.push(dsCard('📝 Notes & boiler log', dsRows(bl.map(e => ({ cells: [e.what, e.det], flag: e.flag })))));
+  }
+  document.getElementById('dsBody').innerHTML = out.join('');
+}
+(function dsSwipe() { let x0 = null, y0 = null; document.addEventListener('touchstart', e => { const s = e.target.closest && e.target.closest('#dayStatus'); if (!s || e.target.closest('button,a,input')) { x0 = null; return; } x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null; if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) statusShift(dx < 0 ? 1 : -1); }, { passive: true }); })();
+const _renderScreen24 = renderScreen;
+renderScreen = function (id) { _renderScreen24(id); if (id === 'dayStatus') renderDayStatus(); };
+// calendar markers: flag and PM overdue (today) in addition to the existing ones
+const _dayDots24 = dayDots;
+dayDots = function (key, ctx) { let h = _dayDots24(key, ctx); const w = ctx.work[key];
+  if (w) { try { if (readoutEvents(key).some(e => e.flag)) h += '<i class="dot flag" title="flag">!</i>'; } catch (e) {} }
+  if (key === ymd(new Date()) && (ctx.pm || []).some(t => pmStatus(t, key, ctx.work).overdue > 0 && !(((w || {}).pm || {})[t.id] || {}).done)) h = h.replace('<i class="dot pmdue"></i>', '') + '<i class="dot pmover"></i>';
+  return h; };
 
 /* ---------- Startup ---------- */
 migrateData();
