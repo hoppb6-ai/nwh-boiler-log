@@ -614,6 +614,53 @@ html.dark table.ss tbody tr td, html.dark table.ss .dc, html.dark table.rd td { 
 html.dark .cl-item label, html.dark .cl-item .check, html.dark .cl-item b { color: #E6EAF0 !important; opacity: 1; }
 html.dark .dot.ck, html.dark .dot.pmdue, html.dark .dot.chem { background: #0E1621; }
 html.dark .bs-choice button.on { background: #2F4A70 !important; color: #fff !important; }
+/* ---- v3.0.1 theme variables ---- */
+:root { --bg: #EEF1F5; --surface: #FFFFFF; --surface2: #F2F4F7; --text: #222222; --text2: #3C4654; --border: #C9CED6; --head: #1F3A5F; --flagbg: #FFF1C2; --flagtx: #5A4100; --bad: #B71C1C; --good: #1B5E20; --warnbg: #FFF1C2; }
+html.dark { --bg: #0E1621; --surface: #16202E; --surface2: #1C2838; --text: #E6EAF0; --text2: #BAC5D3; --border: #2C3A4E; --head: #A9C6EC; --flagbg: #4A3A08; --flagtx: #FFE6A0; --bad: #FF9A8F; --good: #8FD694; --warnbg: #3D3209; }
+/* phone spreadsheet cards */
+.ssc { padding: 0 !important; overflow: hidden; } .ssc-h { background: var(--head); color: var(--surface); font-weight: 800; font-size: 16px; padding: 8px 12px; }
+html.dark .ssc-h { background: #24395A; color: #FFFFFF; }
+.ssc-r { display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 15px; }
+.ssc-r.alt { background: var(--surface2); } .ssc-r:last-child { border-bottom: 0; }
+.ssc-k { font-weight: 700; color: var(--text); overflow-wrap: anywhere; } .ssc-vs { text-align: right; min-width: 0; }
+.ssc-v { font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; color: var(--text); } .ssc-v.sub { font-size: 14px; font-weight: 500; color: var(--text2); margin-top: 2px; }
+.ssc-l { color: var(--text2); font-weight: 500; font-size: 13px; }
+.ssc-v.flag { background: var(--flagbg); color: var(--flagtx) !important; border-radius: 4px; padding: 0 4px; font-weight: 800; display: inline-block; } .ssc-v.bad { color: var(--bad) !important; font-weight: 800; } .ssc-v.good { color: var(--good) !important; }
+.ssc.foot .ssc-h { background: #3C4654; } .ssc.foot .ssc-r { background: var(--surface2); }
+/* sheet preview */
+.ss-prev { display: grid; gap: 10px; } .ss-thumb { display: block !important; width: 100% !important; padding: 0 !important; margin: 0 !important; background: var(--surface) !important; border: 1px solid var(--border) !important; border-radius: 10px; overflow: hidden; color: var(--text) !important; min-height: 0 !important; }
+.ss-thumb img { display: block; width: 100%; height: auto; background: #fff; } .ss-thumb span { display: block; padding: 6px; font-size: 14px; font-weight: 700; }
+.pv-wrap { padding: 8px; } .pv-stage { touch-action: pinch-zoom pan-y; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+.pv-img { width: 100%; height: auto; background: #fff; border: 1px solid var(--border); }
+/* ---- dark audit fixes ---- */
+html.dark :is(label, .muted, small, dt, .legend, .legend span, .cal-dow, .ms-cell span, .pad-last, .tl-type, .tl, .places-l, .live-when, .live-t small, .ds-v, .ss-row .k, .ss-card dt, .cl-f, #tabBar span, .live-t .u, .pad-last b) { color: var(--text2) !important; }
+html.dark :is(.ss-gh, .ss-card-h, .mchk, .cl-prog, .pad-step, .pad-name, .link-btn, .now-btn, .cl-n, .stat .v, .v:not(.ssc-v), .dash-v) { color: var(--head) !important; }
+html.dark :is(.sop-txt, .cl-item, .tl-entry, .pm-item, .aoc-card) { color: var(--text); }
+html.dark :is(.ps-cmp, .pm-tag.ok) { color: var(--good) !important; } html.dark .pm-tag.ok { background: #183A1E !important; }
+html.dark :is(.sop-tpl, .sop-caution, .pm-tag.due) { background: var(--warnbg) !important; color: var(--flagtx) !important; }
+html.dark .ss-row, html.dark .ss-card.foot .ss-row { background: var(--surface) !important; color: var(--text); border-color: var(--border) !important; } html.dark .ss-row.alt, html.dark .ss-card.foot .ss-row.alt { background: var(--surface2) !important; }
+html.dark .badge { background: #4A5566; color: #fff; } html.dark .dot.flag { color: #FFC857 !important; }
+html.dark .toast { background: #E6EAF0 !important; color: #0E1621 !important; }
+html.dark .now-btn, html.dark .mchk { background: var(--surface2) !important; }
+html.dark .ver { color: #E6EAF0 !important; } html.dark .restore-btn { color: #C3D8F3 !important; }
+html.dark :is(button.small:not(.secondary):not(.danger), .pad-next, button.primary, .ss-save):not(.on) { background: #2F5A8F !important; color: #fff !important; }
+html.dark button.danger, html.dark .danger-btn, html.dark .small.danger { background: #B3261E !important; color: #fff !important; }
+html.dark .seg button { background: #1C2838 !important; color: var(--text) !important; } html.dark .seg button.on { background: #2F5A8F !important; color: #fff !important; }
+html.dark .seg { background: #111B28 !important; }
+html.dark :is(.bs-st.st-Running, .ds-badge.ok, .mchk.done, .mchk[class*=ok]) { background: #1E6B24 !important; color: #fff !important; }
+html.dark input, html.dark select, html.dark textarea { color: #F0F3F7 !important; }
+html.dark .ws-sec { background: var(--surface2) !important; border-color: var(--border) !important; border-left-color: var(--head) !important; color: var(--text); }
+html.dark :is(.ws-sec .fl, .ws-sec .fu, .ws-sec .tl, .readon span, .tl-entry span:not([class]), .tl-meta, .tl-entry small) { color: var(--text2) !important; }
+html.dark .info-btn { color: var(--head) !important; background: transparent !important; } html.dark span[class="badge"] { background: #4A5566 !important; color: #fff !important; }
+/* light-mode contrast (same variables) */
+:is(.muted, small, .cal-dow, .legend, .legend span, .ssInfo) { color: var(--text2); }
+#tabBar button:not(.on) span, #tabBar button:not(.on) b { color: #4A5566 !important; }
+:is(.mprog.ok, .pm-tag.ok, .ps-cmp) { color: var(--good) !important; } span[class="badge"] { background: #5A6472 !important; }
+.ph { color: #6B7686 !important; } small[class=""], .aoc-card small { color: var(--text2); }
+#tabBar button span { opacity: 1 !important; } .pc-chev { color: var(--text2) !important; } .dot.flag { color: #8A5300 !important; } html.dark .dot.flag { color: #FFC857 !important; }
+.badge.ok { background: #E3F1E4; color: #1B5E20; } html.dark .badge.ok { background: #183A1E; color: #8FD694; }
+html.dark #tabBar button:not(.on) span, html.dark #tabBar button:not(.on) b { color: #BAC5D3 !important; }
+.ssc-at { font-size: 13px; color: var(--text2); font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body class="locked">
@@ -851,7 +898,7 @@ html.dark .bs-choice button.on { background: #2F4A70 !important; color: #fff !im
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.0 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.0.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2696,7 +2743,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.0';
+const APP_VER = '3.0.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3869,6 +3916,39 @@ renderScreen = function (id) { _renderScreen30(id); fabSync();
   if (id === 'aocs') { const h = document.querySelector('#aocs .scr-head h2'); if (h) h.textContent = 'Timeline'; }
   if (id === 'trends') setTimeout(() => {}, 0); };
 document.addEventListener('DOMContentLoaded', fabSync);
+
+/* ===================== v3.0.1: readable phone spreadsheet cards, Sheet preview, dark-mode audit fixes ===================== */
+sheetCardsHtml = function (sp) {
+  const cellCls = c => (c.bg ? ' flag' : '') + (c.color && /c62828|C62828|red/i.test(c.color) ? ' bad' : c.color && /2E7D32/i.test(c.color) ? ' good' : '');
+  const card = (r, foot) => {
+    const blocks = []; let cur = null;
+    r.cells.slice(1).forEach((c, i) => { const col = sp.cols[i + 1]; if (c.t === '' || c.t === '—') return;
+      const g = col.g || ''; if (!g || !cur || cur.g !== g) blocks.push(cur = { g, items: [] }); cur.items.push({ c, col }); });
+    const rows = blocks.map((b, bi) => { const name = b.g || b.items[0].col.h;
+      const vals = b.items.map(({ c, col }, j) => { const lab = b.g && (j > 0 || b.items.length > 1) && !/^(Used|Ran|Read|!)/.test(c.t) ? `<span class="ssc-l">${esc(col.h)}</span> ` : '';
+        const m = /^(.*?) @ (.+)$/.exec(c.t), main = m ? m[1] : c.t, at = m ? `<div class="ssc-at">@ ${esc(m[2])}</div>` : '';
+        return `<div class="ssc-v${j ? ' sub' : ''}${cellCls(c)}">${j ? lab : ''}${c.bg && !/^!/.test(c.t) ? '! ' : ''}${esc(main)}</div>${at}`; }).join('');
+      return `<div class="ssc-r${bi % 2 ? ' alt' : ''}"><div class="ssc-k">${esc(name)}</div><div class="ssc-vs">${vals}</div></div>`; }).join('');
+    const click = !foot && r.id ? `onclick="openAoc('${r.id}')"` : !foot && r.day ? `onclick="openStatus('${r.day}')"` : '';
+    return `<div class="card ss-card ssc${foot ? ' foot' : ''}" ${click}><div class="ssc-h">${esc(r.cells[0].t)}</div>${rows || '<p class="muted">—</p>'}</div>`;
+  };
+  return sp.rows.map(r => card(r)).join('') + sp.foot.map(r => card(r, true)).join('');
+};
+function sheetPreviewHtml(scr, sp) {
+  const cvs = sheetCanvases(sp); window._prevCvs = cvs;
+  return `<div class="ss-prev">${cvs.map((c, i) => `<button type="button" class="ss-thumb" onclick="sheetPreviewOpen(${i})" aria-label="Open page ${i + 1} full screen"><img alt="Sheet page ${i + 1} of ${cvs.length}" src="${c.toDataURL('image/jpeg', .8)}"><span>Page ${i + 1} of ${cvs.length} · tap to enlarge</span></button>`).join('')}</div><p class="muted">Preview of the landscape export (11 × 8.5 in). Exports are full-size.</p>`;
+}
+function sheetPreviewOpen(i) { const cvs = window._prevCvs || [], m = document.getElementById('mpad'); if (!cvs[i]) return; m.hidden = false; document.body.classList.add('pad-open');
+  m.innerHTML = `<div class="pv-wrap"><div class="pad-head"><b>Page ${i + 1} of ${cvs.length}</b><span class="muted">rotate phone or pinch to zoom</span><button class="small secondary" aria-label="Close" onclick="padClose()">✕</button></div>
+    <div class="pv-stage"><img class="pv-img" alt="Sheet page ${i + 1}" src="${cvs[i].toDataURL('image/png')}"></div>
+    <div class="pad-nav pv-nav"><button type="button" class="secondary" ${i ? '' : 'disabled'} onclick="sheetPreviewOpen(${i - 1})">‹ Prev</button><button type="button" class="secondary" ${i < cvs.length - 1 ? '' : 'disabled'} onclick="sheetPreviewOpen(${i + 1})">Next ›</button></div></div>`; pvFit(); }
+function pvFit() { const img = document.querySelector('#mpad .pv-img'), st = document.querySelector('#mpad .pv-stage'); if (!img) return; const W = innerWidth - 16, H = innerHeight - 140, R = 8.5 / 11;
+  if (innerHeight > innerWidth) { const w = Math.min(H, W / R); img.style.cssText = `width:${w}px;height:${w * R}px;max-width:none;transform:rotate(90deg)`; st.style.height = H + 'px'; } else { img.style.cssText = 'width:100%;height:auto;transform:none'; st.style.height = ''; } }
+addEventListener('resize', () => { if (document.querySelector('#mpad .pv-img')) pvFit(); });
+const _renderSheet31 = renderSheet;
+renderSheet = function (scr) { const st = ssSt(scr); if (st.layout !== 'fit' && st.layout !== 'cards') st.layout = 'cards'; _renderSheet31(scr);
+  const box = document.querySelector(`#${scr} .ss-pane`), fb = box.querySelector('.ssLayout button[data-l="fit"]'); if (fb) fb.textContent = '🖼 Sheet preview'; const cb = box.querySelector('.ssLayout button[data-l="cards"]'); if (cb) cb.textContent = '▤ Cards';
+  if (st.layout === 'fit') { const [f, t] = rangeDates(st), sp = buildSheet(scr, f, t, st.desc); if (sp.rows.length) box.querySelector('.ssOut').innerHTML = sheetPreviewHtml(scr, sp); } };
 
 /* ---------- Startup ---------- */
 migrateData();
