@@ -438,8 +438,8 @@ body.in-round #tabBar, body.in-round header, body.in-round .app-header { display
 @keyframes pressed { 0% { transform: scale(1); } 40% { transform: scale(.96); } 100% { transform: scale(1); } } button.pressed { animation: pressed .18s ease-out; }
 @keyframes tapok { 0% { box-shadow: 0 0 0 0 rgba(46,125,50,.55); } 100% { box-shadow: 0 0 0 10px rgba(46,125,50,0); } } .tap-ok { animation: tapok .5s ease-out; }
 /* Dark mode: invert the UI (exports are canvases drawn light and never affected); photos/previews counter-inverted */
-html.dark { filter: invert(.9) hue-rotate(180deg); background: #fff; }
-html.dark .rep-img { filter: invert(1) hue-rotate(180deg); }
+
+
 @media (prefers-reduced-motion: reduce) { button.pressed, .tap-ok { animation: none; } }
 .t24 { font-variant-numeric: tabular-nums; letter-spacing: .02em; } .t24.bad { border-color: #C62828 !important; background: #FDECEC; }
 .tbox:has(.t24) .tph { display: none !important; } .tbox .t24, input.t24 { height: 38px !important; min-height: 38px !important; max-height: 38px; margin-top: 0 !important; margin-bottom: 0 !important; } .tbox .t24 { width: 96px !important; } .tbox .tph { pointer-events: none; }
@@ -540,7 +540,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .bs-row.lh { flex-direction: row; justify-content: space-between; gap: 8px; }
 .bk-card { border-left: 5px solid #1F3A5F; }
 #printArea { display: none; }
-@media print { @page { size: letter landscape; margin: 0; } body.printing > *:not(#printArea) { display: none !important; } body.printing #printArea { display: block; } #printArea img { width: 100%; display: block; page-break-after: always; } html.dark { filter: none !important; } }
+@media print { @page { size: letter landscape; margin: 0; } body.printing > *:not(#printArea) { display: none !important; } body.printing #printArea { display: block; } #printArea img { width: 100%; display: block; page-break-after: always; }  }
 .file-btn { position: relative; display: block; overflow: hidden; }
 .file-btn input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 200px; cursor: pointer; z-index: 2; }
 .rs-err { background: #FDECEA; border-left: 4px solid #C62828; padding: 10px; font-weight: 700; overflow-wrap: anywhere; }
@@ -559,7 +559,7 @@ body.pad-open { overflow: hidden; } body.pad-open #tabBar { display: none !impor
 .dot.flag { width: auto !important; height: auto !important; background: none !important; color: #B36B00; font: 900 10px/1 system-ui; font-style: normal; }
 .dot.pmover { background: #C62828; border-radius: 50%; box-shadow: 0 0 0 2px #fff inset; }
 .wheel-rot { transition: none !important; }
-html.dark svg.wheel { filter: invert(1) hue-rotate(180deg); } /* cancel the dark-mode page inversion so the wheel keeps its exact colours */
+ /* cancel the dark-mode page inversion so the wheel keeps its exact colours */
 html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 .live-t.empty { border-top-color: #C9CED6 !important; background: #FAFBFC !important; } .live-t.empty b { color: #8792A2; } .live-t.empty .live-when { color: #1F3A5F; font-weight: 700; }
 .ver { font-size: 12px; font-weight: 700; color: #3C4654; background: #E4E8EE; border-radius: 6px; padding: 1px 6px; vertical-align: middle; }
@@ -568,6 +568,52 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 .file-btn input[type=file] { font-size: 16px !important; pointer-events: auto !important; }
 .load-bk { border: 2px solid #1F3A5F; background: #F5F8FC; }
 .file-btn input[type=file] { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-sizing: border-box !important; opacity: 0 !important; display: block !important; z-index: 5; cursor: pointer; -webkit-appearance: none; }
+/* ---- v3.0 ---- */
+#homeStats, #homeChecklist, #homeAocs, #home > .btn-row, #home .legend .dot.chem, #home .cal-tools .secondary { display: none !important; }
+.plant-card { padding: 10px 10px 8px; } .pc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .pc-head b { font-size: 17px; } .pc-head small { flex: 1; min-width: 0; } .pc-head button { width: auto !important; margin: 0 !important; }
+.plant-card .live-b { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.plant-card .bs-st { font-size: 13px; padding: 3px 10px !important; border-radius: 12px; }
+.bs-st.st-Running { background: #2E7D32; color: #fff; } .bs-st.st-Banked { background: #F2A900; color: #222; } .bs-st.st-Off { background: #6B7686; color: #fff; } .bs-st.st-Alarm { background: #C62828; color: #fff; }
+.pc-blow { display: flex !important; align-items: center; gap: 10px; width: 100% !important; margin: 6px 0 0 !important; padding: 6px 8px !important; min-height: 0 !important; background: var(--card2, #F5F7FA) !important; color: inherit !important; border: 1px solid var(--grid) !important; border-radius: 12px; text-align: left; }
+.pc-blow .bs-wheel { flex: 0 0 auto; } .pc-bt { display: flex; flex-direction: column; min-width: 0; flex: 1; } .pc-bt b { font-size: 18px; } .pc-chev { font-size: 26px; color: #8792A2; }
+.v-Open { color: #C62828; } .v-Closed { color: #2E7D32; }
+#fab { position: fixed; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 58px !important; height: 58px; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border-radius: 50%; font-size: 32px; line-height: 1; z-index: 60; background: #F2A900 !important; color: #222 !important; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+#fab[hidden], .pad-open #fab { display: none !important; }
+.fs-h { font-weight: 800; margin: 10px 0 4px; color: var(--navy-ink, #1F3A5F); } .fs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .fs-grid button { margin: 0 !important; min-height: 56px; font-size: 16px; }
+.more-grp { margin-top: 10px; } .more-grp > summary { font-weight: 800; font-size: 17px; cursor: pointer; padding: 4px 0; } .grp-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .grp-btns button { margin: 0 !important; min-width: 0; }
+.screen { padding-bottom: 90px; }
+/* ---- true dark theme (no invert filter; exports are canvases drawn light) ---- */
+html.dark { color-scheme: dark; --cream: #0E1621; --light: #1A2433; --grid: #2C3A4E; --charcoal: #E6EAF0; --card2: #1A2433; --navy-ink: #9DBCE6; background: #0E1621; }
+html.dark body { background: #0E1621; color: #E6EAF0; }
+html.dark .card, html.dark details.card, html.dark .ss-card, html.dark .cal-day, html.dark .pad-wrap .card, html.dark .chem-entry, html.dark .cl-item, html.dark .pm-due, html.dark .tl-entry, html.dark .sop-step { background: #16202E !important; border-color: #2C3A4E !important; color: #E6EAF0; }
+html.dark .cal-day.empty { background: transparent !important; } html.dark .cal-day.today { border-color: #F2A900 !important; color: #F2C14E; }
+html.dark .mpad, html.dark #lock, html.dark .lock { background: #0E1621 !important; color: #E6EAF0; }
+html.dark input, html.dark select, html.dark textarea { background: #0E1621 !important; color: #E6EAF0 !important; border-color: #3A4A60 !important; }
+html.dark button.secondary, html.dark .secondary { background: #24334A !important; color: #E6EAF0 !important; }
+html.dark .muted, html.dark small, html.dark .live-when, html.dark .live-t small, html.dark .ds-v, html.dark .ds-m small { color: #A3AFBF !important; }
+html.dark h1, html.dark h2, html.dark h3, html.dark .live-b, html.dark .ds-sub, html.dark .fs-h, html.dark .dial-n { color: #DCE6F3; }
+html.dark #tabBar { background: #111B28 !important; border-color: #2C3A4E !important; } html.dark #tabBar button { color: #A3AFBF !important; } html.dark #tabBar button.on { color: #F2C14E !important; }
+html.dark #appHeader { background: #0B1420 !important; }
+html.dark .live-t { background: #16202E !important; color: #E6EAF0 !important; border-color: #2C3A4E !important; } html.dark .live-t.stale { background: #2A2410 !important; } html.dark .live-t.empty { background: #121B27 !important; border-top-color: #2C3A4E !important; } html.dark .live-t.empty .live-when { color: #9DBCE6 !important; } html.dark .live-t .arr { color: #9DBCE6; } html.dark .live-t .u { color: #A3AFBF; }
+html.dark svg.spark polyline { stroke: #9DBCE6 !important; } html.dark svg.spark circle { fill: #9DBCE6 !important; }
+html.dark .stale-tag, html.dark .rs-warn { background: #3A2F0A !important; color: #F5D67A !important; } html.dark .rs-err { background: #3A1414 !important; color: #FFB4AB; }
+html.dark .ds-rows .ds-row:nth-child(even), html.dark .ds-m:nth-child(even), html.dark .bs-row:nth-child(even), html.dark tr:nth-child(even) td { background: #1A2433 !important; }
+html.dark .ds-row, html.dark .ds-m, html.dark .bs-row, html.dark td, html.dark th, html.dark .rs-prev .kv { border-color: #2C3A4E !important; }
+html.dark .ds-row.flag, html.dark .ds-m.flag, html.dark .flag-row { background: #3A300C !important; color: #F5E3A6; }
+html.dark .info-note { background: #1A2433; color: #C9D3E0; border-left-color: #9DBCE6; }
+html.dark .dial { background: radial-gradient(circle, #16202E 0 58%, #1A2433 58% 100%); border-color: #9DBCE6; } html.dark .dial-n { background: #16202E !important; color: #DCE6F3 !important; border-color: #5B7BA6 !important; } html.dark .dial-n.on { background: #F2A900 !important; color: #222 !important; }
+html.dark .pc-blow { background: #1A2433 !important; } html.dark .v-Open { color: #FF8A80; } html.dark .v-Closed { color: #81C784; }
+html.dark .ex-banner, html.dark .save-banner { background: #2A2410 !important; color: #F5E3A6; }
+html.dark .ver { background: #24334A; color: #DCE6F3; } html.dark .load-bk { background: #16202E !important; border-color: #5B7BA6 !important; }
+html.dark .restore-btn { background: #16202E; color: #9DBCE6; border-color: #9DBCE6; }
+html.dark .rep-img, html.dark .ss-scale img, html.dark canvas.sheet { filter: none !important; }
+html.dark .seg button.on, html.dark .seg button[aria-pressed=true] { background: #2F4A70 !important; color: #fff !important; }
+html.dark .ms-cell, html.dark .mprog, html.dark .pad-disp, html.dark .pk, html.dark .pad-sum-row, html.dark .bs-choice button:not(.on), html.dark .round-card, html.dark .aoc-card, html.dark .pm-item, html.dark .chip, html.dark .stat, html.dark .tile, html.dark .catalogue-item, html.dark .table-wrap, html.dark .seg button.on, html.dark .badge.ex, html.dark .ss-fit, html.dark .round-nav { background: #16202E !important; color: #E6EAF0 !important; border-color: #2C3A4E !important; }
+html.dark .pad-disp { border-color: #9DBCE6 !important; } html.dark .cl-n, html.dark .cal-day.today { color: #F2C14E !important; }
+html.dark table.ss tbody tr td, html.dark table.ss .dc, html.dark table.rd td { background: #16202E !important; color: #E6EAF0; } html.dark table.ss tbody tr:nth-child(even) td { background: #1A2433 !important; }
+html.dark .cl-item label, html.dark .cl-item .check, html.dark .cl-item b { color: #E6EAF0 !important; opacity: 1; }
+html.dark .dot.ck, html.dark .dot.pmdue, html.dark .dot.chem { background: #0E1621; }
+html.dark .bs-choice button.on { background: #2F4A70 !important; color: #fff !important; }
 </style>
 </head>
 <body class="locked">
@@ -638,9 +684,9 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 
 <!-- Daily checklist -->
 <div id="daily" class="screen">
-  <div class="scr-head"><h2>Daily checklist</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('daily','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('daily','sheet')">📊 Spreadsheet</button></div></div>
+  <div class="scr-head"><h2>Today's round</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('daily','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('daily','sheet')">📊 Spreadsheet</button></div></div>
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
-  <div class="ed-pane"><div class="btn-row"><button class="small" onclick="startRound(edDay)">▶ Round mode</button><button class="small secondary" onclick="openReport(edDay)">📄 Daily status</button></div><div id="dailyNav"></div><div class="card" id="dailyBody"></div><div class="card" id="dailyAocs"></div></div>
+  <div class="ed-pane"><div class="btn-row"><button class="small" onclick="startRound(edDay)">▶ Guided</button><button class="small secondary" onclick="openReport(edDay)">📄 Daily status</button></div><div id="dailyNav"></div><div class="card" id="dailyBody"></div><div class="card" id="dailyAocs"></div></div>
   <div class="ss-pane"></div>
 </div>
 
@@ -654,8 +700,8 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 
 <!-- AOCs -->
 <div id="aocs" class="screen">
-  <div class="scr-head"><h2>AOCs</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('aocs','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('aocs','sheet')">📊 Spreadsheet</button></div></div>
-  <p class="muted" style="margin-top:-4px">Operations history · AOCs, notes and procedure runs</p>
+  <div class="scr-head"><h2>Timeline</h2><div class="seg mini vt"><button data-v="editor" onclick="setView('aocs','editor')">✏️ Editor</button><button data-v="sheet" onclick="setView('aocs','sheet')">📊 Spreadsheet</button></div></div>
+  <p class="muted" style="margin-top:-4px">AOCs, notes and procedure runs</p>
   <div class="ex-banner"><span>📘 Includes example data</span><button class="small secondary" onclick="removeExamples()">Remove</button></div>
   <div class="ed-pane">
     <div class="seg mini" id="aocModeSeg"><button data-m="timeline" onclick="setAocMode('timeline')">🕘 Timeline</button><button data-m="library" onclick="setAocMode('library')">📚 Library</button></div>
@@ -766,7 +812,12 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
     <p class="muted">Save writes a full backup file (on iPhone choose “Save to Files”). Restore shows a preview and asks before replacing anything; a snapshot is taken first.</p>
   </div>
 
-  <div class="btn-row"><button class="secondary" onclick="showScreen('boiler')">🔥 Boiler log</button><button class="secondary" onclick="showScreen('pm')">🛠️ Scheduled tasks / PM</button><button class="secondary" onclick="showScreen('sops')">📋 Procedures</button><button class="secondary" onclick="showScreen('bstat')">🔥 Boiler status</button><button class="secondary" onclick="showScreen('pmTasks')">⚙️ Manage scheduled tasks</button><button class="secondary" onclick="showScreen('notes')">🔎 Notes</button></div>
+  <div class="card more-grp"><h3>📋 Procedures</h3><div class="grp-btns"><button class="secondary" onclick="showScreen('sops')">Procedures</button><button class="secondary" onclick="showScreen('aocs');setAocMode('timeline')">Run history</button></div></div>
+  <div class="card more-grp"><h3>🛠️ PM / Tasks</h3><div class="grp-btns"><button class="secondary" onclick="showScreen('pm')">PM status</button><button class="secondary" onclick="showScreen('pmTasks')">Manage tasks</button></div></div>
+  <div class="card more-grp"><h3>📒 Logs</h3><div class="grp-btns"><button class="secondary" onclick="showScreen('bstat')">Boiler history</button><button class="secondary" onclick="showScreen('boiler')">Boiler log</button><button class="secondary" onclick="showScreen('notes')">🔎 Search</button><button class="secondary" onclick="showScreen('trends')">📈 Trends</button></div></div>
+  <div class="card more-grp"><h3>📤 Exports</h3><div class="grp-btns"><button class="secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button><button class="secondary" onclick="showScreen('meters');setView('meters','sheet')">Meters sheet</button><button class="secondary" onclick="showScreen('daily');setView('daily','sheet')">Checklist sheet</button><button class="secondary" onclick="showScreen('pm');setView('pm','sheet')">PM sheet</button></div><p class="muted">Every 📊 Spreadsheet view exports PNG / PDF / CSV.</p></div>
+  <details class="card more-grp" id="setupGrp"><summary>⚙️ Setup <small class="muted">job, checklist, tests, meters, boilers, units, display</small></summary>
+  <div class="grp-btns"><button class="secondary" onclick="showScreen('bstat');setTimeout(()=>{const d=document.querySelector('#bstat details.card');if(d){d.open=true;d.scrollIntoView()}},60)">Boilers & units</button></div>
   <div class="card">
     <h3>💼 Job</h3>
     <div class="row2">
@@ -795,11 +846,12 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
     <p class="muted">Adds clearly marked example checklists, boiler log entries, meter readings and AOCs so you can try the app. Remove removes only examples.</p>
     <div class="row2"><button class="olive" onclick="loadExamples()">Load example data</button><button class="secondary" onclick="removeExamples()">Remove examples</button></div>
   </div>
+  </details>
   <div class="card"><h3>Display</h3><div class="seg mini" id="themeSeg"><button data-m="auto" onclick="setTheme('auto')">Auto</button><button data-m="light" onclick="setTheme('light')">☀️ Light</button><button data-m="dark" onclick="setTheme('dark')">🌙 Dark</button></div><p class="muted">Auto follows the phone's dark mode. Exports are always printed light.</p>
-    <div class="btn-row"><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>
+</div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v2.2.4 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.0 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -878,11 +930,12 @@ html.dark svg.wheel circle:first-of-type { fill: #E9EDF3; }
 <div id="sopRun" class="screen"><div id="sopRunBody"></div></div>
 <nav id="tabBar">
   <button data-tab="home" onclick="calFocus=new Date();showScreen('home')"><span>📅</span><b>Home</b></button>
-  <button data-tab="daily" onclick="edDay=ymd(new Date());showScreen('daily')"><span>✅</span><b>Checklist</b></button>
+  <button data-tab="daily" onclick="edDay=ymd(new Date());showScreen('daily')"><span>🧭</span><b>Round</b></button>
   <button data-tab="meters" onclick="showScreen('meters')"><span>📟</span><b>Meters</b></button>
-  <button data-tab="aocs" onclick="showScreen('aocs')"><span>⚠️</span><b>AOCs</b></button>
+  <button data-tab="aocs" onclick="showScreen('aocs')"><span>🕘</span><b>Timeline</b></button>
   <button data-tab="more" onclick="showScreen('more')"><span>☰</span><b>More</b></button>
 </nav>
+<button id="fab" type="button" aria-label="Add" onclick="fabMenu()" hidden>＋</button>
 </div>
 <div id="toast" class="toast"></div>
 <script>
@@ -2643,7 +2696,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '2.2.4';
+const APP_VER = '3.0';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -2722,7 +2775,7 @@ function renderTrends() {
   const cv = document.getElementById('trendCv'), wrap = cv.parentElement, dpr = window.devicePixelRatio || 1, w = Math.max(200, wrap.clientWidth), h = Math.round(Math.min(320, w * 0.68));
   cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-  drawChart(ctx, s, 0, 0, w, h, 1, false); // dark mode inverts the whole UI, so draw light
+  drawChart(ctx, s, 0, 0, w, h, 1, isDark()); // dark mode inverts the whole UI, so draw light
   cv.dataset.points = s ? s.pts.length : 0;
   document.getElementById('trendTitle').textContent = s ? `${s.label} · ${mdy(from)} – ${mdy(to)}` : '';
   document.getElementById('trendStats').textContent = trendStats(s);
@@ -3778,6 +3831,44 @@ const _renderScreen26 = renderScreen;
 renderScreen = function (id) { _renderScreen26(id);
   if (id === 'home') { const old = document.getElementById('loadBackup'); if (old) old.remove(); const h = loadBackupCardHtml(); if (h) document.querySelector('#home .cal-head, #home #calGrid').closest('.card, #home > *').insertAdjacentHTML('beforebegin', h); }
   if (id === 'more') { const h = document.querySelector('#more h2'); if (h && !h.querySelector('.ver')) h.insertAdjacentHTML('beforeend', ` <small class="ver">v${APP_VER}</small>`); } };
+
+/* ===================== v3.0: one plant-status card, Round/Timeline tabs, floating ＋, grouped More, true dark theme ===================== */
+const isDark = () => document.documentElement.classList.contains('dark');
+/* ---- Home: calendar + ONE plant status card ---- */
+const _boilerPanelHtml30 = boilerPanelHtml;
+liveStripHtml = function () {
+  return `<div class="live-strip">${getBoilers().map(b => { const st = bsLatest(b.id, 'status'); return `<div class="live-row" data-boiler="${b.id}"><div class="live-b"><span>${esc(b.name)}</span>
+    <button type="button" class="bs-st st-${st ? st.status : 'none'}" onclick="bsStatusQuick('${b.id}')" aria-label="Set ${esc(b.name)} status">${st ? (st.status === 'Alarm' ? '! ' : '') + esc(st.status) : 'Status'}</button></div>
+    <div class="live-tiles">${['press', 'feed', 'temp'].map(k => liveTile(b, k)).join('')}</div></div>`; }).join('')}</div>`;
+};
+function blowRowHtml() { const c = blowNow();
+  return `<button type="button" class="pc-blow" onclick="blowEdit()" aria-label="Blow-off valve: change"><span class="bs-wheel">${wheelSvg(c ? c.clock || 12 : 12, c ? c.valve : '', 72)}</span>
+    <span class="pc-bt"><small>Blow-off</small><b class="bs-vstate v-${c ? c.valve : 'unk'}">${c ? (c.valve === 'Open' ? '◯ OPEN' : '● CLOSED') : '— not set'}</b><small>${c ? `Spoke ${c.clock || '—'} o'clock · ${bsStamp(c).slice(0, 5)} ${c.time || ''}` : 'Tap to set'}</small></span><span class="pc-chev">›</span></button>`; }
+boilerPanelHtml = function (compact) {
+  if (!compact) return _boilerPanelHtml30(compact);
+  return `<div class="card plant-card"><div class="pc-head"><b>Plant status</b><small class="muted">stale after ${staleMin() >= 60 ? staleMin() / 60 + ' h' : staleMin() + ' min'}</small><button class="small secondary" onclick="showScreen('bstat')">History ›</button></div>
+    ${liveStripHtml()}${blowRowHtml()}</div>`;
+};
+/* ---- floating ＋ ---- */
+function fabMenu() { const t = ymd(new Date()), m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open');
+  m.innerHTML = `<div class="pad-wrap fab-sheet"><div class="pad-head"><b>Add</b><button class="small secondary" aria-label="Close" onclick="padClose()">✕</button></div>
+    <p class="fs-h">Reading</p><div class="fs-grid">
+      <button type="button" onclick="padClose();edDay='${t}';showScreen('daily');setTimeout(()=>openMeterPad('${t}'),30)">📟 Meters</button>
+      ${getBoilers().map(b => `<button type="button" onclick="padClose();bsLogOpen('${b.id}')">🔥 ${esc(b.name)}</button>`).join('')}
+      <button type="button" onclick="padClose();blowEdit()">🔧 Blow-off</button></div>
+    <p class="fs-h">Log</p><div class="fs-grid">
+      <button type="button" onclick="padClose();showScreen('aocs');setAocMode('timeline');histFormToggle(true)">📝 Note</button>
+      <button type="button" onclick="padClose();openAoc(null,'${t}')">⚠️ AOC</button>
+      <button type="button" onclick="padClose();edDay='${t}';showScreen('daily');chemAdd('${t}');setTimeout(()=>{const c=document.querySelector('#daily .chem-entry:last-child');c&&c.scrollIntoView({block:'center'})},60)">🧪 Chemical</button>
+      <button type="button" onclick="padClose();showScreen('sops')">📋 Procedure run</button></div></div>`; }
+function fabSync() { const f = document.getElementById('fab'); if (!f) return; const a = (document.querySelector('.screen.active') || {}).id; f.hidden = !['home', 'daily', 'meters', 'aocs'].includes(a); }
+/* ---- tab renames + screen hooks ---- */
+const _renderScreen30 = renderScreen;
+renderScreen = function (id) { _renderScreen30(id); fabSync();
+  if (id === 'daily') { const h = document.querySelector('#daily .scr-head h2'); if (h) h.textContent = edDay === ymd(new Date()) ? "Today's round" : 'Round'; }
+  if (id === 'aocs') { const h = document.querySelector('#aocs .scr-head h2'); if (h) h.textContent = 'Timeline'; }
+  if (id === 'trends') setTimeout(() => {}, 0); };
+document.addEventListener('DOMContentLoaded', fabSync);
 
 /* ---------- Startup ---------- */
 migrateData();
