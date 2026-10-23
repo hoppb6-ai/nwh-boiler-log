@@ -704,6 +704,21 @@ html.dark { --lv-g: #8EE59A; --lv-a: #FFD166; --lv-r: #FF9C94; --lv-gbg: #12301A
 .pc-head > button { white-space: nowrap; }
 .live-t .pbar { width: 100%; flex: 0 0 auto; align-self: stretch; min-width: 90px; }
 .mw-days span.today small { color: #fff !important; opacity: 1; }
+.mt-scope { display: flex; gap: 4px; margin: 0 0 8px; } .mt-scope button { flex: 1; font-size: 16px; min-height: 44px; }
+.mt-scope button.on { background: #1F3A5F; color: #fff; }
+.md-list { display: flex; flex-direction: column; gap: 6px; }
+.md-r { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; background: var(--card, #fff); color: var(--text, #1b2430); border: 1px solid var(--line, #D5DAE1); font-size: 16px; }
+.md-n { display: flex; flex-direction: column; font-weight: 700; min-width: 0; } .md-n small, .md-v small { font-size: 14px; font-weight: 600; color: var(--muted, #4A5563); }
+.md-v { display: flex; flex-direction: column; align-items: flex-end; } .md-v b { font-size: 24px; } .md-r.empty { opacity: .9; }
+.mm-wk { display: grid; gap: 3px; } .mm-wk span { display: flex; flex-direction: column; align-items: center; font-size: 14px; line-height: 1.1; }
+.mm-c { display: flex; align-items: center; justify-content: center; } .fan-low { color: #B3261E; font-weight: 700; }
+html.dark .fan-low { color: #FF8A80; }
+.mw-rng small, .mm-wk small, .mm-wk b { font-size: 14px !important; }
+.md-r, .md-r:disabled { background: #fff; color: #1B2430; border: 1px solid #C9CED6; opacity: 1; }
+.md-r .md-n small, .md-r .md-v small { color: #4A5563; }
+html.dark .md-r, html.dark .md-r:disabled { background: #1A2740; color: #EEF2F7; border-color: #34445E; }
+html.dark .md-r .md-n small, html.dark .md-r .md-v small { color: #B8C2D0; }
+.mw-n small { font-size: 14px !important; }
 </style>
 </head>
 <body class="locked">
@@ -941,7 +956,7 @@ html.dark { --lv-g: #8EE59A; --lv-a: #FFD166; --lv-r: #FF9C94; --lv-gbg: #12301A
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.1.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2786,7 +2801,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.1';
+const APP_VER = '3.1.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3996,7 +4011,7 @@ renderSheet = function (scr) { const st = ssSt(scr); if (st.layout !== 'fit' && 
 // 1. feed rate / wood feed no longer shown anywhere (stored values are kept untouched)
 { const i = BS_FIELDS.findIndex(f => f.k === 'feed'); if (i >= 0) BS_FIELDS.splice(i, 1); }
 const LIM_DEF = { pMin: 60, pIdeal: 70, pAmber: 75, pPrompt: 78, pMax: 80, tAmber: 1000, tMax: 1100, fanMax: 60 };
-const lim = () => Object.assign({}, LIM_DEF, load('nwhSettings', {}).bsLim || {});
+const FAN_CAP = 60; const lim = () => { const L = Object.assign({}, LIM_DEF, load('nwhSettings', {}).bsLim || {}); L.fanMax = FAN_CAP; return L; };
 function pLvl(v) { const L = lim(); if (v == null || v === '' || isNaN(v)) return ''; v = Number(v); return v < L.pMin || v >= L.pMax ? 'r' : v >= L.pAmber ? 'a' : 'g'; }
 function tLvl(v) { const L = lim(); if (v == null || v === '' || isNaN(v)) return ''; v = Number(v); return v >= L.tMax ? 'r' : v >= L.tAmber ? 'a' : 'g'; }
 function pBar(v) { const L = lim(), lo = L.pMin - 10, hi = L.pMax + 10, P = x => Math.max(0, Math.min(100, (x - lo) / (hi - lo) * 100)).toFixed(1);
@@ -4008,9 +4023,9 @@ const steamNow = () => { const l = sysLog('steam'); return l[l.length - 1] || nu
 const fanNow = () => { const l = sysLog('fan'); return l[l.length - 1] || null; };
 function sysAdd(key, rec) { const d = ymd(new Date()), W = getWork(), e = W[d] = W[d] || {}; e[key] = e[key] || []; const r = Object.assign({ id: key + Date.now().toString(36), date: d, time: nowHM() }, rec); e[key].push(r); delete e.isExample; store('nwhWork', W); refreshDayCell(d); return r; }
 function steamToggle(on) { sysAdd('steam', { on: !!on }); toast(on ? '♨ Steamer ON logged' : 'Steamer OFF logged'); bsRefresh(); actRefresh(); }
-const FAN_SEED = { date: '2026-10-22', time: '20:55', hz: 52, note: 'Starting value' };
-function seedFan() { const S = load('nwhSettings', {}); if (S.fanSeeded || sysLog('fan').length) return; const W = load('nwhWork', null) || {}; const e = W[FAN_SEED.date] = W[FAN_SEED.date] || {};
-  e.fan = [Object.assign({ id: 'fan-seed' }, FAN_SEED)]; store('nwhWork', W); S.fanSeeded = true; store('nwhSettings', S); }
+function seedFan() { /* v3.1.1: no seed. Strip only the auto-seeded 52.00 'Starting value' entry. */ const W = load('nwhWork', null); let ch = false;
+  if (W) Object.keys(W).forEach(k => { const e = W[k]; if (!e || !Array.isArray(e.fan)) return; const n = e.fan.filter(f => !(f && f.id === 'fan-seed')); if (n.length === e.fan.length) return; ch = true; if (n.length) e.fan = n; else { delete e.fan; if (!Object.keys(e).length) delete W[k]; } });
+  if (ch) store('nwhWork', W); const S = load('nwhSettings', {}); if ('fanSeeded' in S) { delete S.fanSeeded; store('nwhSettings', S); } }
 const _migrateData34 = migrateData; migrateData = function () { _migrateData34(); seedFan(); };
 const fanBoilerId = () => { const S = load('nwhSettings', {}), B = getBoilers(); return S.fanBoiler || (B.find(b => /sawdust|wood/i.test((b.fuel || '') + ' ' + b.name)) || B[0] || {}).id; };
 const hz = v => Number(v).toFixed(2);
@@ -4020,18 +4035,18 @@ function fanGauge(v, size) { const L = lim(), f = Math.max(0, Math.min(1, (Numbe
   return `<svg class="fan-g" viewBox="0 0 100 58" width="${size || 96}" height="${(size || 96) * .58}" aria-hidden="true"><path d="M10 50 A40 40 0 0 1 90 50" fill="none" stroke="#C9CED6" stroke-width="8" stroke-linecap="round"/>
     ${f > 0 ? `<path d="M10 50 A40 40 0 0 1 ${ex} ${ey}" fill="none" stroke="#2F6FB0" stroke-width="8" stroke-linecap="round"/>` : ''}${ticks}<line x1="50" y1="50" x2="${nx}" y2="${ny}" stroke="#F2A900" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="#F2A900" stroke="#1F3A5F" stroke-width="2"/></svg>`; }
 function fanCardHtml() { const c = fanNow(), last = sysLog('fan').slice(-5).reverse();
-  return `<div class="fan-card"><button type="button" class="fan-main" onclick="fanEdit()" aria-label="Fan speed: adjust">${fanGauge(c ? c.hz : 0)}<span class="fan-t"><small>Fan speed</small><b>${c ? hz(c.hz) : '—'}<span class="u"> Hz</span></b><small>${c ? `${bsStamp(c).slice(0, 5)} ${c.time || ''} · ${agoText(c)}${c.note ? ' · ' + esc(c.note) : ''}` : 'Tap to set'}</small></span><span class="pc-chev">›</span></button>
+  return `<div class="fan-card"><button type="button" class="fan-main" onclick="fanEdit()" aria-label="Fan speed: adjust">${fanGauge(c ? c.hz : 0)}<span class="fan-t"><small>Fan speed</small><b>${c ? hz(c.hz) : '—'}<span class="u"> Hz</span></b><small>${c ? `${bsStamp(c).slice(0, 5)} ${c.time || ''} · ${agoText(c)}${c.note ? ' · ' + esc(c.note) : ''}` : 'Tap to log'}</small>${c && lim().fanMin != null && c.hz < lim().fanMin ? `<small class="fan-low">! Below ${hz(lim().fanMin)} Hz</small>` : ''}</span><span class="pc-chev">›</span></button>
     ${last.length ? `<details class="bs-hist"><summary>Last ${last.length} changes</summary><div class="bs-rows">${last.map(r => `<div class="bs-row"><span class="bs-t">${bsStamp(r)}</span><span><b>${hz(r.hz)} Hz</b>${r.note ? ' · ' + esc(r.note) : ''}</span></div>`).join('')}</div></details>` : ''}</div>`; }
 let fanDraft = null;
-function fanEdit() { const c = fanNow(); fanDraft = c ? Number(c.hz) : 52; const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open'); fanRender(); }
+function fanEdit() { const c = fanNow(); fanDraft = c ? Number(c.hz) : null; const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open'); fanRender(); }
 function fanRender() { document.getElementById('mpad').innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>Fan speed</b><button class="small secondary" aria-label="Close" onclick="fanDraft=null;padClose()">✕</button></div>
-  <div class="fan-ed">${fanGauge(fanDraft, 150)}<div class="fan-ed-row"><button type="button" class="secondary fan-step" onclick="fanStep(-0.5)">−0.5</button>
-  <input id="fanIn" class="fan-in" inputmode="decimal" enterkeyhint="done" aria-label="Fan speed Hz" value="${hz(fanDraft)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');const v=parseFloat(this.value);if(!isNaN(v)){fanDraft=v;document.querySelector('#mpad .fan-ed svg').outerHTML=fanGauge(v,150)}"><span class="u">Hz</span>
-  <button type="button" class="secondary fan-step" onclick="fanStep(0.5)">+0.5</button></div><input id="fanNote" placeholder="Note (optional)" aria-label="Fan note"></div>
-  <p class="muted" style="text-align:center">${(c => c ? `Current ${hz(c.hz)} Hz · ${bsStamp(c)}` : '')(fanNow())}. Saved with the current date and time.</p>
+  <div class="fan-ed">${fanGauge(fanDraft || 0, 150)}<div class="fan-ed-row"><button type="button" class="secondary fan-step" onclick="fanStep(-0.5)">−0.5</button>
+  <input id="fanIn" class="fan-in" inputmode="decimal" enterkeyhint="done" aria-label="Fan speed Hz" value="${fanDraft == null ? '' : hz(fanDraft)}" placeholder="0.00" oninput="this.value=this.value.replace(/[^0-9.]/g,'');const v=parseFloat(this.value);document.getElementById('fanErr').hidden=!(v>60);if(!isNaN(v)&&v<=60){fanDraft=v;document.querySelector('#mpad .fan-ed svg').outerHTML=fanGauge(v,150)}"><span class="u">Hz</span>
+  <button type="button" class="secondary fan-step" onclick="fanStep(0.5)">+0.5</button></div><p id="fanErr" class="oor" hidden><b>Max is 60.00 Hz</b></p><input id="fanNote" placeholder="Note (optional)" aria-label="Fan note"></div>
+  <p class="muted" style="text-align:center">${(c => c ? `Current ${hz(c.hz)} Hz · ${bsStamp(c)}. ` : 'No fan speed logged yet. ')(fanNow())}0–60.00 Hz. Saved with the current date and time.</p>
   <div class="pad-nav"><button type="button" class="secondary" onclick="fanDraft=null;padClose()">Cancel</button><button type="button" class="pad-next" onclick="fanSave()">✓ Save</button></div></div>`; }
-function fanStep(d) { fanDraft = Math.max(0, Math.round((Number(fanDraft) + d) * 100) / 100); document.getElementById('fanIn').value = hz(fanDraft); document.querySelector('#mpad .fan-ed svg').outerHTML = fanGauge(fanDraft, 150); }
-function fanSave() { const v = parseFloat(document.getElementById('fanIn').value); if (isNaN(v)) { toast('Enter Hz'); return; } sysAdd('fan', { hz: Math.round(v * 100) / 100, note: document.getElementById('fanNote').value.trim() }); fanDraft = null; padClose(); toast('Fan speed saved'); bsRefresh(); actRefresh(); }
+function fanStep(d) { fanDraft = Math.min(FAN_CAP, Math.max(0, Math.round((Number(fanDraft) || 0) * 100 + d * 100) / 100)); document.getElementById('fanErr').hidden = true; document.getElementById('fanIn').value = hz(fanDraft); document.querySelector('#mpad .fan-ed svg').outerHTML = fanGauge(fanDraft, 150); }
+function fanSave() { const v = parseFloat(document.getElementById('fanIn').value); if (isNaN(v)) { toast('Enter Hz'); return; } if (v > FAN_CAP) { document.getElementById('fanErr').hidden = false; toast('Max is 60.00 Hz'); return; } sysAdd('fan', { hz: Math.round(v * 100) / 100, note: document.getElementById('fanNote').value.trim() }); fanDraft = null; padClose(); toast('Fan speed saved'); bsRefresh(); actRefresh(); }
 /* ---- Home plant card: press/temp only, colored, range bar, alerts, high-pressure prompt, steamer, fan ---- */
 const LV_TXT = { g: 'ok', a: 'attention', r: 'problem' };
 liveStripHtml = function () { const L = lim(), fb = fanBoilerId(); let prompt = [];
@@ -4054,10 +4069,10 @@ boilerPanelHtml = function (compact) { const h = _boilerPanelHtml34(compact); re
 /* ---- thresholds in Boiler setup ---- */
 const _renderBstatSetup34 = renderBstatSetup;
 renderBstatSetup = function () { _renderBstatSetup34(); const L = lim(), f = (k, l) => `<label>${l}<input type="number" inputmode="decimal" value="${L[k]}" aria-label="${l}" onchange="limSet('${k}',this.value)"></label>`;
-  document.getElementById('bsSetup').insertAdjacentHTML('beforeend', `<h4>Limits &amp; colors</h4><div class="row2">${f('pMin', 'Pressure low (red under)')}${f('pIdeal', 'Pressure ideal')}</div><div class="row2">${f('pAmber', 'Pressure amber from')}${f('pPrompt', 'Steamer/blow-off prompt at')}</div><div class="row2">${f('pMax', 'Pressure red at/over')}${f('tAmber', 'Temp amber from')}</div><div class="row2">${f('tMax', 'Temp limit (red at/over)')}${f('fanMax', 'Fan gauge max (Hz)')}</div>
+  document.getElementById('bsSetup').insertAdjacentHTML('beforeend', `<h4>Limits &amp; colors</h4><div class="row2">${f('pMin', 'Pressure low (red under)')}${f('pIdeal', 'Pressure ideal')}</div><div class="row2">${f('pAmber', 'Pressure amber from')}${f('pPrompt', 'Steamer/blow-off prompt at')}</div><div class="row2">${f('pMax', 'Pressure red at/over')}${f('tAmber', 'Temp amber from')}</div><div class="row2">${f('tMax', 'Temp limit (red at/over)')}<label>Fan low warning (Hz, optional)<input type="number" inputmode="decimal" value="${L.fanMin == null ? '' : L.fanMin}" placeholder="none" aria-label="Fan low warning" onchange="limSet('fanMin',this.value)"></label></div>
     <label>Fan speed shown with<select aria-label="Fan boiler" onchange="(s=>{s.fanBoiler=this.value;store('nwhSettings',s);bsRefresh()})(load('nwhSettings',{}))">${getBoilers().map(b => `<option value="${b.id}"${b.id === fanBoilerId() ? ' selected' : ''}>${esc(b.name)}</option>`).join('')}</select></label>
     <button type="button" class="small secondary" onclick="(s=>{delete s.bsLim;store('nwhSettings',s);renderBstatSetup();bsRefresh()})(load('nwhSettings',{}))">Reset limits to default</button>`); };
-function limSet(k, v) { const S = load('nwhSettings', {}); S.bsLim = Object.assign({}, S.bsLim, { [k]: Number(v) }); store('nwhSettings', S); bsRefresh(); }
+function limSet(k, v) { const S = load('nwhSettings', {}); S.bsLim = Object.assign({}, S.bsLim, { [k]: Number(v) }); if (String(v).trim() === '' || isNaN(Number(v))) delete S.bsLim[k]; store('nwhSettings', S); bsRefresh(); }
 /* ---- readout / timeline / sheets ---- */
 const _readoutEvents34 = readoutEvents;
 readoutEvents = function (day) { const ev = _readoutEvents34(day), L = lim(), B = getBoilers();
@@ -4116,7 +4131,8 @@ function navFix() { const t = document.querySelector('#tabBar button[data-tab="a
     <button class="secondary" onclick="showScreen('aocs');setAocMode('timeline')">Timeline</button><button class="secondary" onclick="showScreen('aocs');setAocMode('library')">AOC library</button>
     <button class="secondary" onclick="actOpen('all')">📖 Activity log</button><button class="secondary" onclick="showScreen('bstat')">Boiler / fan history</button></div></div>`); }
 /* ---- 8. Meters: condensed Mon–Sun week grid ---- */
-let mtWeek = 0;
+let mtWeek = 0, mtMon = 0, mtDay = 0; let mtScope = localStorage.getItem('nwhMtScope') || 'week';
+function mtSet(sc) { mtScope = sc; localStorage.setItem('nwhMtScope', sc); renderMeters(); }
 const abbr = (it, v) => { if (v == null) return ''; const a = Math.abs(v); if (isHourMeter(it)) return Number(v).toFixed(1); return a >= 1e6 ? (v / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e4 ? (v / 1e3).toFixed(a >= 1e5 ? 0 : 1) + 'k' : Math.round(v).toLocaleString('en-US'); };
 const mdyy = d => mdy(d).slice(0, 6) + mdy(d).slice(8);
 function weekDays(off) { const t = new Date(), m = addDays(t, -((t.getDay() + 6) % 7) + off * 7); return [...Array(7)].map((_, i) => ymd(addDays(m, i))); }
@@ -4134,7 +4150,21 @@ function mwDetail(id, d) { const W = getWork(), it = allItemDefs().find(i => i.i
     <div class="pad-nav"><button type="button" class="secondary" onclick="padClose()">Close</button><button type="button" class="pad-next" onclick="padClose();openDay('${d}')">Open day</button></div></div>`; }
 const _renderMeters34 = renderMeters;
 renderMeters = function () { _renderMeters34(); const p = document.querySelector('#meters .ed-pane'); let wk = document.getElementById('mtWeekBox'); if (!wk) { p.insertAdjacentHTML('afterbegin', '<div id="mtWeekBox"></div><details id="mtOne" class="card"><summary>One meter · full history</summary></details>'); wk = document.getElementById('mtWeekBox'); const one = document.getElementById('mtOne'); one.appendChild(document.getElementById('mtItem')); one.appendChild(document.getElementById('mtTable')); }
-  wk.innerHTML = meterWeekHtml(); };
+  const seg = `<div class="seg mt-scope" role="tablist" aria-label="Meters view">${['day', 'week', 'month'].map(k => `<button type="button" role="tab" data-sc="${k}" aria-selected="${mtScope === k}" class="${mtScope === k ? 'on' : ''}" onclick="mtSet('${k}')">${k[0].toUpperCase() + k.slice(1)}</button>`).join('')}</div>`;
+  wk.innerHTML = seg + (mtScope === 'day' ? meterDayHtml() : mtScope === 'month' ? meterMonthHtml() : meterWeekHtml()); };
+const mtItems = W => allItemDefs().filter(it => isMeter(it) && (getChecklist().includes(it) || meterSeries(it.id, W, meterKey(it)).length));
+function meterDayHtml() { const W = getWork(), today = ymd(new Date()), d = ymd(addDays(new Date(), mtDay));
+  return `<div class="mw-head"><button type="button" class="secondary" onclick="mtDay--;renderMeters()" aria-label="Previous day">‹</button><div class="mw-rng"><b>${parseYmd(d).toLocaleDateString('en-US', { weekday: 'short' })} ${mdyy(d)}</b><small>Today ${mdyy(today)}${mtDay ? ` · <button type="button" class="linkish" onclick="mtDay=0;renderMeters()">today</button>` : ''}</small></div><button type="button" class="secondary" onclick="mtDay++;renderMeters()" aria-label="Next day"${mtDay >= 0 ? ' disabled' : ''}>›</button></div>
+  <div class="md-list">${mtItems(W).map(it => { const x = meterSeries(it.id, W, meterKey(it)).find(s => s.day === d), hr = isHourMeter(it), st = x ? readStamp(it.id, d, W) : null;
+    return `<button type="button" class="md-r${x ? '' : ' empty'}" ${x ? `onclick="mwDetail('${it.id}','${d}')"` : 'disabled'}><span class="md-n">${esc(it.label)}<small>${st && st.time ? st.time : x ? '' : 'Not read'}</small></span><span class="md-v"><b>${x ? (x.usage == null ? '—' : (x.usage < 0 ? '!' : '') + abbr(it, x.usage)) : '—'}</b><small>${hr ? 'ran hrs' : 'used'}</small></span></button>`; }).join('')}</div>`; }
+function meterMonthHtml() { const W = getWork(), t = new Date(), m0 = new Date(t.getFullYear(), t.getMonth() + mtMon, 1), m1 = new Date(m0.getFullYear(), m0.getMonth() + 1, 0), a = ymd(m0), z = ymd(m1);
+  const wks = []; let s = addDays(m0, -((m0.getDay() + 6) % 7)); while (ymd(s) <= z) { const e = addDays(s, 6); wks.push([ymd(s) < a ? a : ymd(s), ymd(e) > z ? z : ymd(e)]); s = addDays(s, 7); }
+  const lbl = m0.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), cols = `repeat(${wks.length}, minmax(0, 1fr))`;
+  return `<div class="mw-head"><button type="button" class="secondary" onclick="mtMon--;renderMeters()" aria-label="Previous month">‹</button><div class="mw-rng"><b>${lbl}</b><small>Weekly totals · Today ${mdyy(ymd(t))}${mtMon ? ` · <button type="button" class="linkish" onclick="mtMon=0;renderMeters()">this month</button>` : ''}</small></div><button type="button" class="secondary" onclick="mtMon++;renderMeters()" aria-label="Next month"${mtMon >= 0 ? ' disabled' : ''}>›</button></div>
+  <div class="mw-sticky"><div class="mm-wk" style="grid-template-columns:${cols}">${wks.map(([b, e]) => `<span><b>${Number(b.slice(5, 7))}/${Number(b.slice(8))}</b><small>–${Number(e.slice(8))}</small></span>`).join('')}</div></div>
+  ${mtItems(W).map(it => { const ser = meterSeries(it.id, W, meterKey(it)), hr = isHourMeter(it), tot = wks.map(([b, e]) => { const r = ser.filter(x => x.day >= b && x.day <= e && x.usage != null && x.usage >= 0); return r.length ? r.reduce((q, x) => q + x.usage, 0) : null; }), mt = tot.filter(v => v != null).reduce((q, v) => q + v, 0);
+    return `<div class="mw-m"><div class="mw-n"><b>${esc(it.label)}</b><small>${hr ? 'Ran hrs' : 'Used'} · month ${abbr(it, mt)}</small></div><div class="mw-cells" style="grid-template-columns:${cols}">${tot.map((v, i) => `<span class="mw-c mm-c${v == null ? ' empty' : ''}${ymd(t) >= wks[i][0] && ymd(t) <= wks[i][1] ? ' today' : ''}">${v == null ? '' : abbr(it, v)}</span>`).join('')}</div></div>`; }).join('')}
+  <p class="muted">Each cell = total used / ran that week (within ${lbl}).</p>`; }
 
 /* ===================== v3.0.2: every export is exactly ONE landscape page ===================== */
 const ONE_MIN_FS = 22, ONE_MAX_FS = 34;
