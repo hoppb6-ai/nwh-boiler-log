@@ -733,6 +733,9 @@ html.dark .md-r .md-n small, html.dark .md-r .md-v small { color: #B8C2D0; }
 .eq-close { background: #C62828 !important; color: #fff !important; }
 .eq-timer { margin-top: 10px; text-align: center; padding: 12px; border-radius: 12px; background: #EAF0F7; } .eq-timer span { display: block; font-size: 52px; font-weight: 800; font-variant-numeric: tabular-nums; color: #1F3A5F; } .eq-timer small { font-size: 16px; }
 .eq-ovr { color: #8A5300; font-weight: 700; }
+.eq-chains button { width: 100%; min-height: 56px; font-size: 19px; margin: 6px 0; } .eq-ind { margin: 14px 4px 6px; }
+.eq-sec { margin: 16px 2px 6px; padding: 8px 12px; border-radius: 10px; background: #1F3A5F; color: #fff; font-weight: 800; font-size: 19px; } .eq-sec.skip { background: #FFF4E0; color: #6B4200; border: 1px dashed #B26A00; font-weight: 700; font-size: 17px; }
+html.dark .eq-sec { background: #2A4A75; color: #fff; } html.dark .eq-sec.skip { background: #2E2412; color: #FFD59A; border-color: #FFB74D; }
 .pc-eq .pc-chev { color: inherit !important; } .eq-sh .mchk { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #1F3A5F; color: #fff; font-weight: 800; font-size: 17px; } .eq-step.done .eq-sh .mchk { background: #2E7D32; }
 html.dark .eq-sh .mchk { background: #8FB4E3; color: #0B1420; } html.dark .eq-step.done .eq-sh .mchk { background: #81C784; color: #0B1420; }
 .pc-eq { display: flex !important; align-items: center; justify-content: space-between; width: 100% !important; margin: 8px 0 0 !important; min-height: 48px; font-size: 18px; text-align: left; }
@@ -976,7 +979,7 @@ html.dark .eq-t { color: #C9D3E0; } html.dark .eq-timer { background: #1A2433; }
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.2 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.2.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2824,7 +2827,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.2';
+const APP_VER = '3.2.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4314,8 +4317,13 @@ const EQ_B1_SHUT = { id: 'eq-b1-shutdown', eq: 'b1', kind: 'shutdown', builtin: 
   { text: 'Close blow-off if open.', type: 'blowoff' },
   { text: 'Wait 10 minutes.', type: 'timer', min: 10 },
   { text: 'Turn boiler switch to off.', type: 'afterTimer' }] };
+const EQ_SCR_SHUT = { id: 'eq-scr-shutdown', eq: 'scr', kind: 'shutdown', builtin: true, steps: [{ text: 'Turn drag conveyor switch to off.' }, { text: 'Turn pump switch to off (up-and-down position).' }] };
+const EQ_SCR_START = { id: 'eq-scr-startup', eq: 'scr', kind: 'startup', builtin: true, steps: [{ text: 'Press E-stop button.' }, { text: 'Pull chain to engage exhaust diverter.' }, { text: 'Turn on conveyor switch.' }, { text: 'Turn on pump switch.' }] };
+const EQ_CHAINS = { 'plant-shutdown': { name: 'Plant shutdown (Boiler 1 → Scrubber)', secs: ['eq-b1-shutdown', 'eq-scr-shutdown'] }, 'plant-startup': { name: 'Plant startup (Scrubber → Boiler 1)', secs: ['eq-scr-startup', 'eq-b1-startup'] } };
+const eqRunName = r => EQ_CHAINS[r.pid] ? EQ_CHAINS[r.pid].name : eqName(eqProcs().find(x => x.id === r.pid) || { eq: '', kind: 'shutdown' });
+const eqChainBtns = cls => Object.entries(EQ_CHAINS).map(([k, c]) => `<button type="button" class="${cls || ''}" onclick="eqStart('${k}')">${k === 'plant-shutdown' ? '⏼' : '⏻'} ${esc(c.name)}</button>`).join('');
 function eqProcs() { const s = load('nwhSettings', {}), have = Array.isArray(s.eqProcs) ? s.eqProcs : [], out = [];
-  EQ_LIST.forEach(e => Object.keys(EQ_KIND).forEach(k => { const id = `eq-${e.id}-${k}`; out.push(have.find(p => p.id === id) || (id === EQ_B1_SHUT.id ? JSON.parse(JSON.stringify(EQ_B1_SHUT)) : { id, eq: e.id, kind: k, steps: [] })); })); return out; }
+  EQ_LIST.forEach(e => Object.keys(EQ_KIND).forEach(k => { const id = `eq-${e.id}-${k}`; out.push(have.find(p => p.id === id) || (id === EQ_B1_SHUT.id ? JSON.parse(JSON.stringify(EQ_B1_SHUT)) : id === EQ_SCR_SHUT.id ? JSON.parse(JSON.stringify(EQ_SCR_SHUT)) : id === EQ_SCR_START.id ? JSON.parse(JSON.stringify(EQ_SCR_START)) : { id, eq: e.id, kind: k, steps: [] })); })); return out; }
 function eqSaveProc(p) { const s = load('nwhSettings', {}), l = (Array.isArray(s.eqProcs) ? s.eqProcs : []).filter(x => x.id !== p.id); l.push(p); s.eqProcs = l; store('nwhSettings', s); }
 const eqName = p => { const e = EQ_LIST.find(x => x.id === p.eq) || { name: p.eq }; return `${e.name} ${EQ_KIND[p.kind]}`; };
 const eqGetRun = () => load('nwhSettings', {}).eqRun || null;
@@ -4324,13 +4332,16 @@ const eqStamp = () => { const d = new Date(); return { date: ymd(d), time: nowHM
 const eqWhen = s => s && s.time ? `${mdy(s.date)} ${s.time}` : '';
 function eqLastRun(id) { return getAocs().filter(a => a.kind === 'proc' && a.sopId === id).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time))[0]; }
 function renderEqHome() { const P = eqProcs(), run = eqGetRun();
-  document.getElementById('eqBody').innerHTML = (run ? `<div class="card eq-active"><b>▶ In progress: ${esc(eqName(P.find(p => p.id === run.pid) || { eq: '', kind: 'shutdown' }))}</b><div class="muted">Started ${eqWhen(run.started)}</div><button onclick="showScreen('eqRun')">Resume ›</button></div>` : '') +
+  document.getElementById('eqBody').innerHTML = (run ? `<div class="card eq-active"><b>▶ In progress: ${esc(eqRunName(run))}</b><div class="muted">Started ${eqWhen(run.started)}</div><button onclick="showScreen('eqRun')">Resume ›</button></div>` : '') + `<div class="card eq-chains"><h3>Plant</h3>${eqChainBtns()}<p class="muted">Runs each procedure in order as one logged run. Empty procedures are skipped with a note.</p></div><h3 class="eq-ind">Individual procedures</h3>` +
     EQ_LIST.map(e => `<div class="card eq-card"><h3>${esc(e.name)}${e.sub ? ` <small class="muted">${esc(e.sub)}</small>` : ''}</h3>${Object.keys(EQ_KIND).map(k => { const p = P.find(x => x.eq === e.id && x.kind === k), l = eqLastRun(p.id);
       return `<div class="eq-proc" data-eq="${p.id}"><div class="eq-pt"><b>${k === 'startup' ? '⏻ ' : '⏼ '}${EQ_KIND[k]}</b><small class="muted">${p.steps.length ? `${p.steps.length} steps · ${l ? 'last ' + mdy(l.date) + ' ' + l.time : 'never run'}` : 'Steps coming — edit to add'}</small></div>
         <div class="eq-btns">${p.steps.length ? `<button class="small" onclick="eqStart('${p.id}')">▶ Run</button>` : ''}<button class="small secondary" onclick="eqEditOpen('${p.id}')">✎ Edit</button></div></div>`; }).join('')}</div>`).join('');
 }
 function eqStart(id) { const cur = eqGetRun(); if (cur) { if (cur.pid === id) return showScreen('eqRun'); if (!confirm('Another procedure is in progress. Discard it and start this one?')) return; }
-  const p = eqProcs().find(x => x.id === id); eqSetRun({ pid: id, started: eqStamp(), steps: p.steps.map(s => Object.assign({}, s, { done: null })) }); showScreen('eqRun'); }
+  const P = eqProcs(), ids = EQ_CHAINS[id] ? EQ_CHAINS[id].secs : [id], steps = [], skipped = [];
+  ids.forEach(pid => { const p = P.find(x => x.id === pid); if (!p || !p.steps.length) { skipped.push(pid); return; } p.steps.forEach(st => steps.push(Object.assign({}, st, { sec: pid, done: null }))); });
+  if (!steps.length) { toast('No steps yet — edit the procedures to add steps'); return; }
+  eqSetRun({ pid: id, secs: ids, skipped, started: eqStamp(), steps }); showScreen('eqRun'); }
 let eqTick = null;
 function eqTimerLeft(r) { const i = r.steps.findIndex(s => s.type === 'timer'); if (i < 0) return null; const s = r.steps[i]; if (!s.startTs) return null; return Math.max(0, s.startTs + (s.min || 10) * 60000 - Date.now()); }
 const eqFmt = ms => { const t = Math.ceil(ms / 1000); return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
@@ -4340,12 +4351,15 @@ function eqBlowHtml(s, i, cur) { const c = blowNow(), open = c && c.valve === 'O
     : `<div class="eq-bo ok">${wheelSvg(c ? c.clock || 12 : 12, c ? c.valve : '', 80)}<div><b class="eq-closed">● ${c ? 'Closed' : 'Not set (treated as closed)'}</b>${c ? `<small>Spoke ${c.clock || '—'} o'clock · since ${bsStamp(c)}</small>` : ''}${cur ? `<button type="button" onclick="eqDone(${i})">✓ Confirm closed</button>` : ''}</div></div>`; }
 function renderEqRun() { clearInterval(eqTick); eqCheckTimer(); const r = eqGetRun(), el = document.getElementById('eqRunBody'); if (!r) { el.innerHTML = '<p class="muted">No procedure in progress.</p><button onclick="showScreen(\'eqHome\')">Back</button>'; return; }
   const p = eqProcs().find(x => x.id === r.pid) || { eq: '', kind: 'shutdown' }, cur = r.steps.findIndex(s => !s.done), n = r.steps.filter(s => s.done).length, left = eqTimerLeft(r);
-  el.innerHTML = `<div class="scr-head"><h2>${esc(eqName(p))}</h2></div><div class="progress"><i style="width:${Math.round(n / r.steps.length * 100)}%"></i></div><p class="muted">Started ${eqWhen(r.started)} · ${n}/${r.steps.length} steps</p>
+  const P = eqProcs(), secName = id => eqName(P.find(x => x.id === id) || { eq: '', kind: '' }), chain = (r.secs || []).length > 1;
+  const secHead = (s, i) => { if (!chain || (i && r.steps[i - 1].sec === s.sec)) return ''; const k = r.secs.indexOf(s.sec); return r.secs.slice(i ? r.secs.indexOf(r.steps[i - 1].sec) + 1 : 0, k).map(sk => `<div class="eq-sec skip">${esc(secName(sk))} — no steps yet, skipped</div>`).join('') + `<div class="eq-sec">Part ${k + 1}: ${esc(secName(s.sec))}</div>`; };
+  const tail = chain ? r.secs.slice(r.secs.indexOf(r.steps[r.steps.length - 1].sec) + 1).map(sk => `<div class="eq-sec skip">${esc(secName(sk))} — no steps yet, skipped</div>`).join('') : '';
+  el.innerHTML = `<div class="scr-head"><h2>${esc(eqRunName(r))}</h2></div><div class="progress"><i style="width:${Math.round(n / r.steps.length * 100)}%"></i></div><p class="muted">Started ${eqWhen(r.started)} · ${n}/${r.steps.length} steps</p>
     ${r.steps.map((s, i) => { const isCur = i === cur; let body = '';
       if (s.type === 'blowoff') body = eqBlowHtml(s, i, isCur);
       else if (s.type === 'timer') body = s.done ? '' : s.startTs ? `<div class="eq-timer" id="eqTimer" data-left="${left}"><span>${left > 0 ? eqFmt(left) : '00:00'}</span><small>${left > 0 ? 'remaining · started ' + s.start.time : 'Time is up'}</small></div>` : '<div class="muted">Timer starts when step ' + i + ' is complete.</div>';
       else if (isCur || (s.type === 'afterTimer' && r.steps[cur] && r.steps[cur].type === 'timer' && r.steps[cur].startTs)) body = s.type === 'afterTimer' && left > 0 ? `<button type="button" disabled>Wait ${eqFmt(left)}</button><button type="button" class="secondary small" onclick="eqOverride(${i})">Override timer…</button>` : `<button type="button" onclick="eqDone(${i})">✓ Done</button>`;
-      return `<div class="card eq-step${s.done ? ' done' : ''}${isCur ? ' cur' : ''}" data-i="${i}"><div class="eq-sh"><span class="mchk">${s.done ? '✓' : i + 1}</span><b>${esc(s.text)}</b><span class="eq-t">${s.done ? eqWhen(s.done) : ''}</span></div>${s.caution ? `<p class="sop-tpl">⚠ ${esc(s.caution)}</p>` : ''}${s.override ? '<small class="eq-ovr">Timer overridden</small>' : ''}${body}</div>`; }).join('')}
+      return secHead(s, i) + `<div class="card eq-step${s.done ? ' done' : ''}${isCur ? ' cur' : ''}" data-i="${i}"><div class="eq-sh"><span class="mchk">${s.done ? '✓' : i + 1}</span><b>${esc(s.text)}</b><span class="eq-t">${s.done ? eqWhen(s.done) : ''}</span></div>${s.caution ? `<p class="sop-tpl">⚠ ${esc(s.caution)}</p>` : ''}${s.override ? '<small class="eq-ovr">Timer overridden</small>' : ''}${body}</div>`; }).join('')}${tail}
     <div class="btn-row">${cur < 0 ? `<button onclick="eqFinish()">✓ Finish & log run</button>` : `<button class="secondary" onclick="eqFinish()">Save partial run</button>`}<button class="secondary" onclick="confirm('Discard this run? (blow-off changes already saved stay)')&&(eqSetRun(null),showScreen('eqHome'))">Discard</button></div>`;
   if (left != null && left > 0) eqTick = setInterval(() => { if (!document.getElementById('eqRun').classList.contains('active')) return clearInterval(eqTick); const L = eqTimerLeft(eqGetRun() || r); const t = document.querySelector('#eqTimer span'); if (t) t.textContent = eqFmt(L || 0); if (!L) renderEqRun(); }, 1000);
 }
@@ -4364,10 +4378,10 @@ function eqOverride(i) { if (!confirm('Timer not finished. Turn boiler switch of
 function eqCheckTimer() { const r = eqGetRun(); if (!r) return; const i = r.steps.findIndex(s => s.type === 'timer'); if (i < 0) return; const s = r.steps[i]; if (s.startTs && !s.done && Date.now() >= s.startTs + (s.min || 10) * 60000) { const d = new Date(s.startTs + (s.min || 10) * 60000); s.done = { date: ymd(d), time: String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'), ts: d.getTime() }; eqSetRun(r); } }
 function eqFinish() { const r = eqGetRun(); if (!r) return; const p = eqProcs().find(x => x.id === r.pid) || { eq: '', kind: '' }, done = r.steps.filter(s => s.done).length;
   if (done < r.steps.length && !confirm(`${r.steps.length - done} step(s) not done. Save the run anyway?`)) return;
-  const nm = eqName(p), ov = r.steps.some(s => s.override), list = getAocs();
+  const nm = eqRunName(r), P = eqProcs(), secN = id => eqName(P.find(x => x.id === id) || { eq: '', kind: '' }), secs = r.secs || [r.pid], chain = secs.length > 1, ov = r.steps.some(s => s.override), list = getAocs();
   list.push({ id: 'P-' + Date.now().toString(36), kind: 'proc', sopId: r.pid, created: new Date().toISOString(), date: r.started.date, time: r.started.time, occ: [{ id: 'o0', date: r.started.date, time: r.started.time }],
-    equipment: (EQ_LIST.find(e => e.id === p.eq) || {}).name || 'Both', equipOther: '', category: 'Procedure', title: 'Equipment: ' + nm, probable: '', actual: '', severity: 'Low', status: 'Resolved', resolved: '',
-    actions: `${done}/${r.steps.length} steps completed${ov ? ' · timer overridden' : ''}${r.steps.some(s => s.closedByRun) ? ' · blow-off closed' : ''}`, steps: r.steps.map(s => ({ text: s.text + (s.override ? ' (override)' : ''), time: s.done ? s.done.time : '', date: s.done ? s.done.date : '' })), tags: ['Procedure', 'Equipment'], related: [] });
+    equipment: chain ? 'Boiler 1 + Scrubber' : (EQ_LIST.find(e => e.id === p.eq) || {}).name || 'Both', equipOther: '', category: 'Procedure', title: 'Equipment: ' + nm, probable: '', actual: '', severity: 'Low', status: 'Resolved', resolved: '',
+    actions: `${chain ? secs.map(id => { const l = r.steps.filter(s => s.sec === id); return `${secN(id)}: ${l.length ? l.filter(s => s.done).length + '/' + l.length + ' steps' : 'no steps (skipped)'}`; }).join(' · ') + ' · ' : ''}${done}/${r.steps.length} steps completed${ov ? ' · timer overridden' : ''}${r.steps.some(s => s.closedByRun) ? ' · blow-off closed' : ''}`, steps: r.steps.map(s => ({ text: (chain ? `[${secN(s.sec)}] ` : '') + s.text + (s.override ? ' (override)' : ''), time: s.done ? s.done.time : '', date: s.done ? s.done.date : '' })), tags: ['Procedure', 'Equipment'], related: [] });
   store('nwhAocs', list); eqSetRun(null); toast(nm + ' logged'); refreshDayCell(r.started.date); showScreen('eqHome'); }
 let eqDraft = null;
 function eqEditOpen(id) { eqDraft = JSON.parse(JSON.stringify(eqProcs().find(x => x.id === id))); showScreen('eqEdit'); }
@@ -4385,11 +4399,12 @@ const _renderScreen35 = renderScreen;
 renderScreen = function (id) { if (id === 'eqRun') eqCheckTimer(); _renderScreen35(id);
   if (id === 'eqHome') renderEqHome(); if (id === 'eqRun') renderEqRun(); if (id === 'eqEdit') renderEqEdit();
   if (['eqHome', 'eqRun', 'eqEdit'].includes(id)) document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === 'more'));
-  if (id === 'more' && !document.getElementById('eqGrp')) { const g = document.getElementById('histGrp') || document.querySelector('#more .more-grp'); if (g) g.insertAdjacentHTML('beforebegin', `<div class="card more-grp" id="eqGrp"><h3>⏻ Equipment Startup &amp; Shutdown</h3><div class="grp-btns"><button class="secondary" onclick="showScreen('eqHome')">Boiler 1 · Scrubber</button></div></div>`); } };
+  if (id === 'more' && !document.getElementById('eqGrp')) { const g = document.getElementById('histGrp') || document.querySelector('#more .more-grp'); if (g) g.insertAdjacentHTML('beforebegin', `<div class="card more-grp" id="eqGrp"><h3>⏻ Equipment Startup &amp; Shutdown</h3><div class="grp-btns">${eqChainBtns()}<button class="secondary" onclick="showScreen('eqHome')">Individual procedures</button></div></div>`); } };
 const _boilerPanelHtml35 = boilerPanelHtml;
 boilerPanelHtml = function (compact) { const h = _boilerPanelHtml35(compact); if (!compact) return h; const r = eqGetRun(), l = r ? eqTimerLeft(r) : null;
   const btn = `<button type="button" class="pc-eq" onclick="showScreen('${r ? 'eqRun' : 'eqHome'}')">${r ? `▶ Shutdown in progress${l ? ' · ' + eqFmt(l) + ' left' : ''}` : '⏻ Startup &amp; Shutdown'}<span class="pc-chev">›</span></button>`;
-  return h.replace(/<\/div>\s*$/, btn + '</div>'); };
+  const two = r ? btn : `<div class="pc-eqs">${eqChainBtns('pc-eq')}<button type="button" class="pc-eq secondary" onclick="showScreen('eqHome')">Procedures<span class="pc-chev">›</span></button></div>`;
+  return h.replace(/<\/div>\s*$/, two + '</div>'); };
 
 /* ---------- Startup ---------- */
 migrateData();
