@@ -662,6 +662,48 @@ html.dark .info-btn { color: var(--head) !important; background: transparent !im
 html.dark #tabBar button:not(.on) span, html.dark #tabBar button:not(.on) b { color: #BAC5D3 !important; }
 .ssc-at { font-size: 13px; color: var(--text2); font-variant-numeric: tabular-nums; }
 .ph-sheet { display: block; max-width: 100%; height: auto; margin: 0 auto 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+:root { --lv-g: #1E6B23; --lv-a: #8A5300; --lv-r: #B71C1C; --lv-gbg: #E8F5E9; --lv-abg: #FFF4D6; --lv-rbg: #FDE7E7; }
+html.dark { --lv-g: #8EE59A; --lv-a: #FFD166; --lv-r: #FF9C94; --lv-gbg: #12301A; --lv-abg: #3A2E0E; --lv-rbg: #3D1717; }
+.live-tiles.two { grid-template-columns: 1fr 1fr !important; }
+.live-t.lv-g { border-left: 6px solid var(--lv-g) !important; } .live-t.lv-a { border-left: 6px solid #F2A900 !important; background: var(--lv-abg) !important; } .live-t.lv-r { border-left: 6px solid #C62828 !important; background: var(--lv-rbg) !important; }
+.live-t.lv-g b { color: var(--lv-g) !important; } .live-t.lv-a b { color: var(--lv-a) !important; } .live-t.lv-r b { color: var(--lv-r) !important; }
+.lv-dot { font-weight: 900; }
+.live-row.lvrow-a { background: var(--lv-abg); box-shadow: inset 4px 0 0 #F2A900; border-radius: 10px; padding: 6px; } .live-row.lvrow-r { background: var(--lv-rbg); box-shadow: inset 4px 0 0 #C62828; border-radius: 10px; padding: 6px; }
+.pbar { position: relative; display: block; height: 30px; margin: 6px 2px 0; } .pbar > span { position: absolute; top: 2px; height: 8px; } .pb-g { background: #2E7D32; } .pb-a { background: #F2A900; } .pb-r { background: #C62828; opacity: .85; }
+.pbar i { position: absolute; top: -1px; width: 3px; height: 14px; margin-left: -1.5px; } .pb-ideal { background: var(--text, #222); } .pb-m { background: var(--text, #222); width: 0 !important; height: 0 !important; top: -6px !important; border: 7px solid transparent; border-top-color: var(--text, #222); margin-left: -7px !important; background: none !important; }
+.pbar em { position: absolute; top: 13px; transform: translateX(-50%); font-size: 11px; font-style: normal; font-weight: 700; color: var(--text, #222); }
+.lv-alerts { margin-top: 4px; } .lv-al { font-weight: 800; font-size: 14px; padding: 3px 6px; border-radius: 6px; } .lv-al.a { color: var(--lv-a); } .lv-al.r { color: var(--lv-r); }
+.hp-prompt { border: 2px solid #C62828; background: var(--lv-rbg); color: var(--lv-r); border-radius: 12px; padding: 10px; margin-bottom: 8px; } .hp-prompt b { display: block; margin-bottom: 8px; }
+.hp-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .hp-btns button { margin: 0; min-height: 48px; } .hp-blow { background: #C62828 !important; color: #fff !important; }
+.steam-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 8px; border-radius: 10px; margin-top: 6px; border: 1px solid var(--border, #C9CED6); flex-wrap: wrap; } .steam-row > span { min-width: 0; } .steam-row.on { border-color: #F2A900; background: var(--lv-abg); }
+.fan-card { margin-top: 6px; } .fan-main { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--surface2, #F2F4F7) !important; color: var(--text, #222) !important; border: 1px solid var(--border, #C9CED6); border-radius: 10px; padding: 6px 8px; margin: 0; min-width: 0; }
+.fan-t { display: flex; flex-direction: column; flex: 1; min-width: 0; } .fan-t b { font-size: 24px; font-variant-numeric: tabular-nums; } .fan-t small { color: var(--muted, #555); overflow-wrap: anywhere; } .fan-t .u { font-size: 14px; }
+.fan-ed { text-align: center; } .fan-ed-row { display: flex; align-items: center; gap: 8px; justify-content: center; margin: 8px 0; } .fan-in { width: 120px !important; font-size: 28px !important; text-align: center; font-weight: 800; } .fan-step { min-width: 64px; min-height: 52px; font-size: 18px; margin: 0; }
+.rd-btn { margin: 0 0 0 auto !important; padding: 6px 10px !important; font-size: 14px !important; min-height: 36px; background: var(--surface2, #F2F4F7) !important; color: var(--text, #222) !important; border: 1px solid var(--border, #C9CED6) !important; white-space: nowrap; flex: 0 0 auto; }
+.rd-wrap { display: flex; justify-content: flex-end; margin-bottom: 6px; } .scr-head { flex-wrap: wrap; }
+#actv { position: fixed; inset: 0; z-index: 60; background: var(--bg, #fff); color: var(--text, #222); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: env(safe-area-inset-top) 0 calc(20px + env(safe-area-inset-bottom)); }
+#actv[hidden] { display: none; } body.act-open { overflow: hidden; }
+.act-head { position: sticky; top: 0; background: var(--bg, #fff); padding: 10px 12px 6px; border-bottom: 2px solid var(--border, #C9CED6); z-index: 1; }
+.act-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 20px; } .act-top button { margin: 0; }
+.act-nav { display: grid; grid-template-columns: 52px 1fr 52px; gap: 8px; margin: 8px 0 4px; } .act-nav button { margin: 0; font-size: 24px; min-height: 48px; } .act-nav input { font-size: 18px; min-height: 48px; margin: 0; }
+.act-sub { font-size: 16px; color: var(--muted, #444); } .linkish { background: none !important; color: var(--link, #1F5FA8) !important; padding: 0 !important; margin: 0 !important; min-height: 0 !important; text-decoration: underline; font-size: inherit !important; border: 0 !important; } html.dark .linkish { color: #9CC7FF !important; }
+.act-list { padding: 8px 12px; } .act-e { display: grid; grid-template-columns: 72px 1fr; gap: 10px; padding: 12px 10px; border-bottom: 1px solid var(--border, #C9CED6); border-radius: 8px; }
+.act-e:nth-child(even) { background: var(--surface2, #F2F4F7); } .act-e.flag { background: var(--lv-abg); box-shadow: inset 5px 0 0 #F2A900; }
+.act-t { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; } .act-b { min-width: 0; overflow-wrap: anywhere; } .act-b small { display: block; font-size: 14px; font-weight: 700; color: var(--muted, #444); text-transform: uppercase; letter-spacing: .03em; }
+.act-b b { display: block; font-size: 19px; } .act-d { font-size: 18px; margin-top: 2px; } .act-empty { font-size: 19px; text-align: center; padding: 30px 10px; }
+.mw-head { display: grid; grid-template-columns: 48px 1fr 48px; gap: 6px; align-items: center; margin-bottom: 6px; } .mw-head button { margin: 0; min-height: 46px; font-size: 22px; } .mw-rng { text-align: center; display: flex; flex-direction: column; } .mw-rng b { font-size: 18px; }
+.mw-sticky { position: sticky; top: 0; z-index: 2; background: var(--bg, #fff); padding: 4px 0; }
+.mw-days, .mw-cells { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.mw-days span { text-align: center; display: flex; flex-direction: column; font-size: 14px; line-height: 1.1; padding: 2px 0; border-radius: 6px; } .mw-days span.today { background: #1F3A5F; color: #fff; }
+.mw-m { padding: 6px 0 8px; border-bottom: 2px solid var(--border, #C9CED6); } .mw-n { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; min-width: 0; } .mw-n b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .mw-n small { color: var(--muted, #444); white-space: nowrap; } .mw-n svg { margin-left: auto; flex: 0 0 auto; }
+.mw-c { margin: 0 !important; padding: 0 !important; min-height: 38px; min-width: 0 !important; font-size: 14px !important; font-weight: 800; font-variant-numeric: tabular-nums; background: var(--surface2, #F2F4F7) !important; color: var(--text, #222) !important; border: 1px solid var(--border, #C9CED6) !important; border-radius: 6px; overflow: hidden; white-space: nowrap; letter-spacing: -.02em; }
+.mw-c.today { border: 2px solid #1F3A5F !important; } html.dark .mw-c.today { border-color: #9CC7FF !important; } .mw-c.empty { background: transparent !important; } .mw-c.neg { color: var(--lv-r) !important; } .mw-c i { font-style: normal; opacity: .8; }
+.mw-big { font-size: 34px; font-weight: 900; font-variant-numeric: tabular-nums; } .mw-dd { font-size: 17px; }
+.pc-head { flex-wrap: wrap; row-gap: 6px; }
+.pc-head > small { flex: 1 1 auto; min-width: 80px; white-space: nowrap; }
+.pc-head > button { white-space: nowrap; }
+.live-t .pbar { width: 100%; flex: 0 0 auto; align-self: stretch; min-width: 90px; }
+.mw-days span.today small { color: #fff !important; opacity: 1; }
 </style>
 </head>
 <body class="locked">
@@ -899,7 +941,7 @@ html.dark #tabBar button:not(.on) span, html.dark #tabBar button:not(.on) b { co
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.0.2 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2744,7 +2786,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.0.2';
+const APP_VER = '3.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3507,7 +3549,7 @@ function migrateBlowoff() { // move any per-boiler valve/clock data (v2.1) into 
   Object.entries(W).forEach(([k, w]) => { if (!w || !Array.isArray(w.bstat)) return;
     w.bstat = w.bstat.filter(r => { if (r.valve == null && r.clock == null) return true; w.blowoff = w.blowoff || [];
       w.blowoff.push({ id: 'bo-' + (r.id || Date.now().toString(36)), date: r.date || k, time: r.time || '', valve: r.valve || '', clock: r.clock != null ? r.clock : '', from: r.b }); n++;
-      const rest = BS_FIELDS.some(f => r[f.k] != null && r[f.k] !== '') || r.status; if (rest) { delete r.valve; delete r.clock; return true; } return false; });
+      const rest = ['temp', 'press', 'feed'].some(k => r[k] != null && r[k] !== '') || r.status; if (rest) { delete r.valve; delete r.clock; return true; } return false; });
     if (!w.bstat.length) delete w.bstat; });
   if (n) store('nwhWork', W); return n;
 }
@@ -3587,7 +3629,7 @@ bsLogOpen = function (bid) { _bsLogOpen22(bid); const b = getBoilers().find(x =>
 // running history on the Boiler status screen: graph + list per value
 let liveHistKey = 'b1:press';
 function liveHistHtml() {
-  const opts = getBoilers().flatMap(b => ['press', 'feed', 'temp'].map(k => ({ v: b.id + ':' + k, l: `${b.name} — ${bsFieldLabel(b, k)}` })));
+  const opts = getBoilers().flatMap(b => ['press', 'temp'].map(k => ({ v: b.id + ':' + k, l: `${b.name} — ${bsFieldLabel(b, k)}` })));
   if (!opts.some(o => o.v === liveHistKey)) liveHistKey = opts[0].v; const [bid, k] = liveHistKey.split(':'), U = bsUnits(), s = fieldSeries(bid, k).slice().reverse();
   return `<div class="card"><h3>📈 Value history</h3><select aria-label="Value" onchange="liveHistKey=this.value;document.getElementById('liveHist').innerHTML=liveHistHtml();liveHistDraw()">${opts.map(o => `<option value="${o.v}"${o.v === liveHistKey ? ' selected' : ''}>${esc(o.l)}</option>`).join('')}</select>
     <div class="trend-wrap"><canvas id="liveCv"></canvas></div>
@@ -3602,8 +3644,7 @@ function liveHistDraw() { const cv = document.getElementById('liveCv'); if (!cv)
   s.forEach((r, i) => { ctx.beginPath(); ctx.arc(X(xs[i]), Y(Number(r[k])), 3.5, 0, 7); ctx.fillStyle = '#1F3A5F'; ctx.fill(); });
   ctx.textAlign = 'left'; ctx.fillStyle = '#555'; ctx.fillText(bsStamp(s[0]), 46, h - 6); ctx.textAlign = 'right'; ctx.fillText(bsStamp(s[s.length - 1]), w - 10, h - 6); }
 const _renderBstatSetup22 = renderBstatSetup;
-renderBstatSetup = function () { _renderBstatSetup22(); document.getElementById('bsSetup').insertAdjacentHTML('beforeend', `${getBoilers().map((b, i) => `<label>${esc(b.name)} feed label<input value="${esc(bsFieldLabel(b, 'feed'))}" aria-label="Boiler ${i + 1} feed label" onchange="bsSetBoiler(${i},'feedLabel',this.value)"></label>`).join('')}
-  <label>Mark live values stale after (minutes)<input type="number" min="5" inputmode="numeric" value="${staleMin()}" aria-label="Stale interval minutes" onchange="(s=>{s.bsStaleMin=Math.max(5,Number(this.value)||120);store('nwhSettings',s);bsRefresh()})(load('nwhSettings',{}))"></label>`);
+renderBstatSetup = function () { _renderBstatSetup22(); document.getElementById('bsSetup').insertAdjacentHTML('beforeend', `<label>Mark live values stale after (minutes)<input type="number" min="5" inputmode="numeric" value="${staleMin()}" aria-label="Stale interval minutes" onchange="(s=>{s.bsStaleMin=Math.max(5,Number(this.value)||120);store('nwhSettings',s);bsRefresh()})(load('nwhSettings',{}))"></label>`);
   let lh = document.getElementById('liveHist'); if (!lh) { document.getElementById('bstatPanel').insertAdjacentHTML('afterend', '<div id="liveHist"></div>'); lh = document.getElementById('liveHist'); } lh.innerHTML = liveHistHtml(); liveHistDraw(); };
 setInterval(() => { if (document.getElementById('home').classList.contains('active') && !PAD) { const s = document.querySelector('#homeBoilers .live-strip'); if (s) s.outerHTML = liveStripHtml(); } }, 60000);
 
@@ -3950,6 +3991,150 @@ const _renderSheet31 = renderSheet;
 renderSheet = function (scr) { const st = ssSt(scr); if (st.layout !== 'fit' && st.layout !== 'cards') st.layout = 'cards'; _renderSheet31(scr);
   const box = document.querySelector(`#${scr} .ss-pane`), fb = box.querySelector('.ssLayout button[data-l="fit"]'); if (fb) fb.textContent = '🖼 Sheet preview'; const cb = box.querySelector('.ssLayout button[data-l="cards"]'); if (cb) cb.textContent = '▤ Cards';
   if (st.layout === 'fit') { const [f, t] = rangeDates(st), sp = buildSheet(scr, f, t, st.desc); if (sp.rows.length) box.querySelector('.ssOut').innerHTML = sheetPreviewHtml(scr, sp); } };
+
+/* ===================== v3.1: pressure/temp limits, steamer, fan speed, activity readout, Readable buttons, meters week grid, nav ===================== */
+// 1. feed rate / wood feed no longer shown anywhere (stored values are kept untouched)
+{ const i = BS_FIELDS.findIndex(f => f.k === 'feed'); if (i >= 0) BS_FIELDS.splice(i, 1); }
+const LIM_DEF = { pMin: 60, pIdeal: 70, pAmber: 75, pPrompt: 78, pMax: 80, tAmber: 1000, tMax: 1100, fanMax: 60 };
+const lim = () => Object.assign({}, LIM_DEF, load('nwhSettings', {}).bsLim || {});
+function pLvl(v) { const L = lim(); if (v == null || v === '' || isNaN(v)) return ''; v = Number(v); return v < L.pMin || v >= L.pMax ? 'r' : v >= L.pAmber ? 'a' : 'g'; }
+function tLvl(v) { const L = lim(); if (v == null || v === '' || isNaN(v)) return ''; v = Number(v); return v >= L.tMax ? 'r' : v >= L.tAmber ? 'a' : 'g'; }
+function pBar(v) { const L = lim(), lo = L.pMin - 10, hi = L.pMax + 10, P = x => Math.max(0, Math.min(100, (x - lo) / (hi - lo) * 100)).toFixed(1);
+  return `<span class="pbar" aria-label="Pressure range ${L.pMin} to ${L.pMax}, ideal ${L.pIdeal}"><span class="pb-r" style="left:0;width:${P(L.pMin)}%"></span><span class="pb-g" style="left:${P(L.pMin)}%;width:${P(L.pAmber) - P(L.pMin)}%"></span><span class="pb-a" style="left:${P(L.pAmber)}%;width:${P(L.pMax) - P(L.pAmber)}%"></span><span class="pb-r" style="left:${P(L.pMax)}%;right:0"></span>
+    <i class="pb-ideal" style="left:${P(L.pIdeal)}%"></i>${v != null && !isNaN(v) ? `<i class="pb-m" style="left:${P(Number(v))}%"></i>` : ''}<em style="left:${P(L.pMin)}%">${L.pMin}</em><em style="left:${P(L.pIdeal)}%">${L.pIdeal}★</em><em style="left:${P(L.pMax)}%">${L.pMax}</em></span>`; }
+/* ---- steamer + fan speed: W[day].steam = [{id,date,time,on}], W[day].fan = [{id,date,time,hz,note}] ---- */
+const sysLog = key => { const W = getWork(); return Object.keys(W).flatMap(k => (W[k][key] || []).map(r => Object.assign({ day: k }, r))).sort((a, b) => ((a.date || a.day) + ' ' + (a.time || '')).localeCompare((b.date || b.day) + ' ' + (b.time || ''))); };
+const steamNow = () => { const l = sysLog('steam'); return l[l.length - 1] || null; };
+const fanNow = () => { const l = sysLog('fan'); return l[l.length - 1] || null; };
+function sysAdd(key, rec) { const d = ymd(new Date()), W = getWork(), e = W[d] = W[d] || {}; e[key] = e[key] || []; const r = Object.assign({ id: key + Date.now().toString(36), date: d, time: nowHM() }, rec); e[key].push(r); delete e.isExample; store('nwhWork', W); refreshDayCell(d); return r; }
+function steamToggle(on) { sysAdd('steam', { on: !!on }); toast(on ? '♨ Steamer ON logged' : 'Steamer OFF logged'); bsRefresh(); actRefresh(); }
+const FAN_SEED = { date: '2026-10-22', time: '20:55', hz: 52, note: 'Starting value' };
+function seedFan() { const S = load('nwhSettings', {}); if (S.fanSeeded || sysLog('fan').length) return; const W = load('nwhWork', null) || {}; const e = W[FAN_SEED.date] = W[FAN_SEED.date] || {};
+  e.fan = [Object.assign({ id: 'fan-seed' }, FAN_SEED)]; store('nwhWork', W); S.fanSeeded = true; store('nwhSettings', S); }
+const _migrateData34 = migrateData; migrateData = function () { _migrateData34(); seedFan(); };
+const fanBoilerId = () => { const S = load('nwhSettings', {}), B = getBoilers(); return S.fanBoiler || (B.find(b => /sawdust|wood/i.test((b.fuel || '') + ' ' + b.name)) || B[0] || {}).id; };
+const hz = v => Number(v).toFixed(2);
+function fanGauge(v, size) { const L = lim(), f = Math.max(0, Math.min(1, (Number(v) || 0) / L.fanMax)), a = Math.PI * (1 - f), cx = 50, cy = 50, r = 40;
+  const nx = (cx + Math.cos(a) * (r - 6)).toFixed(1), ny = (cy - Math.sin(a) * (r - 6)).toFixed(1), ex = (cx + Math.cos(a) * r).toFixed(1), ey = (cy - Math.sin(a) * r).toFixed(1);
+  const ticks = [0, .25, .5, .75, 1].map(t => { const b = Math.PI * (1 - t); return `<line x1="${(cx + Math.cos(b) * 34).toFixed(1)}" y1="${(cy - Math.sin(b) * 34).toFixed(1)}" x2="${(cx + Math.cos(b) * 44).toFixed(1)}" y2="${(cy - Math.sin(b) * 44).toFixed(1)}" stroke="#8A94A3" stroke-width="2"/>`; }).join('');
+  return `<svg class="fan-g" viewBox="0 0 100 58" width="${size || 96}" height="${(size || 96) * .58}" aria-hidden="true"><path d="M10 50 A40 40 0 0 1 90 50" fill="none" stroke="#C9CED6" stroke-width="8" stroke-linecap="round"/>
+    ${f > 0 ? `<path d="M10 50 A40 40 0 0 1 ${ex} ${ey}" fill="none" stroke="#2F6FB0" stroke-width="8" stroke-linecap="round"/>` : ''}${ticks}<line x1="50" y1="50" x2="${nx}" y2="${ny}" stroke="#F2A900" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="#F2A900" stroke="#1F3A5F" stroke-width="2"/></svg>`; }
+function fanCardHtml() { const c = fanNow(), last = sysLog('fan').slice(-5).reverse();
+  return `<div class="fan-card"><button type="button" class="fan-main" onclick="fanEdit()" aria-label="Fan speed: adjust">${fanGauge(c ? c.hz : 0)}<span class="fan-t"><small>Fan speed</small><b>${c ? hz(c.hz) : '—'}<span class="u"> Hz</span></b><small>${c ? `${bsStamp(c).slice(0, 5)} ${c.time || ''} · ${agoText(c)}${c.note ? ' · ' + esc(c.note) : ''}` : 'Tap to set'}</small></span><span class="pc-chev">›</span></button>
+    ${last.length ? `<details class="bs-hist"><summary>Last ${last.length} changes</summary><div class="bs-rows">${last.map(r => `<div class="bs-row"><span class="bs-t">${bsStamp(r)}</span><span><b>${hz(r.hz)} Hz</b>${r.note ? ' · ' + esc(r.note) : ''}</span></div>`).join('')}</div></details>` : ''}</div>`; }
+let fanDraft = null;
+function fanEdit() { const c = fanNow(); fanDraft = c ? Number(c.hz) : 52; const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open'); fanRender(); }
+function fanRender() { document.getElementById('mpad').innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>Fan speed</b><button class="small secondary" aria-label="Close" onclick="fanDraft=null;padClose()">✕</button></div>
+  <div class="fan-ed">${fanGauge(fanDraft, 150)}<div class="fan-ed-row"><button type="button" class="secondary fan-step" onclick="fanStep(-0.5)">−0.5</button>
+  <input id="fanIn" class="fan-in" inputmode="decimal" enterkeyhint="done" aria-label="Fan speed Hz" value="${hz(fanDraft)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');const v=parseFloat(this.value);if(!isNaN(v)){fanDraft=v;document.querySelector('#mpad .fan-ed svg').outerHTML=fanGauge(v,150)}"><span class="u">Hz</span>
+  <button type="button" class="secondary fan-step" onclick="fanStep(0.5)">+0.5</button></div><input id="fanNote" placeholder="Note (optional)" aria-label="Fan note"></div>
+  <p class="muted" style="text-align:center">${(c => c ? `Current ${hz(c.hz)} Hz · ${bsStamp(c)}` : '')(fanNow())}. Saved with the current date and time.</p>
+  <div class="pad-nav"><button type="button" class="secondary" onclick="fanDraft=null;padClose()">Cancel</button><button type="button" class="pad-next" onclick="fanSave()">✓ Save</button></div></div>`; }
+function fanStep(d) { fanDraft = Math.max(0, Math.round((Number(fanDraft) + d) * 100) / 100); document.getElementById('fanIn').value = hz(fanDraft); document.querySelector('#mpad .fan-ed svg').outerHTML = fanGauge(fanDraft, 150); }
+function fanSave() { const v = parseFloat(document.getElementById('fanIn').value); if (isNaN(v)) { toast('Enter Hz'); return; } sysAdd('fan', { hz: Math.round(v * 100) / 100, note: document.getElementById('fanNote').value.trim() }); fanDraft = null; padClose(); toast('Fan speed saved'); bsRefresh(); actRefresh(); }
+/* ---- Home plant card: press/temp only, colored, range bar, alerts, high-pressure prompt, steamer, fan ---- */
+const LV_TXT = { g: 'ok', a: 'attention', r: 'problem' };
+liveStripHtml = function () { const L = lim(), fb = fanBoilerId(); let prompt = [];
+  const rows = getBoilers().map(b => { const st = bsLatest(b.id, 'status'), p = bsLatest(b.id, 'press'), t = bsLatest(b.id, 'temp'), pl = p ? pLvl(p.press) : '', tl = t ? tLvl(t.temp) : '';
+    const worst = [pl, tl].includes('r') ? 'r' : [pl, tl].includes('a') ? 'a' : pl || tl ? 'g' : '';
+    const tile = (k, l) => { let h = liveTile(b, k); if (l) h = h.replace('class="live-t', `class="live-t lv-${l}`).replace('<small>', `<small><span class="lv-dot" aria-label="${LV_TXT[l]}">${l === 'g' ? '✓' : '!'}</span> `); if (k === 'press') h = h.replace(/<\/button>$/, pBar(p ? p.press : null) + '</button>'); return h; };
+    const al = []; if (p && Number(p.press) >= L.pMax) al.push(`! Pressure at/over ${L.pMax} psi`); else if (p && Number(p.press) < L.pMin) al.push(`! Pressure under ${L.pMin} psi`); else if (pl === 'a') al.push(`! Pressure approaching high (${L.pAmber}–${L.pMax})`);
+    if (t && Number(t.temp) >= L.tMax) al.push(`! Temp at/over ${L.tMax} limit`); else if (tl === 'a') al.push(`! Temp ${L.tAmber}+ — keep under ${L.tMax}`);
+    if (p && Number(p.press) >= L.pPrompt) prompt.push(`${b.name} ${Number(p.press)} psi`);
+    return `<div class="live-row lvrow-${worst || 'n'}" data-boiler="${b.id}"><div class="live-b"><span>${esc(b.name)}</span>
+    <button type="button" class="bs-st st-${st ? st.status : 'none'}" onclick="bsStatusQuick('${b.id}')" aria-label="Set ${esc(b.name)} status">${st ? (st.status === 'Alarm' ? '! ' : '') + esc(st.status) : 'Status'}</button></div>
+    <div class="live-tiles two">${tile('press', pl)}${tile('temp', tl)}</div>${al.length ? `<div class="lv-alerts">${al.map(a => `<div class="lv-al ${/at\/over|under/.test(a) ? 'r' : 'a'}">${esc(a)}</div>`).join('')}</div>` : ''}${b.id === fb ? fanCardHtml() : ''}</div>`; }).join('');
+  const sn = steamNow(), on = sn && sn.on;
+  const pr = prompt.length ? `<div class="hp-prompt" role="alert"><b>! Pressure high — ${esc(prompt.join(', '))}</b><div class="hp-btns">${on ? `<button type="button" class="secondary" onclick="steamToggle(false)">Steamer OFF</button>` : `<button type="button" onclick="steamToggle(true)">♨ Turn on steamer</button>`}<button type="button" class="hp-blow" onclick="blowEdit()">◯ Open blow-off</button></div></div>` : '';
+  const sc = on || (sn && sn.date === ymd(new Date())) ? `<div class="steam-row ${on ? 'on' : ''}"><span>♨ Steamer <b>${on ? 'ON' : 'OFF'}</b> · since ${bsStamp(sn).slice(0, 5)} ${sn.time} (${agoText(sn)})</span><button type="button" class="small secondary" onclick="steamToggle(${!on})">${on ? 'Turn off' : 'Turn on'}</button></div>` : '';
+  return `<div class="live-strip">${pr}${rows}${sc}</div>`; };
+const _boilerPanelHtml34 = boilerPanelHtml;
+boilerPanelHtml = function (compact) { const h = _boilerPanelHtml34(compact); return compact ? h.replace('<button class="small secondary" onclick="showScreen(\'bstat\')">History ›</button>', `<button class="small secondary" onclick="actOpen('home')">📖 Today's activity</button><button class="small secondary" onclick="showScreen('bstat')">History ›</button>`) : h + `<div class="card"><h3>Fan speed</h3>${fanCardHtml()}</div>`; };
+// boiler quick log: pressure/temp only (BS_FIELDS already trimmed) — keep labels
+/* ---- thresholds in Boiler setup ---- */
+const _renderBstatSetup34 = renderBstatSetup;
+renderBstatSetup = function () { _renderBstatSetup34(); const L = lim(), f = (k, l) => `<label>${l}<input type="number" inputmode="decimal" value="${L[k]}" aria-label="${l}" onchange="limSet('${k}',this.value)"></label>`;
+  document.getElementById('bsSetup').insertAdjacentHTML('beforeend', `<h4>Limits &amp; colors</h4><div class="row2">${f('pMin', 'Pressure low (red under)')}${f('pIdeal', 'Pressure ideal')}</div><div class="row2">${f('pAmber', 'Pressure amber from')}${f('pPrompt', 'Steamer/blow-off prompt at')}</div><div class="row2">${f('pMax', 'Pressure red at/over')}${f('tAmber', 'Temp amber from')}</div><div class="row2">${f('tMax', 'Temp limit (red at/over)')}${f('fanMax', 'Fan gauge max (Hz)')}</div>
+    <label>Fan speed shown with<select aria-label="Fan boiler" onchange="(s=>{s.fanBoiler=this.value;store('nwhSettings',s);bsRefresh()})(load('nwhSettings',{}))">${getBoilers().map(b => `<option value="${b.id}"${b.id === fanBoilerId() ? ' selected' : ''}>${esc(b.name)}</option>`).join('')}</select></label>
+    <button type="button" class="small secondary" onclick="(s=>{delete s.bsLim;store('nwhSettings',s);renderBstatSetup();bsRefresh()})(load('nwhSettings',{}))">Reset limits to default</button>`); };
+function limSet(k, v) { const S = load('nwhSettings', {}); S.bsLim = Object.assign({}, S.bsLim, { [k]: Number(v) }); store('nwhSettings', S); bsRefresh(); }
+/* ---- readout / timeline / sheets ---- */
+const _readoutEvents34 = readoutEvents;
+readoutEvents = function (day) { const ev = _readoutEvents34(day), L = lim(), B = getBoilers();
+  const q = {}; B.forEach(b => q[b.name] = bsReadings(b.id).filter(x => (x.date || x.day) === day).sort((x, y) => String(x.time || '').localeCompare(String(y.time || ''))));
+  ev.forEach(e => { if (e.cat !== 'Boiler') return; const r = (q[e.what] || []).shift(); if (!r) return;
+    if ((r.press != null && pLvl(r.press) !== 'g') || (r.temp != null && tLvl(r.temp) !== 'g')) { e.flag = true; e.det += [r.press != null && pLvl(r.press) === 'r' ? ' · ! pressure out of range' : r.press != null && pLvl(r.press) === 'a' ? ' · ! pressure approaching high' : '', r.temp != null && Number(r.temp) >= L.tMax ? ` · ! Temp at/over ${L.tMax} limit` : r.temp != null && tLvl(r.temp) === 'a' ? ' · ! temp high' : ''].join(''); } });
+  sysLog('steam').filter(r => (r.date || r.day) === day).forEach(r => ev.push({ t: r.time || '', cat: 'Steamer', what: r.on ? '♨ Steamer ON' : 'Steamer OFF', det: '', flag: false }));
+  sysLog('fan').filter(r => (r.date || r.day) === day).forEach(r => ev.push({ t: r.time || '', cat: 'Fan', what: `Fan speed ${hz(r.hz)} Hz`, det: r.note || '', flag: false }));
+  return ev.sort((x, y) => (x.t ? 0 : 1) - (y.t ? 0 : 1) || x.t.localeCompare(y.t)); };
+const _readoutSections34 = readoutSections;
+readoutSections = function (day) { const S = _readoutSections34(day), rows = [...sysLog('fan').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Fan speed', hz(r.hz) + ' Hz' + (r.note ? ' · ' + r.note : '')] })), ...sysLog('steam').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Steamer', r.on ? 'ON' : 'OFF'] }))].sort((a, b) => String(a.k).localeCompare(String(b.k)));
+  const cur = sysLog('fan').filter(r => (r.date || r.day) <= day).pop();
+  const i = S.findIndex(s => /^Blow-off/.test(s.title)); S.splice(i < 0 ? S.length : i + 1, 0, { title: 'Fan speed / steamer', col: 1, cols: [{ h: 'Time', w: .2 }, { h: 'Item', w: .3 }, { h: 'Value', w: .5 }], rows: rows.length ? rows : [{ cells: ['—', 'Fan speed', cur ? `No change (${hz(cur.hz)} Hz)` : 'Not set'] }] }); return S; };
+const _tlEntries34 = tlEntries;
+tlEntries = function () { const sys = [...sysLog('steam').map(r => ({ a: { id: 'sys-' + r.id, kind: 'note', title: r.on ? '♨ Steamer ON' : 'Steamer OFF', equipment: 'Both', category: 'Operation note', actions: 'Steamer ' + (r.on ? 'turned on' : 'turned off'), tags: ['Steamer'] }, o: { date: r.date || r.day, time: r.time } })),
+  ...sysLog('fan').map(r => ({ a: { id: 'sys-' + r.id, kind: 'note', title: `Fan speed ${hz(r.hz)} Hz`, equipment: 'Both', category: 'Operation note', actions: r.note || 'Fan speed adjusted', tags: ['Fan speed'] }, o: { date: r.date || r.day, time: r.time } }))].map(x => Object.assign(x, { k: x.o.date + ' ' + (x.o.time || '') }));
+  return _tlEntries34().concat(sys).sort((x, y) => y.k.localeCompare(x.k)); };
+const _openAoc34 = openAoc; openAoc = function (id, ...r) { if (typeof id === 'string' && id.startsWith('sys-')) return; return _openAoc34(id, ...r); };
+const _buildSheet34 = buildSheet;
+buildSheet = function (scr, from, to, desc) { const sp = _buildSheet34(scr, from, to, desc); if (scr !== 'bstat') return sp;
+  const fi = sp.cols.findIndex(c => /feed|Feed/.test(c.h)); if (fi >= 0) { sp.cols.splice(fi, 1); sp.rows.forEach(r => r.cells.splice(fi, 1)); }
+  sp.cols.push({ h: 'Fan (Hz)', kind: 'num', g: '' }); sp.rows.forEach(r => r.cells.push(C('')));
+  const n = sp.cols.length, mk = (r, what, st, fanv) => { const c = Array.from({ length: n }, () => C('')); c[0] = C(sDate(r.date || r.day)); c[1] = C(r.time || ''); c[2] = C(what, { bold: true }); c[3] = C(st); if (fanv != null) c[n - 1] = C(hz(fanv), { raw: String(fanv) }); return { day: r.date || r.day, cells: c }; };
+  const inR = r => (r.date || r.day) >= from && (r.date || r.day) <= to;
+  sysLog('fan').filter(inR).forEach(r => sp.rows.push(mk(r, 'Fan speed', r.note || '', r.hz))); sysLog('steam').filter(inR).forEach(r => sp.rows.push(mk(r, 'Steamer', r.on ? 'ON' : 'OFF')));
+  sp.rows.sort((a, b) => (a.day + ' ' + a.cells[1].t).localeCompare(b.day + ' ' + b.cells[1].t)); if (desc) sp.rows.reverse();
+  const pi = sp.cols.findIndex(c => /^Pressure/.test(c.h)), ti = sp.cols.findIndex(c => /^Temp/.test(c.h));
+  sp.rows.forEach(r => { [[pi, pLvl], [ti, tLvl]].forEach(([i, f]) => { const c = r.cells[i]; if (!c || c.t === '') return; const l = f(Number(String(c.raw != null ? c.raw : c.t).replace(/,/g, ''))); if (l && l !== 'g') { c.t = '! ' + c.t; c.bg = AMBER_BG; c.bold = true; } }); });
+  return sp; };
+/* ---- 6/7. Activity readout (large text) + 📖 Readable on every page ---- */
+const ACT_F = { home: ['Boiler', 'Blow-off', 'Steamer', 'Fan', 'Boiler log'], bstat: ['Boiler', 'Blow-off', 'Steamer', 'Fan', 'Boiler log'], boiler: ['Boiler log', 'Boiler'], daily: ['Checklist', 'Meter', 'Water test', 'Chemical', 'Task'], round: ['Checklist', 'Meter', 'Water test', 'Chemical', 'Task'],
+  meters: ['Meter'], aocs: ['AOC', 'Note', 'Procedure', 'Steamer', 'Fan'], aocEdit: ['AOC', 'Note'], pm: ['Task'], pmTasks: ['Task'], sops: ['Procedure'], sopEdit: ['Procedure'], sopRun: ['Procedure'], notes: ['Notes', 'Note'] };
+const ACT_N = { home: 'Plant status', bstat: 'Boiler status', boiler: 'Boiler log', daily: 'Round', round: 'Round', meters: 'Meters', aocs: 'Timeline', aocEdit: 'AOCs', pm: 'PM / tasks', pmTasks: 'PM / tasks', sops: 'Procedures', sopEdit: 'Procedures', sopRun: 'Procedures', notes: 'Notes' };
+let ACT = null;
+function actOpen(scope, day) { const cur = (document.querySelector('.screen.active') || {}).id; ACT = { scope: scope || 'all', day: day || (cur === 'daily' && typeof edDay !== 'undefined' && edDay) || (cur === 'dayStatus' && statusDay) || ymd(new Date()) };
+  let o = document.getElementById('actv'); if (!o) { o = document.createElement('div'); o.id = 'actv'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Activity readout'); document.body.appendChild(o); } o.hidden = false; document.body.classList.add('act-open'); actRender(); }
+function actClose() { const o = document.getElementById('actv'); if (o) o.hidden = true; document.body.classList.remove('act-open'); ACT = null; }
+function actRefresh() { if (ACT) actRender(); }
+function actShift(n) { ACT.day = ymd(addDays(parseYmd(ACT.day), n)); actRender(); }
+function actRender() { const f = ACT_F[ACT.scope], ev = readoutEvents(ACT.day).filter(e => !f || f.includes(e.cat)), today = ymd(new Date());
+  document.getElementById('actv').innerHTML = `<div class="act-head"><div class="act-top"><b>📖 ${f ? esc(ACT_N[ACT.scope]) + ' activity' : 'Day activity'}</b><button type="button" class="small secondary" onclick="actClose()" aria-label="Close">✕ Close</button></div>
+    <div class="act-nav"><button type="button" class="secondary" onclick="actShift(-1)" aria-label="Previous day">‹</button><input type="date" value="${ACT.day}" aria-label="Day" onchange="if(this.value){ACT.day=this.value;actRender()}"><button type="button" class="secondary" onclick="actShift(1)" aria-label="Next day"${ACT.day >= today ? ' disabled' : ''}>›</button></div>
+    <div class="act-sub">${parseYmd(ACT.day).toLocaleDateString('en-US', { weekday: 'long' })} ${mdy(ACT.day)} · ${ev.length} entr${ev.length === 1 ? 'y' : 'ies'}${f ? ` · <button type="button" class="linkish" onclick="ACT.scope='all';actRender()">show everything</button>` : ''}</div></div>
+    <div class="act-list">${ev.length ? ev.map(e => `<div class="act-e${e.flag ? ' flag' : ''}"><div class="act-t">${esc(e.t || '—')}</div><div class="act-b"><small>${esc(e.cat)}</small><b>${esc(e.what)}</b>${e.det ? `<div class="act-d">${esc(e.det)}</div>` : ''}</div></div>`).join('') : `<p class="act-empty">Nothing logged${f ? ' here' : ''} on this day.</p>`}</div>`; }
+const _renderScreen34 = renderScreen;
+renderScreen = function (id) { _renderScreen34(id); navFix();
+  if (['aocs', 'aocEdit'].includes(id)) document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === 'more'));
+  const s = document.getElementById(id); if (!s || id === 'pinScreen' || s.querySelector(':scope > .rd-wrap, .scr-head .rd-btn')) return;
+  const btn = `<button type="button" class="rd-btn" onclick="actOpen('${ACT_F[id] ? id : 'all'}')" aria-label="Readable activity">📖 Readable</button>`, h = s.querySelector(':scope > .scr-head');
+  if (h) h.insertAdjacentHTML('beforeend', btn); else s.insertAdjacentHTML('afterbegin', `<div class="rd-wrap">${btn}</div>`); };
+const _renderDayStatus34 = renderDayStatus;
+renderDayStatus = function () { _renderDayStatus34(); const e = document.getElementById('dsEdit'); if (e && !document.getElementById('dsAct')) e.insertAdjacentHTML('afterend', `<button type="button" id="dsAct" class="secondary" onclick="actOpen('all',statusDay)">📖 Activity</button>`); };
+/* ---- 9. nav: Home, Round, Meters, More; History group in More ---- */
+function navFix() { const t = document.querySelector('#tabBar button[data-tab="aocs"]'); if (t) t.remove();
+  const g = document.querySelector('#more .more-grp'); if (g && !document.getElementById('histGrp')) g.insertAdjacentHTML('beforebegin', `<div class="card more-grp" id="histGrp"><h3>🕘 History</h3><div class="grp-btns">
+    <button class="secondary" onclick="showScreen('aocs');setAocMode('timeline')">Timeline</button><button class="secondary" onclick="showScreen('aocs');setAocMode('library')">AOC library</button>
+    <button class="secondary" onclick="actOpen('all')">📖 Activity log</button><button class="secondary" onclick="showScreen('bstat')">Boiler / fan history</button></div></div>`); }
+/* ---- 8. Meters: condensed Mon–Sun week grid ---- */
+let mtWeek = 0;
+const abbr = (it, v) => { if (v == null) return ''; const a = Math.abs(v); if (isHourMeter(it)) return Number(v).toFixed(1); return a >= 1e6 ? (v / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e4 ? (v / 1e3).toFixed(a >= 1e5 ? 0 : 1) + 'k' : Math.round(v).toLocaleString('en-US'); };
+const mdyy = d => mdy(d).slice(0, 6) + mdy(d).slice(8);
+function weekDays(off) { const t = new Date(), m = addDays(t, -((t.getDay() + 6) % 7) + off * 7); return [...Array(7)].map((_, i) => ymd(addDays(m, i))); }
+function meterWeekHtml() { const W = getWork(), days = weekDays(mtWeek), today = ymd(new Date());
+  const items = allItemDefs().filter(it => isMeter(it) && (getChecklist().includes(it) || meterSeries(it.id, W, meterKey(it)).length));
+  const hdr = `<div class="mw-days">${days.map((d, i) => `<span class="${d === today ? 'today' : ''}"><b>${'MTWTFSS'[i]}</b><small>${Number(d.slice(8))}</small></span>`).join('')}</div>`;
+  return `<div class="mw-head"><button type="button" class="secondary" onclick="mtWeek--;renderMeters()" aria-label="Previous week">‹</button><div class="mw-rng"><b>${mdyy(days[0])} – ${mdyy(days[6])}</b><small>Today ${mdyy(today)}${mtWeek ? ` · <button type="button" class="linkish" onclick="mtWeek=0;renderMeters()">this week</button>` : ''}</small></div><button type="button" class="secondary" onclick="mtWeek++;renderMeters()" aria-label="Next week"${mtWeek >= 0 ? ' disabled' : ''}>›</button></div>
+  <div class="mw-sticky">${hdr}</div>${items.map(it => { const ser = meterSeries(it.id, W, meterKey(it)), by = Object.fromEntries(ser.map(x => [x.day, x])), hr = isHourMeter(it), vals = days.map(d => by[d] && by[d].usage != null && by[d].usage >= 0 ? by[d].usage : null);
+    return `<div class="mw-m"><div class="mw-n"><b>${esc(it.label)}</b><small>${hr ? 'Ran hrs' : 'Used'}</small>${sparkSvg(vals.filter(v => v != null))}</div><div class="mw-cells">${days.map(d => { const x = by[d], fut = d > today, neg = x && x.usage < 0;
+      return `<button type="button" class="mw-c${d === today ? ' today' : ''}${neg ? ' neg' : ''}${x ? '' : ' empty'}" ${x ? `onclick="mwDetail('${it.id}','${d}')"` : 'disabled'} aria-label="${esc(it.label)} ${mdy(d)}">${fut || !x ? '' : x.usage == null ? '<i>—</i>' : (neg ? '!' : '') + abbr(it, x.usage)}</button>`; }).join('')}</div></div>`; }).join('')}
+  <p class="muted">Each cell = ${'used / ran'} since the previous reading. Tap a cell for the full reading and time. ! = negative (check reading).</p>`; }
+function mwDetail(id, d) { const W = getWork(), it = allItemDefs().find(i => i.id === id), x = meterSeries(id, W, meterKey(it)).find(s => s.day === d), st = readStamp(id, d, W), c = meterCompare(id, d, W), m = document.getElementById('mpad');
+  m.hidden = false; document.body.classList.add('pad-open'); m.innerHTML = `<div class="pad-wrap mw-det"><div class="pad-head"><b>${esc(it.label)}</b><button class="small secondary" aria-label="Close" onclick="padClose()">✕</button></div>
+    <p class="mw-dd">${parseYmd(d).toLocaleDateString('en-US', { weekday: 'long' })} ${mdy(d)}</p><div class="mw-big">${fmtM(it, x.value)}</div><p>Read at <b>${st.time ? mdy(st.date) + ' ' + st.time : '—'}</b></p><p class="${c && (c.flag || c.inf.usage < 0) ? 'oor' : ''}"><b>${c ? esc(c.text) : 'No previous reading'}</b></p>
+    <div class="pad-nav"><button type="button" class="secondary" onclick="padClose()">Close</button><button type="button" class="pad-next" onclick="padClose();openDay('${d}')">Open day</button></div></div>`; }
+const _renderMeters34 = renderMeters;
+renderMeters = function () { _renderMeters34(); const p = document.querySelector('#meters .ed-pane'); let wk = document.getElementById('mtWeekBox'); if (!wk) { p.insertAdjacentHTML('afterbegin', '<div id="mtWeekBox"></div><details id="mtOne" class="card"><summary>One meter · full history</summary></details>'); wk = document.getElementById('mtWeekBox'); const one = document.getElementById('mtOne'); one.appendChild(document.getElementById('mtItem')); one.appendChild(document.getElementById('mtTable')); }
+  wk.innerHTML = meterWeekHtml(); };
 
 /* ===================== v3.0.2: every export is exactly ONE landscape page ===================== */
 const ONE_MIN_FS = 22, ONE_MAX_FS = 34;
