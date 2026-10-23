@@ -736,6 +736,11 @@ html.dark .md-r .md-n small, html.dark .md-r .md-v small { color: #B8C2D0; }
 .eq-yn { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .eq-amb { margin-top: 10px; padding: 10px; border-radius: 10px; background: #FFF4E0; color: #6B4200; border: 2px solid #B26A00; font-weight: 800; font-size: 18px; } .eq-yes { margin-top: 8px; color: #1B5E20; font-weight: 800; font-size: 18px; }
 .tr-q { width: 100%; font-size: 19px; min-height: 50px; margin-bottom: 10px; } .tr-card h3 { margin: 0 0 6px; font-size: 21px; } .tr-if { font-size: 19px; margin: 4px 0; } .tr-ol { font-size: 19px; line-height: 1.4; margin: 4px 0 6px 0; padding-left: 28px; } .tr-esc { margin: 8px 0 0; color: #8A3B00; font-size: 18px; } .tr-ol.esc { color: #8A3B00; } .tr-row { align-items: center; gap: 6px; } .tr-row button { margin: 0; }
 html.dark .eq-amb { background: #2E2412; color: #FFD59A; border-color: #FFB74D; } html.dark .eq-yes { color: #A5D6A7; } html.dark .tr-esc, html.dark .tr-ol.esc { color: #FFCC80; }
+.eq-tg { margin-top: 10px; padding: 10px; border-radius: 12px; border: 2px solid; } .eq-tg > div { display: flex; flex-direction: column; } .eq-tg b { font-size: 30px; } .eq-tg small { font-size: 16px; }
+.eq-tg.ok { background: #E8F5E9; border-color: #2E7D32; color: #1B5E20; } .eq-tg.wait { background: #FFF4E0; border-color: #B26A00; color: #6B4200; }
+.eq-tgin { display: flex; gap: 8px; margin-top: 8px; } .eq-tgin input { flex: 1; min-width: 0; font-size: 20px; min-height: 52px; } .eq-tgin button { width: auto !important; margin-top: 0 !important; }
+.eq-newb { color: #8A3B00; font-weight: 800; font-size: 15px; }
+html.dark .eq-tg.ok { background: #12301A; border-color: #81C784; color: #A5D6A7; } html.dark .eq-tg.wait { background: #2E2412; border-color: #FFB74D; color: #FFD59A; } html.dark .eq-newb { color: #FFCC80; }
 .eq-chains button { width: 100%; min-height: 56px; font-size: 19px; margin: 6px 0; } .eq-ind { margin: 14px 4px 6px; }
 .eq-sec { margin: 16px 2px 6px; padding: 8px 12px; border-radius: 10px; background: #1F3A5F; color: #fff; font-weight: 800; font-size: 19px; } .eq-sec.skip { background: #FFF4E0; color: #6B4200; border: 1px dashed #B26A00; font-weight: 700; font-size: 17px; }
 html.dark .eq-sec { background: #2A4A75; color: #fff; } html.dark .eq-sec.skip { background: #2E2412; color: #FFD59A; border-color: #FFB74D; }
@@ -982,7 +987,7 @@ html.dark .eq-t { color: #C9D3E0; } html.dark .eq-timer { background: #1A2433; }
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.2.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.2.2 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2832,7 +2837,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.2.1';
+const APP_VER = '3.2.2';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4324,11 +4329,15 @@ const EQ_B1_SHUT = { id: 'eq-b1-shutdown', eq: 'b1', kind: 'shutdown', builtin: 
   { text: 'Turn boiler switch to off.', type: 'afterTimer' }] };
 const EQ_SCR_SHUT = { id: 'eq-scr-shutdown', eq: 'scr', kind: 'shutdown', builtin: true, steps: [{ text: 'Turn drag conveyor switch to off.' }, { text: 'Turn pump switch to off (up-and-down position).' }] };
 const EQ_SCR_START = { id: 'eq-scr-startup', eq: 'scr', kind: 'startup', builtin: true, steps: [{ text: 'Press E-stop button.' }, { text: 'Pull chain to engage exhaust diverter.' }, { text: 'Turn on conveyor switch.' }, { text: 'Turn on pump switch.' }] };
-const EQ_B1_START = { id: 'eq-b1-startup', eq: 'b1', kind: 'startup', builtin: true, steps: [{ text: 'Ensure wood feed selector in off position.' }, { text: 'Turn burner switch to on.' }, { text: 'Is the day bin grinder operating?', type: 'yn' }] };
+const EQ_B1_START = { id: 'eq-b1-startup', eq: 'b1', kind: 'startup', builtin: true, bv: 2, steps: [{ text: 'Ensure wood feed selector in off position.' }, { text: 'Put alarm into test mode (before boiler is turned on).' }, { text: 'Turn burner switch to on.' }, { text: 'Is the day bin grinder operating?', type: 'yn' }, { text: 'Once temp is at 650, turn on wood feed selection.', type: 'tempgate', min: 650, b: 'b1' }, { text: 'Turn alarm off (out of test mode) after boiler is running.' }] };
+const EQ_B1_START_V1 = ['Ensure wood feed selector in off position.', 'Turn burner switch to on.', 'Is the day bin grinder operating?'];
+function eqUpgrade() { const s = load('nwhSettings', {}); if (!Array.isArray(s.eqProcs)) return; const i = s.eqProcs.findIndex(p => p.id === 'eq-b1-startup' && !p.bv); if (i < 0) return; const p = s.eqProcs[i];
+  if (!p.steps.length || JSON.stringify(p.steps.map(x => x.text)) === JSON.stringify(EQ_B1_START_V1)) { s.eqProcs.splice(i, 1); store('nwhSettings', s); } }
+const eqNewBuiltin = p => p.id === EQ_B1_START.id && (p.bv || 1) < EQ_B1_START.bv;
 const EQ_CHAINS = { 'plant-shutdown': { name: 'Plant shutdown (Boiler 1 → Scrubber)', secs: ['eq-b1-shutdown', 'eq-scr-shutdown'] }, 'plant-startup': { name: 'Plant startup (Scrubber → Boiler 1)', secs: ['eq-scr-startup', 'eq-b1-startup'] } };
 const eqRunName = r => EQ_CHAINS[r.pid] ? EQ_CHAINS[r.pid].name : eqName(eqProcs().find(x => x.id === r.pid) || { eq: '', kind: 'shutdown' });
 const eqChainBtns = cls => Object.entries(EQ_CHAINS).map(([k, c]) => `<button type="button" class="${cls || ''}" onclick="eqStart('${k}')">${k === 'plant-shutdown' ? '⏼' : '⏻'} ${esc(c.name)}</button>`).join('');
-function eqProcs() { const s = load('nwhSettings', {}), have = Array.isArray(s.eqProcs) ? s.eqProcs : [], out = [];
+function eqProcs() { eqUpgrade(); const s = load('nwhSettings', {}), have = Array.isArray(s.eqProcs) ? s.eqProcs : [], out = [];
   EQ_LIST.forEach(e => Object.keys(EQ_KIND).forEach(k => { const id = `eq-${e.id}-${k}`; out.push(have.find(p => p.id === id) || (id === EQ_B1_SHUT.id ? JSON.parse(JSON.stringify(EQ_B1_SHUT)) : id === EQ_SCR_SHUT.id ? JSON.parse(JSON.stringify(EQ_SCR_SHUT)) : id === EQ_SCR_START.id ? JSON.parse(JSON.stringify(EQ_SCR_START)) : id === EQ_B1_START.id ? JSON.parse(JSON.stringify(EQ_B1_START)) : { id, eq: e.id, kind: k, steps: [] })); })); return out; }
 function eqSaveProc(p) { const s = load('nwhSettings', {}), l = (Array.isArray(s.eqProcs) ? s.eqProcs : []).filter(x => x.id !== p.id); l.push(p); s.eqProcs = l; store('nwhSettings', s); }
 const eqName = p => { const e = EQ_LIST.find(x => x.id === p.eq) || { name: p.eq }; return `${e.name} ${EQ_KIND[p.kind]}`; };
@@ -4340,7 +4349,7 @@ function eqLastRun(id) { return getAocs().filter(a => a.kind === 'proc' && a.sop
 function renderEqHome() { const P = eqProcs(), run = eqGetRun();
   document.getElementById('eqBody').innerHTML = (run ? `<div class="card eq-active"><b>▶ In progress: ${esc(eqRunName(run))}</b><div class="muted">Started ${eqWhen(run.started)}</div><button onclick="showScreen('eqRun')">Resume ›</button></div>` : '') + `<div class="card eq-chains"><h3>Plant</h3>${eqChainBtns()}<p class="muted">Runs each procedure in order as one logged run. Empty procedures are skipped with a note.</p><button type="button" class="secondary" onclick="showScreen('trouble')">🛠 Troubleshooting guide</button></div><h3 class="eq-ind">Individual procedures</h3>` +
     EQ_LIST.map(e => `<div class="card eq-card"><h3>${esc(e.name)}${e.sub ? ` <small class="muted">${esc(e.sub)}</small>` : ''}</h3>${Object.keys(EQ_KIND).map(k => { const p = P.find(x => x.eq === e.id && x.kind === k), l = eqLastRun(p.id);
-      return `<div class="eq-proc" data-eq="${p.id}"><div class="eq-pt"><b>${k === 'startup' ? '⏻ ' : '⏼ '}${EQ_KIND[k]}</b><small class="muted">${p.steps.length ? `${p.steps.length} steps · ${l ? 'last ' + mdy(l.date) + ' ' + l.time : 'never run'}` : 'Steps coming — edit to add'}</small></div>
+      return `<div class="eq-proc" data-eq="${p.id}"><div class="eq-pt"><b>${k === 'startup' ? '⏻ ' : '⏼ '}${EQ_KIND[k]}</b>${eqNewBuiltin(p) ? '<small class="eq-newb">New built-in steps available — Reset to apply</small>' : ''}<small class="muted">${p.steps.length ? `${p.steps.length} steps · ${l ? 'last ' + mdy(l.date) + ' ' + l.time : 'never run'}` : 'Steps coming — edit to add'}</small></div>
         <div class="eq-btns">${p.steps.length ? `<button class="small" onclick="eqStart('${p.id}')">▶ Run</button>` : ''}<button class="small secondary" onclick="eqEditOpen('${p.id}')">✎ Edit</button></div></div>`; }).join('')}</div>`).join('');
 }
 function eqStart(id) { const cur = eqGetRun(); if (cur) { if (cur.pid === id) return showScreen('eqRun'); if (!confirm('Another procedure is in progress. Discard it and start this one?')) return; }
@@ -4363,6 +4372,8 @@ function renderEqRun() { clearInterval(eqTick); eqCheckTimer(); const r = eqGetR
   el.innerHTML = `<div class="scr-head"><h2>${esc(eqRunName(r))}</h2></div><div class="progress"><i style="width:${Math.round(n / r.steps.length * 100)}%"></i></div><p class="muted">Started ${eqWhen(r.started)} · ${n}/${r.steps.length} steps</p>
     ${r.steps.map((s, i) => { const isCur = i === cur; let body = '';
       if (s.type === 'blowoff') body = eqBlowHtml(s, i, isCur);
+      else if (s.type === 'tempgate') { const t = bsLatest(s.b || 'b1', 'temp'), tv = t ? Number(t.temp) : null, ok = tv != null && tv >= (s.min || 650), U = bsUnits();
+        body = `<div class="eq-tg ${ok ? 'ok' : 'wait'}"><div><small>Latest Boiler 1 temp</small><b>${tv != null ? tv.toLocaleString('en-US') + ' ' + esc(U.temp) : '— none'}</b><small>${t ? bsStamp(t) : ''} · need ≥ ${s.min || 650}</small></div></div>${s.done ? '' : isCur ? `<div class="eq-tgin"><input type="number" inputmode="decimal" id="eqTemp" placeholder="Temp now" aria-label="Enter Boiler 1 temp"><button type="button" class="secondary" onclick="eqTempSave(${i})">Save temp</button></div>${ok ? `<button type="button" onclick="eqDone(${i})">✓ Wood feed on</button>` : `<button type="button" disabled>Waiting for ${s.min || 650}</button><button type="button" class="secondary small" onclick="eqTempOverride(${i})">Override temp…</button>`}` : ''}`; }
       else if (s.type === 'yn') body = s.done ? (s.answer === 'N' ? '<div class="eq-amb">⚠ Answer: NO — day bin grinder not operating (logged)</div>' : '<div class="eq-yes">Answer: YES</div>') : isCur ? `<div class="eq-yn"><button type="button" onclick="eqDone(${i},'Y')">Yes</button><button type="button" class="secondary" onclick="eqDone(${i},'N')">No</button></div>` : '';
       else if (s.type === 'timer') body = s.done ? '' : s.startTs ? `<div class="eq-timer" id="eqTimer" data-left="${left}"><span>${left > 0 ? eqFmt(left) : '00:00'}</span><small>${left > 0 ? 'remaining · started ' + s.start.time : 'Time is up'}</small></div>` : '<div class="muted">Timer starts when step ' + i + ' is complete.</div>';
       else if (isCur || (s.type === 'afterTimer' && r.steps[cur] && r.steps[cur].type === 'timer' && r.steps[cur].startTs)) body = s.type === 'afterTimer' && left > 0 ? `<button type="button" disabled>Wait ${eqFmt(left)}</button><button type="button" class="secondary small" onclick="eqOverride(${i})">Override timer…</button>` : `<button type="button" onclick="eqDone(${i})">✓ Done</button>`;
@@ -4374,10 +4385,12 @@ function eqMark(i, extra) { const r = eqGetRun(), s = r.steps[i], st = eqStamp()
   const nx = r.steps[i + 1]; if (nx && nx.type === 'timer' && !nx.startTs) { nx.startTs = st.ts; nx.start = st; }
   if (s.type === 'timer' && !s.startTs) { s.startTs = st.ts; s.start = st; }
   eqSetRun(r); haptic(document.querySelector(`.eq-step[data-i="${i}"]`)); renderEqRun(); const c = document.querySelector('.eq-step.cur'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
-function eqDone(i, ans) { const r = eqGetRun(), s = r.steps[i]; if (s.type === 'yn') return eqMark(i, { answer: ans === 'N' ? 'N' : 'Y' });
+function eqDone(i, ans) { const r = eqGetRun(), s = r.steps[i]; if (s.type === 'yn') return eqMark(i, { answer: ans === 'N' ? 'N' : 'Y' }); if (s.type === 'tempgate') { const t = bsLatest(s.b || 'b1', 'temp'); return eqMark(i, { tempAt: t ? t.temp : null }); }
   if (s.type === 'blowoff') { const c = blowNow(); if (c && c.valve === 'Open') return eqCloseBlow(i); }
   eqMark(i); const nx = r.steps[i + 1]; if (nx && nx.type === 'timer') eqTimerAuto(); }
 function eqTimerAuto() { /* the timer step completes itself when it reaches zero */ }
+function eqTempSave(i) { const v = Number((document.getElementById('eqTemp') || {}).value); if (!(v > 0)) return toast('Enter a temp'); const s = eqGetRun().steps[i]; bsAdd(s.b || 'b1', { temp: v }); bsRefresh(); toast('Temp saved'); renderEqRun(); }
+function eqTempOverride(i) { const t = bsLatest('b1', 'temp'); if (!confirm(`Temp is ${t ? t.temp : 'not logged'}, below ${eqGetRun().steps[i].min || 650}. Turn on wood feed anyway? This is logged as an override.`)) return; eqMark(i, { override: true, tempAt: t ? t.temp : null }); }
 function eqCloseBlow(i) { const c = blowNow(), d = ymd(new Date()), W = getWork(), e = W[d] = W[d] || {}; e.blowoff = e.blowoff || [];
   e.blowoff.push({ id: 'bo' + Date.now().toString(36), date: d, time: nowHM(), valve: 'Closed', clock: c && c.clock ? Number(c.clock) : 12, note: 'Boiler 1 shutdown' }); delete e.isExample; store('nwhWork', W);
   refreshDayCell(d); bsRefresh(); toast('Blow-off closed & logged'); eqMark(i, { closedByRun: true }); }
@@ -4388,14 +4401,14 @@ function eqFinish() { const r = eqGetRun(); if (!r) return; const p = eqProcs().
   const nm = eqRunName(r), P = eqProcs(), secN = id => eqName(P.find(x => x.id === id) || { eq: '', kind: '' }), secs = r.secs || [r.pid], chain = secs.length > 1, ov = r.steps.some(s => s.override), list = getAocs();
   list.push({ id: 'P-' + Date.now().toString(36), kind: 'proc', sopId: r.pid, created: new Date().toISOString(), date: r.started.date, time: r.started.time, occ: [{ id: 'o0', date: r.started.date, time: r.started.time }],
     equipment: chain ? 'Boiler 1 + Scrubber' : (EQ_LIST.find(e => e.id === p.eq) || {}).name || 'Both', equipOther: '', category: 'Procedure', title: 'Equipment: ' + nm, probable: '', actual: '', severity: 'Low', status: 'Resolved', resolved: '',
-    actions: `${chain ? secs.map(id => { const l = r.steps.filter(s => s.sec === id); return `${secN(id)}: ${l.length ? l.filter(s => s.done).length + '/' + l.length + ' steps' : 'no steps (skipped)'}`; }).join(' · ') + ' · ' : ''}${done}/${r.steps.length} steps completed${ov ? ' · timer overridden' : ''}${r.steps.some(s => s.closedByRun) ? ' · blow-off closed' : ''}${r.steps.filter(s => s.answer === 'N').map(s => ' · ⚠ NO: ' + s.text).join('')}`, steps: r.steps.map(s => ({ text: (chain ? `[${secN(s.sec)}] ` : '') + s.text + (s.answer ? ' — Answer: ' + (s.answer === 'N' ? 'NO ⚠' : 'YES') : '') + (s.override ? ' (override)' : ''), time: s.done ? s.done.time : '', date: s.done ? s.done.date : '' })), tags: ['Procedure', 'Equipment'], related: [] });
+    actions: `${chain ? secs.map(id => { const l = r.steps.filter(s => s.sec === id); return `${secN(id)}: ${l.length ? l.filter(s => s.done).length + '/' + l.length + ' steps' : 'no steps (skipped)'}`; }).join(' · ') + ' · ' : ''}${done}/${r.steps.length} steps completed${ov ? ' · timer overridden' : ''}${r.steps.some(s => s.closedByRun) ? ' · blow-off closed' : ''}${r.steps.filter(s => s.answer === 'N').map(s => ' · ⚠ NO: ' + s.text).join('')}`, steps: r.steps.map(s => ({ text: (chain ? `[${secN(s.sec)}] ` : '') + s.text + (s.type === 'tempgate' && s.done ? ` — temp ${s.tempAt != null ? s.tempAt : '?'}` : '') + (s.answer ? ' — Answer: ' + (s.answer === 'N' ? 'NO ⚠' : 'YES') : '') + (s.override ? ' (override)' : ''), time: s.done ? s.done.time : '', date: s.done ? s.done.date : '' })), tags: ['Procedure', 'Equipment'], related: [] });
   store('nwhAocs', list); eqSetRun(null); toast(nm + ' logged'); refreshDayCell(r.started.date); showScreen('eqHome'); }
 let eqDraft = null;
 function eqEditOpen(id) { eqDraft = JSON.parse(JSON.stringify(eqProcs().find(x => x.id === id))); showScreen('eqEdit'); }
 function renderEqEdit() { const d = eqDraft; if (!d) return; const R = i => `eqDraft.steps[${i}]`;
-  document.getElementById('eqEdBody').innerHTML = `<h3>${esc(eqName(d))}</h3>${d.steps.length ? '' : '<p class="muted">Steps coming — add them below.</p>'}
+  document.getElementById('eqEdBody').innerHTML = `<h3>${esc(eqName(d))}</h3>${eqNewBuiltin(d) ? '<p class="eq-amb">New built-in steps available — Reset to apply</p>' : ''}${d.steps.length ? '' : '<p class="muted">Steps coming — add them below.</p>'}
     ${d.steps.map((s, i) => `<div class="card sop-step-ed" data-i="${i}"><div class="row2"><b class="sop-n">${i + 1}.</b><textarea rows="2" aria-label="Step ${i + 1}" onchange="${R(i)}.text=this.value" style="flex:4">${esc(s.text)}</textarea></div>
-      ${s.type ? `<small class="muted">${s.type === 'yn' ? '❓ Yes / No answer' : s.type === 'blowoff' ? '🔧 Linked to blow-off status' : s.type === 'timer' ? `⏱ Timer: <input type="number" inputmode="numeric" min="1" value="${s.min || 10}" style="width:80px" aria-label="Timer minutes" onchange="${R(i)}.min=Math.max(1,Number(this.value)||10)"> min` : '⏱ Unlocks after timer'}</small>` : ''}
+      ${s.type ? `<small class="muted">${s.type === 'tempgate' ? `🌡 Temp gate ≥ <input type="number" inputmode="numeric" value="${s.min || 650}" style="width:90px" aria-label="Gate temp" onchange="${R(i)}.min=Number(this.value)||650">` : s.type === 'yn' ? '❓ Yes / No answer' : s.type === 'blowoff' ? '🔧 Linked to blow-off status' : s.type === 'timer' ? `⏱ Timer: <input type="number" inputmode="numeric" min="1" value="${s.min || 10}" style="width:80px" aria-label="Timer minutes" onchange="${R(i)}.min=Math.max(1,Number(this.value)||10)"> min` : '⏱ Unlocks after timer'}</small>` : ''}
       <input value="${esc(s.caution || '')}" placeholder="⚠ Caution / ⓘ note (optional)" aria-label="Step ${i + 1} caution" onchange="${R(i)}.caution=this.value">
       <div class="btn-row"><button class="small secondary" onclick="eqStepMove(${i},-1)" aria-label="Move up">↑</button><button class="small secondary" onclick="eqStepMove(${i},1)" aria-label="Move down">↓</button><button class="small danger" onclick="eqDraft.steps.splice(${i},1);renderEqEdit()" aria-label="Delete step">✕</button></div></div>`).join('')}
     <button class="secondary" onclick="eqDraft.steps.push({text:''});renderEqEdit()">＋ Add step</button>`; }
