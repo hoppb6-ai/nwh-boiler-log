@@ -753,6 +753,7 @@ html.dark .eq-t { color: #C9D3E0; } html.dark .eq-timer { background: #1A2433; }
 .mh-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; } .mh-chips .chip { margin: 0; min-height: 44px; padding: 6px 14px; font-size: 17px; border-radius: 22px; background: #EAF0F7; color: #1F3A5F; border: 2px solid #C9D3E0; width: auto; }
 .mh-chips .chip.on { background: #1F3A5F !important; color: #fff !important; border-color: #F2A900 !important; }
 .mh-cust { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .mh-cust label { font-size: 16px; } .mh-cust input { width: 100%; min-width: 0; font-size: 17px; }
+#hdrVer, html.dark #hdrVer { color: #fff !important; font-size: 13px; font-weight: 600; margin-left: 4px; } .mh-back { width: 100%; min-height: 50px; font-size: 18px; margin-bottom: 10px; }
 .mh-rng { font-weight: 700; font-size: 17px; margin: 4px 0; } .mh-exp { display: flex; gap: 8px; flex-wrap: wrap; } .mh-exp button { margin: 0; }
 .mh-m h3 { margin: 0 0 8px; font-size: 22px; } .mh-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .mh-sum > div { background: #EAF0F7; border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; min-width: 0; } .mh-sum small { font-size: 15px; color: #3C4654; } .mh-sum b { font-size: 21px; color: #14243A; overflow-wrap: anywhere; }
 .mh-note { font-size: 15px; color: #3C4654; margin: 8px 0; } .mh-list { list-style: none; margin: 0; padding: 0; }
@@ -766,7 +767,7 @@ html.dark .mh-r.flag { background: #2E2412; border-left-color: #FFB74D; } html.d
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log</h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.1</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -998,7 +999,7 @@ html.dark .mh-r.flag { background: #2E2412; border-left-color: #FFB74D; } html.d
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -1083,7 +1084,7 @@ html.dark .mh-r.flag { background: #2E2412; border-left-color: #FFB74D; } html.d
 <nav id="tabBar">
   <button data-tab="home" onclick="calFocus=new Date();showScreen('home')"><span>📅</span><b>Home</b></button>
   <button data-tab="daily" onclick="edDay=ymd(new Date());showScreen('daily')"><span>🧭</span><b>Round</b></button>
-  <button data-tab="meters" onclick="showScreen('meters')"><span>📟</span><b>Meters</b></button>
+  <button data-tab="meters" onclick="mtTab()"><span>📟</span><b>Meters</b></button>
   <button data-tab="aocs" onclick="showScreen('aocs')"><span>🕘</span><b>Timeline</b></button>
   <button data-tab="more" onclick="showScreen('more')"><span>☰</span><b>More</b></button>
 </nav>
@@ -2848,7 +2849,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.3';
+const APP_VER = '3.3.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4514,7 +4515,26 @@ cleanImportStamps();
 updateExampleUI();
 checkRecovery();
 metaGet('fileHandle').then(h => { if (h) fileHandle = h; }).catch(() => {});
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+/* ---- v3.3.1: reliable updates ---- */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  const ctl0 = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!ctl0 || sessionStorage.getItem('nwhSwReloaded') === APP_VER) return; sessionStorage.setItem('nwhSwReloaded', APP_VER);
+    if (document.body.classList.contains('pad-open')) swBanner(null); else location.reload(); });
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => { const up = () => reg.update().catch(() => {}); up();
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) up(); }); window.addEventListener('pageshow', up);
+    if (reg.waiting) reg.waiting.postMessage('skipWaiting');
+    reg.addEventListener('updatefound', () => { const n = reg.installing; n && n.addEventListener('statechange', () => { if (n.state === 'installed' && reg.waiting) reg.waiting.postMessage('skipWaiting'); }); }); }).catch(() => {});
+}
+async function checkForUpdates() { toast('Checking for updates…'); /* keeps localStorage + IndexedDB; only clears the offline app-file cache */
+  try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (e) {}
+  try { if (window.caches) for (const k of await caches.keys()) if (k.startsWith('nwh-log')) await caches.delete(k); } catch (e) {}
+  location.replace(location.pathname + '?v=' + Date.now()); }
+function mtTab() { views.meters = 'editor'; localStorage.setItem('nwhViews', JSON.stringify(views)); showScreen('meters'); }
+(function () { if (localStorage.getItem('nwhV331') ) return; try { if (views.meters === 'sheet') { views.meters = 'editor'; localStorage.setItem('nwhViews', JSON.stringify(views)); } } catch (e) {} localStorage.setItem('nwhV331', '1'); })();
+const _renderScreen331 = renderScreen;
+renderScreen = function (id) { _renderScreen331(id);
+  if (id === 'more' && !document.getElementById('updBtn')) { const v = document.getElementById('appVer'); if (v) v.insertAdjacentHTML('beforebegin', `<div class="card" id="updCard"><h3>⟳ App version</h3><p>Running <b>v${APP_VER}</b>. If something looks out of date, check for updates — your data stays on this phone.</p><button type="button" id="updBtn" onclick="checkForUpdates()">⟳ Check for updates</button></div>`); }
+  if (id === 'meters' && viewOf('meters') === 'sheet') { const p = document.querySelector('#meters .ss-pane'); if (p && !p.querySelector('.mh-back')) p.insertAdjacentHTML('afterbegin', `<button type="button" class="mh-back secondary" onclick="setView('meters','editor');mtSet('history')">📈 Readings history (Day | History) ›</button>`); } };
 
 document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#boilerBox') && e.target.id !== 'bTime') { const t = document.getElementById('bTime'); if (!t.value && e.target.value.trim()) t.value = nowHM(); } });
 </script>
