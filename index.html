@@ -750,6 +750,17 @@ html.dark .eq-sh .mchk { background: #8FB4E3; color: #0B1420; } html.dark .eq-st
 html.dark .eq-bo.bad { background: #3A1414; border-color: #FF8A80; } html.dark .eq-bo.ok { background: #12301A; border-color: #81C784; }
 html.dark .eq-open { color: #FF8A80; } html.dark .eq-closed, html.dark .eq-bo.ok > b { color: #A5D6A7; } html.dark .eq-step.done .eq-sh b { color: #A5D6A7; }
 html.dark .eq-t { color: #C9D3E0; } html.dark .eq-timer { background: #1A2433; } html.dark .eq-timer span { color: #E3ECF7; } html.dark .eq-step.cur { border-color: #8FB4E3; } html.dark .eq-ovr { color: #FFCC80; }
+.mh-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; } .mh-chips .chip { margin: 0; min-height: 44px; padding: 6px 14px; font-size: 17px; border-radius: 22px; background: #EAF0F7; color: #1F3A5F; border: 2px solid #C9D3E0; width: auto; }
+.mh-chips .chip.on { background: #1F3A5F !important; color: #fff !important; border-color: #F2A900 !important; }
+.mh-cust { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .mh-cust label { font-size: 16px; } .mh-cust input { width: 100%; min-width: 0; font-size: 17px; }
+.mh-rng { font-weight: 700; font-size: 17px; margin: 4px 0; } .mh-exp { display: flex; gap: 8px; flex-wrap: wrap; } .mh-exp button { margin: 0; }
+.mh-m h3 { margin: 0 0 8px; font-size: 22px; } .mh-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .mh-sum > div { background: #EAF0F7; border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; min-width: 0; } .mh-sum small { font-size: 15px; color: #3C4654; } .mh-sum b { font-size: 21px; color: #14243A; overflow-wrap: anywhere; }
+.mh-note { font-size: 15px; color: #3C4654; margin: 8px 0; } .mh-list { list-style: none; margin: 0; padding: 0; }
+.mh-r { display: flex; gap: 12px; padding: 10px 4px; border-top: 1px solid var(--grid); } .mh-r.flag { background: #FFF4E0; border-left: 5px solid #B26A00; padding-left: 8px; }
+.mh-t { flex: 0 0 74px; display: flex; flex-direction: column; font-size: 16px; color: #3C4654; } .mh-t b { font-size: 20px; color: #14243A; } .mh-v { flex: 1; min-width: 0; display: flex; flex-direction: column; } .mh-v b { font-size: 22px; } .mh-v span { font-size: 17px; overflow-wrap: anywhere; }
+html.dark .mh-chips .chip { background: #1A2433; color: #E3ECF7; border-color: #3A4A60; } html.dark .mh-chips .chip.on { background: #8FB4E3 !important; color: #0B1420 !important; border-color: #F2A900 !important; }
+html.dark .mh-sum > div { background: #1A2433; } html.dark .mh-sum small, html.dark .mh-note, html.dark .mh-t { color: #C9D3E0; } html.dark .mh-sum b, html.dark .mh-t b { color: #F0F4FA; }
+html.dark .mh-r.flag { background: #2E2412; border-left-color: #FFB74D; } html.dark .mh-r.flag .mh-v span, html.dark .mh-r.flag .mh-v b { color: #FFD59A; }
 </style>
 </head>
 <body class="locked">
@@ -987,7 +998,7 @@ html.dark .eq-t { color: #C9D3E0; } html.dark .eq-timer { background: #1A2433; }
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.2.2 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2837,7 +2848,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.2.2';
+const APP_VER = '3.3';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4448,6 +4459,54 @@ boilerPanelHtml = function (compact) { const h = _boilerPanelHtml35(compact); if
   const btn = `<button type="button" class="pc-eq" onclick="showScreen('${r ? 'eqRun' : 'eqHome'}')">${r ? `▶ Shutdown in progress${l ? ' · ' + eqFmt(l) + ' left' : ''}` : '⏻ Startup &amp; Shutdown'}<span class="pc-chev">›</span></button>`;
   const two = r ? btn : `<div class="pc-eqs">${eqChainBtns('pc-eq')}<button type="button" class="pc-eq secondary" onclick="showScreen('eqHome')">Procedures<span class="pc-chev">›</span></button></div>`;
   return h.replace(/<\/div>\s*$/, two + '</div>'); };
+
+/* ===================== v3.3: Meters History view (per-read list, used between reads, totals, averages) ===================== */
+let MH = Object.assign({ range: '7', from: '', to: '', meter: 'all' }, JSON.parse(localStorage.getItem('nwhMtHist') || '{}'));
+const mhSave = () => localStorage.setItem('nwhMtHist', JSON.stringify(MH));
+function mhRange() { const t = new Date(), to = ymd(t); if (MH.range === '30') return { from: ymd(addDays(t, -29)), to }; if (MH.range === 'month') return { from: to.slice(0, 8) + '01', to };
+  if (MH.range === 'custom' && MH.from && MH.to) return MH.from <= MH.to ? { from: MH.from, to: MH.to } : { from: MH.to, to: MH.from }; return { from: ymd(addDays(t, -6)), to }; }
+const mhLabel = () => ({ '7': 'Last 7 days', '30': 'Last 30 days', month: 'This month', custom: 'Custom' })[MH.range] || 'Last 7 days';
+const mhUnit = it => (it.fields.find(f => f.type === 'meter') || {}).unit || '';
+function mhData(it, from, to, W) { W = W || getWork(); const key = meterKey(it), hr = isHourMeter(it), u = mhUnit(it);
+  const rows = meterSeries(it.id, W, key).filter(p => p.day >= from && p.day <= to).map(p => { const st = readStamp(it.id, p.day, W), c = p.usage != null ? meterCompare(it.id, p.day, W, key) : null;
+    const ps = p.prevDay ? readStamp(it.id, p.prevDay, W) : null, elH = c && c.el != null ? c.el : p.days != null ? p.days * 24 : null;
+    return { day: p.day, st, value: p.value, usage: p.usage, prev: ps, elH, flag: !!(c && (c.flag || c.inf.usage < 0)), neg: p.usage != null && p.usage < 0, text: c ? (p.usage < 0 ? '! ' : '') + (hr ? 'Ran ' : 'Used ') + c.short.replace(/^! /, '') + (hr ? '' : u && !/ over /.test(c.short) ? ' ' + u : '') + (c.el == null && p.days != null ? ` (${p.days} day${p.days > 1 ? 's' : ''})` : '') : 'First read (no earlier reading)' }; });
+  const iv = rows.filter(r => r.usage != null && !r.neg && r.elH > 0), total = iv.reduce((a, r) => a + r.usage, 0), hrs = iv.reduce((a, r) => a + r.elH, 0);
+  const rates = iv.map(r => r.usage / (r.elH / 24));
+  return { it, hr, u, rows, total: mRound(total), hrs, avg: hrs ? mRound(total / (hrs / 24)) : null, min: rates.length ? mRound(Math.min(...rates)) : null, max: rates.length ? mRound(Math.max(...rates)) : null, n: rows.length, nIv: iv.length, negs: rows.filter(r => r.neg).length }; }
+const mhN = (d, v) => v == null ? '—' : fmtM(d.it, v) + (d.hr ? ' hrs' : d.u ? ' ' + d.u : '');
+function mhMeters(W) { const all = mtItems(W); return MH.meter === 'all' ? all : all.filter(i => i.id === MH.meter); }
+function meterHistHtml() { const W = getWork(), { from, to } = mhRange(), all = mtItems(W), list = mhMeters(W);
+  const chips = (arr, cur, fn) => `<div class="mh-chips">${arr.map(([k, l]) => `<button type="button" class="chip${cur === k ? ' on' : ''}" aria-pressed="${cur === k}" onclick="${fn}('${k}')">${esc(l)}</button>`).join('')}</div>`;
+  return `<div class="card mh-ctl">${chips([['7', '7 days'], ['30', '30 days'], ['month', 'This month'], ['custom', 'Custom']], MH.range, 'mhSetRange')}
+    ${MH.range === 'custom' ? `<div class="mh-cust"><label>From<input type="date" value="${MH.from || from}" aria-label="From" onchange="MH.from=this.value;mhSave();renderMeters()"></label><label>To<input type="date" value="${MH.to || to}" aria-label="To" onchange="MH.to=this.value;mhSave();renderMeters()"></label></div>` : ''}
+    ${chips([['all', 'All meters'], ...all.map(i => [i.id, i.label])], MH.meter, 'mhSetMeter')}
+    <p class="mh-rng">${mhLabel()} · ${mdy(from)} – ${mdy(to)}</p>
+    <div class="mh-exp"><button class="small" onclick="mhExport('png')">📱 PNG</button><button class="small secondary" onclick="mhExport('pdf')">📄 PDF</button><button class="small secondary" onclick="mhExport('csv')">CSV</button></div></div>
+    ${list.map(it => { const d = mhData(it, from, to, W); return `<div class="card mh-m" data-mid="${it.id}"><h3>${esc(it.label)}${d.u ? ` <small class="muted">${esc(d.u)}</small>` : ''}</h3>
+      <div class="mh-sum"><div><small>${d.hr ? 'Total ran' : 'Total used'}</small><b>${mhN(d, d.total)}</b></div><div><small>Avg per day</small><b>${mhN(d, d.avg)}</b></div><div><small>Reads</small><b>${d.n}</b></div><div><small>Daily use min / max</small><b>${d.min == null ? '—' : fmtM(it, d.min) + ' / ' + fmtM(it, d.max)}</b></div></div>
+      <p class="mh-note">Avg = total ÷ ${d.hrs ? fmtNum(d.hrs / 24, 1) + ' days' : 'days'} actually elapsed between reads (from each read's date + time). Totals include the use since the read before ${mdy(from)}.${d.negs ? ` ! ${d.negs} negative read${d.negs > 1 ? 's' : ''} left out.` : ''}</p>
+      ${d.rows.length ? `<ol class="mh-list">${d.rows.slice().reverse().map(r => `<li class="mh-r${r.flag ? ' flag' : ''}"><div class="mh-t">${mdy(r.st.date).slice(0, 5)} <b>${esc(r.st.time || '—')}</b><small>${parseYmd(r.st.date).toLocaleDateString('en-US', { weekday: 'short' })}</small></div><div class="mh-v"><b>${fmtM(it, r.value)}</b><span>${esc(r.text)}</span></div></li>`).join('')}</ol>` : '<p class="muted">No reads in this range.</p>'}</div>`; }).join('')}`; }
+function mhSetRange(k) { MH.range = k; if (k === 'custom' && !MH.from) { const r = mhRange(); MH.from = ymd(addDays(new Date(), -6)); MH.to = ymd(new Date()); } mhSave(); renderMeters(); }
+function mhSetMeter(k) { MH.meter = k; mhSave(); renderMeters(); }
+function mhSheet() { const W = getWork(), { from, to } = mhRange(), D = mhMeters(W).map(it => mhData(it, from, to, W));
+  const sp = { title: 'NWH Meter History', slug: 'Meter-History', from, to, cols: [{ h: 'Date', kind: 'text', key: true, g: '' }, { h: 'Time', kind: 'text', g: '' }, { h: 'Meter', kind: 'text', g: '' }, { h: 'Reading', kind: 'num', g: '' }, { h: 'Used since last read', kind: 'text', g: '' }, { h: 'Elapsed (hrs)', kind: 'num', g: '' }].map(c => Object.assign({ g: '' }, c)), rows: [], foot: [] };
+  D.forEach(d => { d.rows.forEach(r => sp.rows.push({ day: r.day, flag: r.flag, cells: [C(sDate(r.st.date)), C(r.st.time || ''), C(d.it.label, { bold: true }), C(fmtM(d.it, r.value), { raw: String(r.value) }), C(r.text, r.flag ? { bg: AMBER_BG, bold: true } : {}), C(r.elH != null ? fmtNum(r.elH, 1) : '')] }));
+    sp.foot.push({ cells: [C('Summary'), C(''), C(d.it.label, { bold: true }), C(d.n + ' reads'), C(`Total ${mhN(d, d.total)} · avg ${mhN(d, d.avg)}/day · min/max ${d.min == null ? '—' : fmtM(d.it, d.min) + ' / ' + fmtM(d.it, d.max)}`, { bold: true }), C(d.hrs ? fmtNum(d.hrs, 1) : '')] }); });
+  return { sp, D, from, to }; }
+async function mhExport(kind) { const { sp, D, from, to } = mhSheet(); if (!D.some(d => d.rows.length)) return toast('Nothing to export in this range'); const base = `NWH-Meter-History-${from}_to_${to}`;
+  if (kind === 'csv') { const L = [['Meter', 'Date', 'Time', 'Reading', 'Used since last read', 'Elapsed hrs', 'Flag'].join(',')], q = v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+    D.forEach(d => { d.rows.forEach(r => L.push([d.it.label, r.st.date, r.st.time, r.value, r.usage == null ? '' : r.usage, r.elH != null ? Math.round(r.elH * 100) / 100 : '', r.flag ? 'check' : ''].map(q).join(','))); L.push([d.it.label + ' SUMMARY', from, to, d.n + ' reads', 'total ' + d.total, 'avg/day ' + (d.avg == null ? '' : d.avg), `min ${d.min == null ? '' : d.min} max ${d.max == null ? '' : d.max}`].map(q).join(',')); });
+    const how = await shareOrDownload([new File([L.join('\n')], base + '.csv', { type: 'text/csv' })]); if (how !== 'cancelled') toast('CSV ' + how); return [base + '.csv']; }
+  if (kind === 'pdf') return shareCanvases(sheetCanvases(sp), base, 'pdf');
+  return shareCanvases([mhPhoneCanvas(D, from, to)], base + '-phone', 'png'); }
+function mhPhoneCanvas(D, from, to) { const blocks = []; D.forEach(d => { blocks.push({ title: `${d.it.label} · summary`, list: true, items: [{ text: `${d.hr ? 'Total ran' : 'Total used'}: ${mhN(d, d.total)}`, bold: true }, { text: `Avg per day: ${mhN(d, d.avg)} (elapsed time between reads)`, bold: true }, { text: `Reads: ${d.n} · daily use min/max: ${d.min == null ? '—' : fmtM(d.it, d.min) + ' / ' + fmtM(d.it, d.max)}` }] });
+  blocks.push({ title: `${d.it.label} · reads`, list: true, items: d.rows.length ? d.rows.map(r => ({ text: `${mdy(r.st.date).slice(0, 5)} ${r.st.time || '—'} · ${fmtM(d.it, r.value)} · ${r.text}`, flag: r.flag, bold: true })) : [{ text: 'No reads in this range' }] }); });
+  return phoneCanvas('Meter History', `${sDate(from, true)} – ${sDate(to, true)}`, blocks); }
+renderMeters = (function (prev) { return function () { if (mtScope === 'week' || mtScope === 'month') { mtScope = 'history'; localStorage.setItem('nwhMtScope', 'history'); }
+  if (mtScope !== 'history') { prev(); const s = document.querySelector('#meters .mt-scope'); if (s) s.outerHTML = mhSeg(); return; }
+  const save = mtScope; mtScope = 'day'; prev(); mtScope = save; const wk = document.getElementById('mtWeekBox'); wk.innerHTML = mhSeg() + meterHistHtml(); }; })(renderMeters);
+const mhSeg = () => `<div class="seg mt-scope" role="tablist" aria-label="Meters view">${[['day', 'Day'], ['history', 'History']].map(([k, l]) => `<button type="button" role="tab" data-sc="${k}" aria-selected="${mtScope === k}" class="${mtScope === k ? 'on' : ''}" onclick="mtSet('${k}')">${l}</button>`).join('')}</div>`;
 
 /* ---------- Startup ---------- */
 migrateData();
