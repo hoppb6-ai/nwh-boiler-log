@@ -762,12 +762,34 @@ html.dark .eq-t { color: #C9D3E0; } html.dark .eq-timer { background: #1A2433; }
 html.dark .mh-chips .chip { background: #1A2433; color: #E3ECF7; border-color: #3A4A60; } html.dark .mh-chips .chip.on { background: #8FB4E3 !important; color: #0B1420 !important; border-color: #F2A900 !important; }
 html.dark .mh-sum > div { background: #1A2433; } html.dark .mh-sum small, html.dark .mh-note, html.dark .mh-t { color: #C9D3E0; } html.dark .mh-sum b, html.dark .mh-t b { color: #F0F4FA; }
 html.dark .mh-r.flag { background: #2E2412; border-left-color: #FFB74D; } html.dark .mh-r.flag .mh-v span, html.dark .mh-r.flag .mh-v b { color: #FFD59A; }
+#mreord { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,.55); overflow-y: auto; padding: calc(env(safe-area-inset-top) + 10px) 10px 20px; }
+.mro-wrap { background: #fff; color: #10233d; border-radius: 14px; padding: 14px; max-width: 560px; margin: 0 auto; }
+.mro-head { display: flex; align-items: center; justify-content: space-between; font-size: 21px; gap: 8px; }
+.mro-head button { width: 56px !important; flex: 0 0 56px; min-width: 50px; min-height: 50px; font-size: 20px; }
+.mro-note { font-size: 16px; color: #33475f; margin: 6px 0 10px; }
+.mro-list { list-style: none; padding: 0; margin: 0 0 12px; }
+.mro-row { display: flex; align-items: center; gap: 8px; padding: 8px; border: 2px solid #c9d4e3; border-radius: 10px; margin-bottom: 8px; background: #f4f7fb; }
+.mro-n { min-width: 30px; font-size: 20px; font-weight: 800; color: #1F3A5F; text-align: center; }
+.mro-lab { flex: 1; font-size: 19px; font-weight: 700; color: #10233d; overflow-wrap: anywhere; }
+.mro-row button { width: 58px !important; min-width: 58px; min-height: 54px; font-size: 24px; padding: 0; background: #1F3A5F !important; color: #fff !important; border-radius: 10px; }
+.mro-row button:disabled { background: #d5dce6 !important; color: #3d4b5c !important; }
+.mro-save, .mro-reset { width: 100%; min-height: 54px; font-size: 19px; margin-top: 8px; }
+.mro-open { width: 100%; min-height: 48px; font-size: 17px; margin: 6px 0; }
+#mpad .pad-head .mro-open { width: auto; margin: 0 6px 0 auto; min-height: 44px; }
+html.dark .mro-wrap { background: #14202f; color: #e8eef6; }
+html.dark .mro-note { color: #c3cfdd; }
+html.dark .mro-row { background: #1b2b3f; border-color: #3a5170; }
+html.dark .mro-lab { color: #f1f5fa; } html.dark .mro-n { color: #9cc3ff; }
+html.dark .mro-row button { background: #2f5d94 !important; color: #fff !important; }
+html.dark .mro-row button:disabled { background: #2a3646 !important; color: #a8b6c7 !important; }
+#mpad .pk.dis { opacity: 1 !important; color: #4a5768 !important; background: #e3e8ef !important; }
+html.dark #mpad .pk.dis { color: #aab6c5 !important; background: #243245 !important; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.1</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.2</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -999,7 +1021,7 @@ html.dark .mh-r.flag { background: #2E2412; border-left-color: #FFB74D; } html.d
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.2 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2849,7 +2871,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.3.1';
+const APP_VER = '3.3.2';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3324,9 +3346,10 @@ checklistProgress = function (day, W) {
   return { done: rest.filter(it => cl[it.id] && cl[it.id].done).length + (mDone ? 1 : 0), total: rest.length + (ms.length ? 1 : 0) };
 };
 function meterStepHtml(day) {
-  const W = getWork(), cl = ((W[day] || {}).checklist) || {}, ms = meterItems(), f = ms.filter(it => meterFilled(cl[it.id], it)).length, done = f === ms.length;
+  const W = getWork(), cl = ((W[day] || {}).checklist) || {}, ms = meterReadItems(), f = ms.filter(it => meterFilled(cl[it.id], it)).length, done = f === ms.length;
   return `<div class="cl-item mstep${done ? ' done' : ''}" data-item="meters" data-step="meters">
     <div class="cl-top"><button type="button" class="mstep-open" onclick="openMeterPad('${day}')"><span class="mchk" aria-hidden="true">${done ? '✓' : ''}</span><span class="cl-n"></span> Meter readings</button><span class="mprog${done ? ' ok' : ''}">${f}/${ms.length}</span></div>
+    <button type="button" class="mro-open secondary" onclick="openMeterReorder('${day}')">⇅ Reorder (read order)</button>
     <div class="mstep-grid">${ms.map(it => { const r = cl[it.id] || {}, v = (r.values || {})[meterKey(it)]; const st = readStamp(it.id, day, W);
       return `<button type="button" class="ms-cell${v != null ? ' ok' : r.done ? ' ok' : ''}" onclick="openMeterPad('${day}','${it.id}')"><span>${esc(it.label.replace(/ ?meter( reading)?$/i, ''))}</span><b>${v != null ? fmtM(it, v) : r.done ? '✓' : '—'}</b>${v != null && st.time ? `<small>${st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : ''}${st.time}</small>` : ''}</button>`; }).join('')}</div>
     <button type="button" class="mstep-go" onclick="openMeterPad('${day}')">${f ? (done ? '✎ Review / edit readings' : '▶ Continue readings') : '▶ Enter meter readings'}</button></div>`;
@@ -3350,10 +3373,10 @@ function saveMeterValue(day, id, val) {
   delete e.isExample; store('nwhWork', W); scheduleSnapshot && scheduleSnapshot();
 }
 function openMeterPad(day, startId) {
-  const ms = meterItems(), W0 = getWork(), cl0 = ((W0[day] || {}).checklist) || {};
+  const ms = meterReadItems(), W0 = getWork(), cl0 = ((W0[day] || {}).checklist) || {};
   let start = startId ? ms.findIndex(it => it.id === startId) : ms.findIndex(it => !meterFilled(cl0[it.id], it));
   const all = start < 0;
-  padOpen({ title: `Meter readings · ${mdy(day)}`, i: Math.max(0, start), mode: all && !startId ? 'done' : 'pad', onClose: () => { refreshMeterStep(day); if (document.getElementById('meters').classList.contains('active')) renderScreen('meters'); },
+  padOpen({ title: `Meter readings · ${mdy(day)}`, meterDay: day, i: Math.max(0, start), mode: all && !startId ? 'done' : 'pad', onClose: () => { refreshMeterStep(day); if (document.getElementById('meters').classList.contains('active')) renderScreen('meters'); },
     steps: ms.map(it => { const key = meterKey(it), dec = !!(it.fields.find(f => f.type === 'meter') || {}).dec;
       return { label: it.label, dec, maxDec: 2, unit: '',
         value: () => ((((getWork()[day] || {}).checklist || {})[it.id] || {}).values || {})[key],
@@ -4509,6 +4532,28 @@ renderMeters = (function (prev) { return function () { if (mtScope === 'week' ||
   const save = mtScope; mtScope = 'day'; prev(); mtScope = save; const wk = document.getElementById('mtWeekBox'); wk.innerHTML = mhSeg() + meterHistHtml(); }; })(renderMeters);
 const mhSeg = () => `<div class="seg mt-scope" role="tablist" aria-label="Meters view">${[['day', 'Day'], ['history', 'History']].map(([k, l]) => `<button type="button" role="tab" data-sc="${k}" aria-selected="${mtScope === k}" class="${mtScope === k ? 'on' : ''}" onclick="mtSet('${k}')">${l}</button>`).join('')}</div>`;
 
+
+/* ---- v3.3.2: rearrangeable READ order for meter entry only (outputs keep sheet order) ---- */
+function meterReadOrderIds() { const ms = meterItems(), ids = new Set(ms.map(m => m.id)), o = (load('nwhSettings', {}) || {}).meterReadOrder;
+  const out = Array.isArray(o) ? o.filter((id, i) => ids.has(id) && o.indexOf(id) === i) : []; ms.forEach(m => { if (!out.includes(m.id)) out.push(m.id); }); return out; }
+function meterReadItems() { const ms = meterItems(), by = Object.fromEntries(ms.map(m => [m.id, m])); return meterReadOrderIds().map(id => by[id]).filter(Boolean); }
+let MRO = null;
+function openMeterReorder(day) { MRO = { day, ids: meterReadOrderIds() }; let o = document.getElementById('mreord'); if (!o) { o = document.createElement('div'); o.id = 'mreord'; document.body.appendChild(o); } o.hidden = false; document.body.classList.add('pad-open'); mroRender(); }
+function mroRender() { const o = document.getElementById('mreord'), by = Object.fromEntries(meterItems().map(m => [m.id, m])), n = MRO.ids.length;
+  o.innerHTML = `<div class="mro-wrap"><div class="mro-head"><b>⇅ Meter read order</b><button type="button" class="secondary" onclick="mroClose()" aria-label="Close">✕</button></div>
+  <p class="mro-note">Order you walk and read them in “Log today”. Day, History, sheets, exports and CSV keep the sheet order.</p>
+  <ol class="mro-list">${MRO.ids.map((id, i) => `<li class="mro-row" data-id="${id}"><span class="mro-n">${i + 1}</span><span class="mro-lab">${esc(by[id].label)}</span>
+    <button type="button" class="mro-up" aria-label="Move ${esc(by[id].label)} up" onclick="mroMove(${i},-1)" ${i ? '' : 'disabled'}>▲</button><button type="button" class="mro-dn" aria-label="Move ${esc(by[id].label)} down" onclick="mroMove(${i},1)" ${i < n - 1 ? '' : 'disabled'}>▼</button></li>`).join('')}</ol>
+  <button type="button" class="mro-save" onclick="mroSave()">✓ Save read order</button><button type="button" class="secondary mro-reset" onclick="mroReset()">↺ Reset to sheet order</button></div>`; }
+function mroMove(i, d) { const j = i + d, a = MRO.ids; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; mroRender(); const b = document.querySelectorAll('#mreord .mro-row')[j]; b && b.querySelector(d < 0 ? '.mro-up' : '.mro-dn')?.focus(); }
+function mroReset() { MRO.ids = meterItems().map(m => m.id); mroRender(); }
+function mroSave() { const s = load('nwhSettings', {}) || {}, sheet = meterItems().map(m => m.id);
+  if (MRO.ids.join() === sheet.join()) delete s.meterReadOrder; else s.meterReadOrder = MRO.ids.slice(); store('nwhSettings', s); scheduleSnapshot && scheduleSnapshot(); toast('Read order saved'); mroClose(true); }
+function mroClose(saved) { const o = document.getElementById('mreord'); o.hidden = true; o.innerHTML = ''; const day = MRO && MRO.day; MRO = null;
+  if (!PAD) document.body.classList.remove('pad-open'); if (day) refreshMeterStep(day);
+  if (saved && PAD && PAD.meterDay) { const d = PAD.meterDay, cur = (PAD.steps[PAD.i] || {}).label; padClose(); openMeterPad(d); } }
+const _padRender332 = padRender;
+padRender = function (light) { _padRender332(light); if (PAD && PAD.meterDay && !light) { const h = document.querySelector('#mpad .pad-head'); if (h && !h.querySelector('.mro-open')) { const b = document.createElement('button'); b.type = 'button'; b.className = 'mro-open secondary small'; b.textContent = '⇅ Reorder'; b.onclick = () => openMeterReorder(PAD.meterDay); h.insertBefore(b, h.lastElementChild); } } };
 /* ---------- Startup ---------- */
 migrateData();
 cleanImportStamps();
