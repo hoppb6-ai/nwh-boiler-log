@@ -784,12 +784,33 @@ html.dark .mro-row button { background: #2f5d94 !important; color: #fff !importa
 html.dark .mro-row button:disabled { background: #2a3646 !important; color: #a8b6c7 !important; }
 #mpad .pk.dis { opacity: 1 !important; color: #4a5768 !important; background: #e3e8ef !important; }
 html.dark #mpad .pk.dis { color: #aab6c5 !important; background: #243245 !important; }
+.upill { display: inline-block; padding: 3px 11px; border-radius: 12px; font-weight: 800; line-height: 1.35; margin-top: 3px; }
+.upill.u-used, .upc-used { background: #D3F1EA !important; color: #00473F !important; }
+.upill.u-zero, .upc-zero { background: #E7DEFB !important; color: #3B1F91 !important; }
+.upill.u-chk, .upc-chk { background: #FDE0E0 !important; color: #A31515 !important; }
+.upc-used, .upc-zero, .upc-chk { font-weight: 800 !important; }
+html.dark .upill.u-used, html.dark .upc-used { background: #0D4A42 !important; color: #C4FBEE !important; }
+html.dark .upill.u-zero, html.dark .upc-zero { background: #3A2970 !important; color: #EEE6FF !important; }
+html.dark .upill.u-chk, html.dark .upc-chk { background: #5E1A1A !important; color: #FFE0E0 !important; }
+.mnote { margin-top: 5px; font-size: 16px; font-style: italic; color: #33475f; overflow-wrap: anywhere; }
+html.dark .mnote { color: #d3dde9; }
+.mh-v .upill { font-size: 17px; }
+.md-r { flex-wrap: wrap; } .md-note { flex-basis: 100%; text-align: left; }
+.mh-fix { display: block; width: 100%; margin-top: 6px; min-height: 46px; font-size: 16px; font-weight: 800; background: #A31515 !important; color: #fff !important; border-radius: 10px; }
+html.dark .mh-fix { background: #C62828 !important; color: #fff !important; }
+.pad-mx { display: flex; gap: 8px; margin: 6px 0; }
+.pad-mx button { flex: 1; min-height: 48px; font-size: 16px; font-weight: 800; }
+.pad-zero { background: #3B1F91 !important; color: #fff !important; }
+html.dark .pad-zero { background: #5B3FC0 !important; color: #fff !important; }
+.pad-note { display: block; margin: 4px 0 8px; font-size: 15px; font-weight: 700; }
+.pad-note textarea { display: block; width: 100%; box-sizing: border-box; font-size: 17px; margin-top: 4px; border-radius: 8px; padding: 8px; }
+html.dark .pad-note textarea { background: #0f1a27; color: #f1f5fa; border: 1px solid #4b627f; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.2</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.3</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1021,7 +1042,7 @@ html.dark #mpad .pk.dis { color: #aab6c5 !important; background: #243245 !import
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.2 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.3 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2455,6 +2476,7 @@ function rangeDates(st) {
 const sDate = (k, y) => parseYmd(k).toLocaleDateString('en-US', Object.assign({ weekday: 'short', month: 'short', day: 'numeric' }, y ? { year: 'numeric' } : {}));
 const C = (t, o) => Object.assign({ t: t == null ? '' : String(t) }, o || {});
 // Plant-safety palette (prints in B&W: every flag also has a symbol)
+const U_USED = '#00594F', U_ZERO = '#4527A0', U_ZERO_BG = '#EDE7F6';
 const NAVY = '#1F3A5F', RED = '#C62828', GREEN = '#2E7D32', AMBER = '#F2A900', AMBER_BG = '#FFF1C2', INK = '#222222', GRID = '#C9CED6', ALT = '#F2F4F7', HEAVY = '#3C4654';
 
 function buildSheet(scr, from, to, desc) {
@@ -2523,8 +2545,8 @@ function buildSheet(scr, from, to, desc) {
         const st = readStamp(m.id, k, W), stx = st.time || st.date !== k ? ' @ ' + stampText(st) : '';
         cells.push(C(fmtNum(inf.today, p) + stx, { raw: rawNum(inf.today, p), csvAfter: st.time || st.date !== k ? stampText(st) : '' }));
         if (inf.usage == null) { cells.push(C('—', { color: '#aaa' })); return; }
-        const cmp = meterCompare(m.id, k, W, m.key), t = cmp.short, tr = t.split(cmp.inf.usage < 0 ? fmtNum(inf.usage, p) : fmtNum(inf.usage, p)).join(rawNum(inf.usage, p));
-        cells.push(inf.usage < 0 ? C('! ' + t, { bg: AMBER_BG, bold: true, raw: '! ' + tr }) : cmp.flag ? C(t, { bg: AMBER_BG, bold: true, raw: tr }) : C(t, { raw: tr }));
+        const cmp = meterCompare(m.id, k, W, m.key), t = cmp.short, tr = t.split(fmtNum(inf.usage, p)).join(rawNum(inf.usage, p)).replace(/^[▲○⚠] /, '');
+        { const nt = mNote(k, m.id), ns = nt ? ' · Note: ' + nt : ''; cells.push(inf.usage < 0 ? C('! ' + t + ns, { bg: AMBER_BG, bold: true, raw: '! ' + tr + ns }) : cmp.flag ? C(t + ns, { bg: AMBER_BG, bold: true, raw: tr + ns, u: 'chk' }) : C(t + ns, { raw: tr + ns, bold: true, u: cmp.kind, color: cmp.kind === 'zero' ? U_ZERO : U_USED })); }
         if (inf.usage >= 0) { tot[i].u += inf.usage; tot[i].d += inf.days; tot[i].n++; }
       });
       sp.rows.push({ day: k, cells });
@@ -2583,7 +2605,7 @@ function sheetTableHtml(sp) {
       i += n;
     }
   } else head1 = sp.cols.map(c => `<th class="${c.key ? 'dc corner' : ''} k-${c.kind}">${esc(c.h)}</th>`).join('');
-  const cell = (c, col, tag) => `<${tag} class="${col.key ? 'dc ' : ''}k-${col.kind}${col.align === 'center' ? ' ctr' : ''}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</${tag}>`;
+  const cell = (c, col, tag) => `<${tag} class="${col.key ? 'dc ' : ''}k-${col.kind}${col.align === 'center' ? ' ctr' : ''}${c.u ? ' upc-' + c.u : ''}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</${tag}>`;
   const body = sp.rows.map(r => `<tr ${r.id ? `onclick="openAoc('${r.id}')"` : r.day ? `onclick="openDay('${r.day}')"` : ''}>${r.cells.map((c, i) => cell(c, sp.cols[i], sp.cols[i].key ? 'th' : 'td')).join('')}</tr>`).join('');
   const foot = sp.foot.map(r => `<tr class="tot">${r.cells.map((c, i) => cell(c, sp.cols[i], sp.cols[i].key ? 'th' : 'td')).join('')}</tr>`).join('');
   return `<table class="ss"><thead><tr>${head1}</tr>${groups ? `<tr class="h2">${head2}</tr>` : ''}</thead><tbody>${body}</tbody>${foot ? `<tfoot>${foot}</tfoot>` : ''}</table>`;
@@ -2623,7 +2645,7 @@ function sheetCardsHtml(sp) {
       const col = sp.cols[i + 1];
       if (c.t === '' || c.t === '—') return;
       if (!cur || cur.g !== (col.g || '')) blocks.push(cur = { g: col.g || '', rows: [] });
-      cur.rows.push(`<div class="ss-row${n++ % 2 ? ' alt' : ''}"><span class="k">${esc(col.h)}</span><span class="v k-${col.kind}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</span></div>`);
+      cur.rows.push(`<div class="ss-row${n++ % 2 ? ' alt' : ''}"><span class="k">${esc(col.h)}</span><span class="v k-${col.kind}${c.u ? ' upc-' + c.u : ''}" style="${c.color ? 'color:' + c.color + ';' : ''}${c.bg ? 'background:' + c.bg + ';' : ''}${c.bold ? 'font-weight:700;' : ''}">${esc(c.t)}</span></div>`);
     });
     return `<div class="card ss-card${foot ? ' foot' : ''}" ${!foot && r.id ? `onclick="openAoc('${r.id}')"` : !foot && r.day ? `onclick="openDay('${r.day}')"` : ''}>
     <div class="ss-card-h">${esc(r.cells[0].t)}</div>${blocks.map(b => `<div class="ss-grp">${b.g ? `<div class="ss-gh">${esc(b.g)}</div>` : ''}${b.rows.join('')}</div>`).join('')}</div>`;
@@ -2871,7 +2893,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.3.2';
+const APP_VER = '3.3.3';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -2995,7 +3017,7 @@ function reportData(day) {
   const meters = items.filter(isMeter);
   if (meters.length) { out.push({ h: 'Meters' }); meters.forEach(it => { const inf = meterInfo(it.id, day, W, meterKey(it)); if (inf.today == null) { out.push({ t: `${it.label}: —`, miss: true }); return; }
     const cmp = meterCompare(it.id, day, W, meterKey(it)), st = readStamp(it.id, day, W);
-    out.push({ t: `${it.label}: ${fmtM(it, inf.today)}${st.time || st.date !== day ? ' @ ' + stampText(st) : ''}`, note: cmp ? (inf.usage < 0 ? '! ' : '') + cmp.text : '', flag: inf.usage < 0 || (cmp && cmp.flag) }); }); }
+    out.push({ t: `${it.label}: ${fmtM(it, inf.today)}${st.time || st.date !== day ? ' @ ' + stampText(st) : ''}`, note: (cmp ? (inf.usage < 0 ? '! ' : '') + cmp.text : '') + (mNote(day, it.id) ? ' · Note: ' + mNote(day, it.id) : ''), flag: inf.usage < 0 || (cmp && cmp.flag) }); }); }
   const ws = wsItem();
   if (ws) { const r = cl[ws.id] || {}, v = r.values || {}, sx = r.sec || {}; const rows = [];
     ws.sections.forEach(sec => { const fs = ws.fields.filter(f => f.sec === sec.id && v[f.key] != null); if (!fs.length) return;
@@ -3190,8 +3212,8 @@ meterUsageHtml = function (id, day, key) {
   const prev = m.prevDay ? `${stampText(readStamp(id, m.prevDay, W))}: <b>${fmtM(it, m.prev)}</b>` : '<span class="muted">No earlier reading</span>';
   const today = `${stampText(readStamp(id, day, W))}: <b>${m.today != null ? fmtM(it, m.today) : '—'}</b>`;
   let use = '';
-  if (c) use = `<b class="${m.usage < 0 ? 'neg' : c.flag ? 'amber-flag' : ''}">${esc(c.text)}</b>${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
-  return [prev, today, use].filter(Boolean).join(' · ');
+  if (c) use = `<b class="${m.usage < 0 ? 'neg' : 'upill u-' + c.kind}">${esc(c.text)}</b>${m.usage < 0 ? ' <small class="neg">⚠ negative: rollover or typo?</small>' : ''}`;
+  const nt = mNote(day, id); return [prev, today, use].filter(Boolean).join(' · ') + (nt ? `<div class="mnote">📝 ${esc(nt)}</div>` : '');
 };
 // 'Read on' date per meter reading (default: the log day)
 function readOnHtml(day, id, r) {
@@ -3378,12 +3400,12 @@ function openMeterPad(day, startId) {
   const all = start < 0;
   padOpen({ title: `Meter readings · ${mdy(day)}`, meterDay: day, i: Math.max(0, start), mode: all && !startId ? 'done' : 'pad', onClose: () => { refreshMeterStep(day); if (document.getElementById('meters').classList.contains('active')) renderScreen('meters'); },
     steps: ms.map(it => { const key = meterKey(it), dec = !!(it.fields.find(f => f.type === 'meter') || {}).dec;
-      return { label: it.label, dec, maxDec: 2, unit: '',
+      return { id: it.id, label: it.label, dec, maxDec: 2, unit: '',
         value: () => ((((getWork()[day] || {}).checklist || {})[it.id] || {}).values || {})[key],
         filled: () => meterFilled((((getWork()[day] || {}).checklist || {})[it.id]), it),
         prevText: () => { const inf = meterInfo(it.id, day, null, key); return inf.prevDay ? `Previous · ${stampText(readStamp(it.id, inf.prevDay, getWork()))}: <b>${fmtM(it, inf.prev)}</b>` : '<span class="muted">No earlier reading</span>'; },
         preview: v => { const inf = meterInfo(it.id, day, null, key); if (v == null || inf.prev == null) return '&nbsp;'; const u = Math.round((v - inf.prev) * 100) / 100;
-          return u < 0 ? `<span class="neg">⚠ ${fmtM(it, v)} is lower than previous (${fmtM(it, u)})</span>` : `<span class="ok">${isHourMeter(it) ? `Ran ${fmtM(it, u)} hrs` : `Used ${fmtM(it, u)}`}${inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : ''}</span>`; },
+          return u === 0 ? `<span class="upill u-zero">○ No use — 0 (same as previous)</span>` : u < 0 ? `<span class="neg">⚠ ${fmtM(it, v)} is lower than previous (${fmtM(it, u)})</span>` : `<span class="upill u-used">▲ ${isHourMeter(it) ? `Ran ${fmtM(it, u)} hrs` : `Used ${fmtM(it, u)}`}${inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : ''}</span>`; },
         commit: v => { const inf = meterInfo(it.id, day, null, key);
           if (inf.prev != null && v < inf.prev && !confirm(`${it.label}: ${fmtM(it, v)} is LOWER than the previous reading (${mdy(inf.prevDay)}: ${fmtM(it, inf.prev)}).\n\nSave anyway? (Meter rollover or replacement)`)) return false;
           const cur = ((((getWork()[day] || {}).checklist || {})[it.id] || {}).values || {})[key]; if (cur === v) return true; saveMeterValue(day, it.id, v); return true; } }; }),
@@ -3392,7 +3414,7 @@ function openMeterPad(day, startId) {
         ${ms.map((it, j) => { const r = cl[it.id] || {}, v = (r.values || {})[meterKey(it)], c = v != null ? meterCompare(it.id, day, W) : null;
           return `<div class="pad-sum-row" data-sum="${it.id}"><div class="ps-top"><b>${esc(it.label)}</b><button type="button" class="link-btn" onclick="padGo(${j})">✎ Edit</button></div>
             <div class="ps-val">${v != null ? fmtM(it, v) : r.done ? '✓ ' + esc(r.note || 'checked') : '<span class="neg">— not recorded</span>'}</div>
-            ${c ? `<div class="ps-cmp${c.flag || c.inf.usage < 0 ? ' neg' : ''}">${esc(c.text)}</div>` : ''}
+            ${c ? `<div class="ps-cmp"><span class="upill u-${c.kind}">${esc(c.text)}</span></div>` : ''}${r.note && v != null ? `<div class="mnote">📝 ${esc(r.note)}</div>` : ''}
             ${v != null ? `<div class="ps-stamp"><label class="cl-time-l"><span class="tl">🕒 Read at</span><span class="tbox"><input type="time" value="${taskTime(r)}" aria-label="${esc(it.label)} read time" onchange="clSet(this,'${day}','${it.id}','time');padRender()"></span></label>${readOnHtml(day, it.id, r)}</div>` : ''}</div>`; }).join('')}
         <div class="pad-nav"><button type="button" class="secondary" onclick="padPrev()">‹ Back</button><button type="button" class="pad-next" onclick="padFinish()">✓ Done</button></div>`; } });
 }
@@ -3752,7 +3774,7 @@ buildSheet = function (scr, from, to, desc) {
 function readoutEvents(day) {
   const W = getWork(), w = W[day] || {}, cl = w.checklist || {}, ev = [], push = (t, cat, what, det, flag) => ev.push({ t: t || '', cat, what, det: det || '', flag: !!flag });
   getChecklist().forEach(it => { const r = cl[it.id]; if (!r) return;
-    if (isMeter(it)) { const v = (r.values || {})[meterKey(it)], st = readStamp(it.id, day, W), c = v != null ? meterCompare(it.id, day, W) : null; push((st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : '') + (st.time || ''), 'Meter', it.label, v != null ? `${fmtM(it, v)}${c ? ' · ' + (c.inf.usage < 0 ? '! ' : '') + c.text : ''}` : (r.note || 'checked'), c && (c.flag || c.inf.usage < 0)); return; }
+    if (isMeter(it)) { const v = (r.values || {})[meterKey(it)], st = readStamp(it.id, day, W), c = v != null ? meterCompare(it.id, day, W) : null; push((st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : '') + (st.time || ''), 'Meter', it.label, v != null ? `${fmtM(it, v)}${c ? ' · ' + (c.inf.usage < 0 ? '! ' : '') + c.text : ''}${r.note ? ' · Note: ' + r.note : ''}` : (r.note || 'checked'), c && (c.flag || c.inf.usage < 0)); return; }
     if (it.sections) { const v = r.values || {}, sx = r.sec || {}; it.sections.forEach(sec => { const fs = it.fields.filter(f => f.sec === sec.id && v[f.key] != null); if (!fs.length && !(sx[sec.id] || {}).time) return;
         push((sx[sec.id] || {}).time || r.time, 'Water test', sec.label, fs.map(f => `${f.label} ${Number(v[f.key]).toLocaleString('en-US', { maximumFractionDigits: 3 })}${f.unit ? ' ' + f.unit : ''}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · ') + ((sx[sec.id] || {}).note ? ' — ' + sx[sec.id].note : ''), fs.some(f => outOfRange(f, v[f.key]))); });
       if (r.done) push(r.time, 'Checklist', '✓ ' + it.label, r.note); return; }
@@ -3776,7 +3798,7 @@ function readoutSections(day) {
   items.forEach(it => { if (isMeter(it)) { if (it === ms[0]) { const f = ms.filter(m => meterFilled(cl[m.id], m)).length; mDone = f === ms.length; steps.push({ cells: [(f === ms.length ? '✓ ' : '✗ ') + 'Meter readings', `${f}/${ms.length}`], flag: f < ms.length }); } return; } const r = cl[it.id] || {}; steps.push({ cells: [(r.done ? '✓ ' : '✗ ') + it.label, taskTime(r) || ''], flag: !r.done }); });
   S.push({ title: `Checklist · ${p.done}/${p.total} steps`, col: 1, cols: [{ h: 'Step', w: .75 }, { h: 'Time', w: .25 }], rows: steps });
   S.push({ title: 'Meters', col: 1, cols: [{ h: 'Meter', w: .34 }, { h: 'Reading @ time', w: .33 }, { h: 'Used / Ran', w: .33 }], rows: ms.map(it => { const r = cl[it.id] || {}, v = (r.values || {})[meterKey(it)], st = readStamp(it.id, day, W), c = v != null ? meterCompare(it.id, day, W) : null;
-    return { cells: [it.label, v != null ? `${fmtM(it, v)}${st.time ? ' @ ' + (st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : '') + st.time : ''}` : (r.done ? '✓ ' + (r.note || '') : '—'), c ? (c.inf.usage < 0 ? '! ' : '') + c.short : ''], flag: c && (c.flag || c.inf.usage < 0) }; }) });
+    return { cells: [it.label, v != null ? `${fmtM(it, v)}${st.time ? ' @ ' + (st.date !== day ? mdy(st.date).slice(0, 5) + ' ' : '') + st.time : ''}` : (r.done ? '✓ ' + (r.note || '') : '—'), c ? (c.inf.usage < 0 ? '! ' : '') + c.short + (r.note && v != null ? ' · Note: ' + r.note : '') : ''], flag: c && (c.flag || c.inf.usage < 0) }; }) });
   const ws = items.find(i => i.sections); if (ws) { const r = cl[ws.id] || {}, v = r.values || {}; const rows = ws.sections.map(sec => { const fs = ws.fields.filter(f => f.sec === sec.id && v[f.key] != null); return fs.length ? { cells: [sec.label, fs.map(f => `${f.label} ${Number(v[f.key]).toLocaleString('en-US', { maximumFractionDigits: 3 })}${outOfRange(f, v[f.key]) ? ' !' : ''}`).join(' · '), ((r.sec || {})[sec.id] || {}).time || ''], flag: fs.some(f => outOfRange(f, v[f.key])) } : null; }).filter(Boolean);
     S.push({ title: 'Water tests', col: 1, cols: [{ h: 'Section', w: .25 }, { h: 'Results', w: .6 }, { h: 'Time', w: .15 }], rows: rows.length ? rows : [{ cells: ['—', 'No water tests logged', ''] }] }); }
   const B = getBoilers(), U = bsUnits(); S.push({ title: 'Boilers', col: 1, cols: [{ h: 'Boiler', w: .22 }, { h: 'Latest that day', w: .63 }, { h: 'Logs', w: .15 }], rows: B.map(b => { const l = bsReadings(b.id).filter(r => (r.date || r.day) === day); const last = {}; l.forEach(r => { BS_FIELDS.forEach(f => { if (r[f.k] != null && r[f.k] !== '') last[f.k] = r[f.k] + ' ' + U[f.k] + ' @' + (r.time || ''); }); if (r.status) last.status = r.status; });
@@ -4047,7 +4069,7 @@ document.addEventListener('DOMContentLoaded', fabSync);
 
 /* ===================== v3.0.1: readable phone spreadsheet cards, Sheet preview, dark-mode audit fixes ===================== */
 sheetCardsHtml = function (sp) {
-  const cellCls = c => (c.bg ? ' flag' : '') + (c.color && /c62828|C62828|red/i.test(c.color) ? ' bad' : c.color && /2E7D32/i.test(c.color) ? ' good' : '');
+  const cellCls = c => (c.u ? ' upc-' + c.u : '') + (c.bg ? ' flag' : '') + (c.color && /c62828|C62828|red/i.test(c.color) ? ' bad' : c.color && /2E7D32/i.test(c.color) ? ' good' : '');
   const card = (r, foot) => {
     const blocks = []; let cur = null;
     r.cells.slice(1).forEach((c, i) => { const col = sp.cols[i + 1]; if (c.t === '' || c.t === '—') return;
@@ -4217,7 +4239,7 @@ function meterWeekHtml() { const W = getWork(), days = weekDays(mtWeek), today =
   <p class="muted">Each cell = ${'used / ran'} since the previous reading. Tap a cell for the full reading and time. ! = negative (check reading).</p>`; }
 function mwDetail(id, d) { const W = getWork(), it = allItemDefs().find(i => i.id === id), x = meterSeries(id, W, meterKey(it)).find(s => s.day === d), st = readStamp(id, d, W), c = meterCompare(id, d, W), m = document.getElementById('mpad');
   m.hidden = false; document.body.classList.add('pad-open'); m.innerHTML = `<div class="pad-wrap mw-det"><div class="pad-head"><b>${esc(it.label)}</b><button class="small secondary" aria-label="Close" onclick="padClose()">✕</button></div>
-    <p class="mw-dd">${parseYmd(d).toLocaleDateString('en-US', { weekday: 'long' })} ${mdy(d)}</p><div class="mw-big">${fmtM(it, x.value)}</div><p>Read at <b>${st.time ? mdy(st.date) + ' ' + st.time : '—'}</b></p><p class="${c && (c.flag || c.inf.usage < 0) ? 'oor' : ''}"><b>${c ? esc(c.text) : 'No previous reading'}</b></p>
+    <p class="mw-dd">${parseYmd(d).toLocaleDateString('en-US', { weekday: 'long' })} ${mdy(d)}</p><div class="mw-big">${fmtM(it, x.value)}</div><p>Read at <b>${st.time ? mdy(st.date) + ' ' + st.time : '—'}</b></p><p>${c ? `<b class="upill u-${c.kind}">${esc(c.text)}</b>` : '<b>No previous reading</b>'}</p>${mNote(d, id) ? `<div class="mnote">📝 ${esc(mNote(d, id))}</div>` : ''}
     <div class="pad-nav"><button type="button" class="secondary" onclick="padClose()">Close</button><button type="button" class="pad-next" onclick="padClose();openDay('${d}')">Open day</button></div></div>`; }
 const _renderMeters34 = renderMeters;
 renderMeters = function () { _renderMeters34(); const p = document.querySelector('#meters .ed-pane'); let wk = document.getElementById('mtWeekBox'); if (!wk) { p.insertAdjacentHTML('afterbegin', '<div id="mtWeekBox"></div><details id="mtOne" class="card"><summary>One meter · full history</summary></details>'); wk = document.getElementById('mtWeekBox'); const one = document.getElementById('mtOne'); one.appendChild(document.getElementById('mtItem')); one.appendChild(document.getElementById('mtTable')); }
@@ -4227,7 +4249,8 @@ const mtItems = W => allItemDefs().filter(it => isMeter(it) && (getChecklist().i
 function meterDayHtml() { const W = getWork(), today = ymd(new Date()), d = ymd(addDays(new Date(), mtDay));
   return `<div class="mw-head"><button type="button" class="secondary" onclick="mtDay--;renderMeters()" aria-label="Previous day">‹</button><div class="mw-rng"><b>${parseYmd(d).toLocaleDateString('en-US', { weekday: 'short' })} ${mdyy(d)}</b><small>Today ${mdyy(today)}${mtDay ? ` · <button type="button" class="linkish" onclick="mtDay=0;renderMeters()">today</button>` : ''}</small></div><button type="button" class="secondary" onclick="mtDay++;renderMeters()" aria-label="Next day"${mtDay >= 0 ? ' disabled' : ''}>›</button></div>
   <div class="md-list">${mtItems(W).map(it => { const x = meterSeries(it.id, W, meterKey(it)).find(s => s.day === d), hr = isHourMeter(it), st = x ? readStamp(it.id, d, W) : null;
-    return `<button type="button" class="md-r${x ? '' : ' empty'}" ${x ? `onclick="mwDetail('${it.id}','${d}')"` : 'disabled'}><span class="md-n">${esc(it.label)}<small>${st && st.time ? st.time : x ? '' : 'Not read'}</small></span><span class="md-v"><b>${x ? (x.usage == null ? '—' : (x.usage < 0 ? '!' : '') + abbr(it, x.usage)) : '—'}</b><small>${hr ? 'ran hrs' : 'used'}</small></span></button>`; }).join('')}</div>`; }
+    return `<button type="button" class="md-r${x ? '' : ' empty'}" ${x ? `onclick="mwDetail('${it.id}','${d}')"` : 'disabled'}><span class="md-n">${esc(it.label)}<small>${st && st.time ? st.time : x ? '' : 'Not read'}</small></span><span class="md-v">${(() => { const c = x && x.usage != null ? meterCompare(it.id, d, W) : null; if (!c) return `<b>${x ? '—' : '—'}</b><small>${hr ? 'ran hrs' : 'used'}</small>`; const k = x.usage < 0 ? 'chk' : c.kind;
+      return `<b class="upill u-${k}">${k === 'zero' ? '○ 0' : (k === 'chk' ? '⚠ ' : '▲ ') + (x.usage < 0 ? '!' : '') + abbr(it, x.usage)}</b><small>${k === 'zero' ? 'no use' : k === 'chk' ? 'check read' : hr ? 'ran hrs' : 'used'}</small>`; })()}</span>${mNote(d, it.id) ? `<span class="mnote md-note">📝 ${esc(mNote(d, it.id))}</span>` : ''}</button>`; }).join('')}</div>`; }
 function meterMonthHtml() { const W = getWork(), t = new Date(), m0 = new Date(t.getFullYear(), t.getMonth() + mtMon, 1), m1 = new Date(m0.getFullYear(), m0.getMonth() + 1, 0), a = ymd(m0), z = ymd(m1);
   const wks = []; let s = addDays(m0, -((m0.getDay() + 6) % 7)); while (ymd(s) <= z) { const e = addDays(s, 6); wks.push([ymd(s) < a ? a : ymd(s), ymd(e) > z ? z : ymd(e)]); s = addDays(s, 7); }
   const lbl = m0.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), cols = `repeat(${wks.length}, minmax(0, 1fr))`;
@@ -4304,7 +4327,7 @@ const shortStamp = s => String(s).replace(/(\d\d\/\d\d)\/\d{4}/g, '$1');
 function phoneBlocksFromSheet(sp) {
   const cols = compactCols(sp);
   const toBlock = (r, foot) => ({ title: r.cells[0].t, foot, cells: cols.slice(1).map(col => { const cl = cellLines(sp, col, r); if (!cl.lines.length) return null;
-    return { k: col.h.replace(/\s*\(.*?\)/g, ''), v: cl.lines[0], subs: cl.lines.slice(1).map(shortStamp).map(x => x.replace(/ over (\d+(\.\d+)?) hrs?/, ' / $1 h')), flag: !!cl.bg, bad: cl.color && /C62828/i.test(cl.color) }; }).filter(Boolean) });
+    return { k: col.h.replace(/\s*\(.*?\)/g, ''), v: cl.lines[0], subs: cl.lines.slice(1).map(shortStamp).map(x => x.replace(/ over (\d+(\.\d+)?) hrs?/, ' / $1 h')), flag: !!cl.bg, bad: cl.color && /C62828/i.test(cl.color), color: cl.color }; }).filter(Boolean) });
   return [...sp.rows.map(r => toBlock(r, false)), ...(sp.foot || []).map(r => toBlock(r, true))];
 }
 function phoneCanvas(title, range, blocks, opts) {
@@ -4324,9 +4347,9 @@ function phoneCanvas(title, range, blocks, opts) {
   T(fit(`${S.employer} · ${S.title}${S.operator ? ' · ' + S.operator : ''}`, PH_W - pad * 2, F(13)), pad, 68 * PH_S, F(13), '#D5DDE8');
   let y = HEAD + pad;
   keep.forEach(l => { const b = l.b; ctx.fillStyle = b.foot ? '#3C4654' : NAVY; ctx.fillRect(pad, y, PH_W - pad * 2, BH); T(fit(b.title, PH_W - pad * 4, F(17, true)), pad + 10 * PH_S, y + 7 * PH_S, F(17, true), '#fff'); y += BH;
-    if (b.list) { l.lines.forEach((ln, i) => { const h = ln.w.length * 22 * PH_S + 10 * PH_S; ctx.fillStyle = ln.it.flag ? AMBER_BG : i % 2 ? ALT : '#fff'; ctx.fillRect(pad, y, PH_W - pad * 2, h); ln.w.forEach((s, j) => T(s, pad + 10 * PH_S, y + 5 * PH_S + j * 22 * PH_S, F(16, j === 0 && ln.it.bold), INK)); y += h; }); y += gap; return; }
+    if (b.list) { l.lines.forEach((ln, i) => { const h = ln.w.length * 22 * PH_S + 10 * PH_S; ctx.fillStyle = ln.it.flag ? AMBER_BG : ln.it.bg || (i % 2 ? ALT : '#fff'); ctx.fillRect(pad, y, PH_W - pad * 2, h); ln.w.forEach((s, j) => T(s, pad + 10 * PH_S, y + 5 * PH_S + j * 22 * PH_S, F(16, j === 0 && ln.it.bold), ln.it.color || INK)); y += h; }); y += gap; return; }
     y += gap; l.rows.forEach((r, ri) => { r.forEach((c, ci) => { const x = pad + ci * (cw + gap), h = l.rh[ri]; ctx.fillStyle = c.flag ? AMBER_BG : b.foot ? '#E4E8EE' : ALT; ctx.fillRect(x, y, cw, h); ctx.fillStyle = GRID; ctx.fillRect(x, y, cw, 2);
-        const w = cw - 16 * PH_S; T(fit(c.k, w, F(13, true)), x + 8 * PH_S, y + 6 * PH_S, F(13, true), '#3C4654'); T(fit((c.flag && !/^!/.test(c.v) ? '! ' : '') + c.v, w, F(19, true)), x + 8 * PH_S, y + 23 * PH_S, F(19, true), c.bad ? RED : INK);
+        const w = cw - 16 * PH_S; T(fit(c.k, w, F(13, true)), x + 8 * PH_S, y + 6 * PH_S, F(13, true), '#3C4654'); T(fit((c.flag && !/^!/.test(c.v) ? '! ' : '') + c.v, w, F(19, true)), x + 8 * PH_S, y + 23 * PH_S, F(19, true), c.bad ? RED : (c.color || INK));
         (c.subs || []).forEach((s, j) => T(fit(s, w, F(15)), x + 8 * PH_S, y + 49 * PH_S + j * 19 * PH_S, F(15), /^!/.test(s) ? '#8A5300' : '#3C4654')); }); y += l.rh[ri] + gap; }); });
   if (more) { ctx.fillStyle = AMBER_BG; ctx.fillRect(pad, y, PH_W - pad * 2, 50 * PH_S); wrap(`+${more} more not shown to keep one image — use a shorter range or the CSV.`, PH_W - pad * 4, F(14, true), 2).forEach((s, j) => T(s, pad + 10 * PH_S, y + 8 * PH_S + j * 18 * PH_S, F(14, true), INK)); y += 56 * PH_S; }
   T('Generated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) + ' · NWH Log', PH_W / 2, cv.height - 28 * PH_S, F(12), '#555', 'center');
@@ -4509,23 +4532,23 @@ function meterHistHtml() { const W = getWork(), { from, to } = mhRange(), all = 
     <div class="mh-exp"><button class="small" onclick="mhExport('png')">📱 PNG</button><button class="small secondary" onclick="mhExport('pdf')">📄 PDF</button><button class="small secondary" onclick="mhExport('csv')">CSV</button></div></div>
     ${list.map(it => { const d = mhData(it, from, to, W); return `<div class="card mh-m" data-mid="${it.id}"><h3>${esc(it.label)}${d.u ? ` <small class="muted">${esc(d.u)}</small>` : ''}</h3>
       <div class="mh-sum"><div><small>${d.hr ? 'Total ran' : 'Total used'}</small><b>${mhN(d, d.total)}</b></div><div><small>Avg per day</small><b>${mhN(d, d.avg)}</b></div><div><small>Reads</small><b>${d.n}</b></div><div><small>Daily use min / max</small><b>${d.min == null ? '—' : fmtM(it, d.min) + ' / ' + fmtM(it, d.max)}</b></div></div>
-      <p class="mh-note">Avg = total ÷ ${d.hrs ? fmtNum(d.hrs / 24, 1) + ' days' : 'days'} actually elapsed between reads (from each read's date + time). Totals include the use since the read before ${mdy(from)}.${d.negs ? ` ! ${d.negs} negative read${d.negs > 1 ? 's' : ''} left out.` : ''}</p>
-      ${d.rows.length ? `<ol class="mh-list">${d.rows.slice().reverse().map(r => `<li class="mh-r${r.flag ? ' flag' : ''}"><div class="mh-t">${mdy(r.st.date).slice(0, 5)} <b>${esc(r.st.time || '—')}</b><small>${parseYmd(r.st.date).toLocaleDateString('en-US', { weekday: 'short' })}</small></div><div class="mh-v"><b>${fmtM(it, r.value)}</b><span>${esc(r.text)}</span></div></li>`).join('')}</ol>` : '<p class="muted">No reads in this range.</p>'}</div>`; }).join('')}`; }
+      <p class="mh-note">Avg = total ÷ ${d.hrs ? fmtNum(d.hrs / 24, 1) + ' days' : 'days'} actually elapsed between reads (from each read's date + time). Totals include the use since the read before ${mdy(from)}.${d.skip ? ` ${d.skip} flagged read${d.skip > 1 ? 's' : ''} left out of min/max.` : ''}${d.negs ? ` ! ${d.negs} negative read${d.negs > 1 ? 's' : ''} left out.` : ''}</p>
+      ${d.rows.length ? `<ol class="mh-list">${d.rows.slice().reverse().map(r => `<li class="mh-r${r.flag ? ' flag' : ''}"><div class="mh-t">${mdy(r.st.date).slice(0, 5)} <b>${esc(r.st.time || '—')}</b><small>${parseYmd(r.st.date).toLocaleDateString('en-US', { weekday: 'short' })}</small></div><div class="mh-v"><b>${fmtM(it, r.value)}</b><span class="upill u-${r.kind}">${esc(r.text)}</span>${r.note ? `<div class="mnote">📝 ${esc(r.note)}</div>` : ''}${r.chk ? `<button type="button" class="mh-fix" onclick="openMeterPad('${r.day}','${it.id}')">⚠ Check this read — tap to edit ›</button>` : ''}</div></li>`).join('')}</ol>` : '<p class="muted">No reads in this range.</p>'}</div>`; }).join('')}`; }
 function mhSetRange(k) { MH.range = k; if (k === 'custom' && !MH.from) { const r = mhRange(); MH.from = ymd(addDays(new Date(), -6)); MH.to = ymd(new Date()); } mhSave(); renderMeters(); }
 function mhSetMeter(k) { MH.meter = k; mhSave(); renderMeters(); }
 function mhSheet() { const W = getWork(), { from, to } = mhRange(), D = mhMeters(W).map(it => mhData(it, from, to, W));
   const sp = { title: 'NWH Meter History', slug: 'Meter-History', from, to, cols: [{ h: 'Date', kind: 'text', key: true, g: '' }, { h: 'Time', kind: 'text', g: '' }, { h: 'Meter', kind: 'text', g: '' }, { h: 'Reading', kind: 'num', g: '' }, { h: 'Used since last read', kind: 'text', g: '' }, { h: 'Elapsed (hrs)', kind: 'num', g: '' }].map(c => Object.assign({ g: '' }, c)), rows: [], foot: [] };
-  D.forEach(d => { d.rows.forEach(r => sp.rows.push({ day: r.day, flag: r.flag, cells: [C(sDate(r.st.date)), C(r.st.time || ''), C(d.it.label, { bold: true }), C(fmtM(d.it, r.value), { raw: String(r.value) }), C(r.text, r.flag ? { bg: AMBER_BG, bold: true } : {}), C(r.elH != null ? fmtNum(r.elH, 1) : '')] }));
+  D.forEach(d => { d.rows.forEach(r => sp.rows.push({ day: r.day, flag: r.flag, cells: [C(sDate(r.st.date)), C(r.st.time || ''), C(d.it.label, { bold: true }), C(fmtM(d.it, r.value), { raw: String(r.value) }), C(r.text + (r.note ? ' · Note: ' + r.note : ''), r.flag ? { bg: AMBER_BG, bold: true, u: 'chk' } : { bold: true, u: r.kind, color: r.kind === 'zero' ? U_ZERO : U_USED }), C(r.elH != null ? fmtNum(r.elH, 1) : '')] }));
     sp.foot.push({ cells: [C('Summary'), C(''), C(d.it.label, { bold: true }), C(d.n + ' reads'), C(`Total ${mhN(d, d.total)} · avg ${mhN(d, d.avg)}/day · min/max ${d.min == null ? '—' : fmtM(d.it, d.min) + ' / ' + fmtM(d.it, d.max)}`, { bold: true }), C(d.hrs ? fmtNum(d.hrs, 1) : '')] }); });
   return { sp, D, from, to }; }
 async function mhExport(kind) { const { sp, D, from, to } = mhSheet(); if (!D.some(d => d.rows.length)) return toast('Nothing to export in this range'); const base = `NWH-Meter-History-${from}_to_${to}`;
-  if (kind === 'csv') { const L = [['Meter', 'Date', 'Time', 'Reading', 'Used since last read', 'Elapsed hrs', 'Flag'].join(',')], q = v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
-    D.forEach(d => { d.rows.forEach(r => L.push([d.it.label, r.st.date, r.st.time, r.value, r.usage == null ? '' : r.usage, r.elH != null ? Math.round(r.elH * 100) / 100 : '', r.flag ? 'check' : ''].map(q).join(','))); L.push([d.it.label + ' SUMMARY', from, to, d.n + ' reads', 'total ' + d.total, 'avg/day ' + (d.avg == null ? '' : d.avg), `min ${d.min == null ? '' : d.min} max ${d.max == null ? '' : d.max}`].map(q).join(',')); });
+  if (kind === 'csv') { const L = [['Meter', 'Date', 'Time', 'Reading', 'Used since last read', 'Elapsed hrs', 'Flag', 'Note'].join(',')], q = v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+    D.forEach(d => { d.rows.forEach(r => L.push([d.it.label, r.st.date, r.st.time, r.value, r.usage == null ? '' : r.usage, r.elH != null ? Math.round(r.elH * 100) / 100 : '', r.chk ? 'check: ' + r.why : r.kind === 'zero' ? 'no use' : '', r.note || ''].map(q).join(','))); L.push([d.it.label + ' SUMMARY', from, to, d.n + ' reads', 'total ' + d.total, 'avg/day ' + (d.avg == null ? '' : d.avg), `min ${d.min == null ? '' : d.min} max ${d.max == null ? '' : d.max}`].map(q).join(',')); });
     const how = await shareOrDownload([new File([L.join('\n')], base + '.csv', { type: 'text/csv' })]); if (how !== 'cancelled') toast('CSV ' + how); return [base + '.csv']; }
   if (kind === 'pdf') return shareCanvases(sheetCanvases(sp), base, 'pdf');
   return shareCanvases([mhPhoneCanvas(D, from, to)], base + '-phone', 'png'); }
 function mhPhoneCanvas(D, from, to) { const blocks = []; D.forEach(d => { blocks.push({ title: `${d.it.label} · summary`, list: true, items: [{ text: `${d.hr ? 'Total ran' : 'Total used'}: ${mhN(d, d.total)}`, bold: true }, { text: `Avg per day: ${mhN(d, d.avg)} (elapsed time between reads)`, bold: true }, { text: `Reads: ${d.n} · daily use min/max: ${d.min == null ? '—' : fmtM(d.it, d.min) + ' / ' + fmtM(d.it, d.max)}` }] });
-  blocks.push({ title: `${d.it.label} · reads`, list: true, items: d.rows.length ? d.rows.map(r => ({ text: `${mdy(r.st.date).slice(0, 5)} ${r.st.time || '—'} · ${fmtM(d.it, r.value)} · ${r.text}`, flag: r.flag, bold: true })) : [{ text: 'No reads in this range' }] }); });
+  blocks.push({ title: `${d.it.label} · reads`, list: true, items: d.rows.length ? d.rows.map(r => ({ text: `${mdy(r.st.date).slice(0, 5)} ${r.st.time || '—'} · ${fmtM(d.it, r.value)} · ${r.text}${r.note ? ' · Note: ' + r.note : ''}`, flag: r.flag, bold: true, color: r.flag ? INK : r.kind === 'zero' ? U_ZERO : U_USED, bg: r.kind === 'zero' && !r.flag ? U_ZERO_BG : null })) : [{ text: 'No reads in this range' }] }); });
   return phoneCanvas('Meter History', `${sDate(from, true)} – ${sDate(to, true)}`, blocks); }
 renderMeters = (function (prev) { return function () { if (mtScope === 'week' || mtScope === 'month') { mtScope = 'history'; localStorage.setItem('nwhMtScope', 'history'); }
   if (mtScope !== 'history') { prev(); const s = document.querySelector('#meters .mt-scope'); if (s) s.outerHTML = mhSeg(); return; }
@@ -4554,6 +4577,50 @@ function mroClose(saved) { const o = document.getElementById('mreord'); o.hidden
   if (saved && PAD && PAD.meterDay) { const d = PAD.meterDay, cur = (PAD.steps[PAD.i] || {}).label; padClose(); openMeterPad(d); } }
 const _padRender332 = padRender;
 padRender = function (light) { _padRender332(light); if (PAD && PAD.meterDay && !light) { const h = document.querySelector('#mpad .pad-head'); if (h && !h.querySelector('.mro-open')) { const b = document.createElement('button'); b.type = 'button'; b.className = 'mro-open secondary small'; b.textContent = '⇅ Reorder'; b.onclick = () => openMeterReorder(PAD.meterDay); h.insertBefore(b, h.lastElementChild); } } };
+/* ===== v3.3.3: used/zero pills, per-read notes, No-change button, outlier + near-duplicate flags ===== */
+function mNote(day, id) { const r = (((getWork()[day] || {}).checklist) || {})[id]; return r && r.note && ((r.values || {})[meterKey(meterDefById(id))] != null) ? String(r.note) : ''; }
+const _mStatsCache = new WeakMap();
+function meterRateStats(id, W, key) { let m = _mStatsCache.get(W); if (!m) { m = {}; _mStatsCache.set(W, m); } const k = id + '|' + key; if (m[k]) return m[k];
+  const rates = []; meterSeries(id, W, key).forEach(p => { if (p.usage == null || p.usage <= 0) return; const a = readStamp(id, p.prevDay, W), b = readStamp(id, p.day, W);
+    const el = a.ms != null && b.ms != null ? (b.ms - a.ms) / 36e5 : p.days != null ? p.days * 24 : null; if (el != null && el >= 1) rates.push(p.usage / (el / 24)); });
+  rates.sort((x, y) => x - y); const med = rates.length >= 4 ? (rates.length % 2 ? rates[(rates.length - 1) / 2] : (rates[rates.length / 2 - 1] + rates[rates.length / 2]) / 2) : null;
+  return m[k] = { med, n: rates.length }; }
+const OUTLIER_X = 10, DUP_HRS = 1;
+const _meterCompare333 = meterCompare;
+meterCompare = function (id, day, W, key) { W = W || getWork(); const c = _meterCompare333(id, day, W, key); if (!c) return c; key = key || meterKey(c.it);
+  const u = c.inf.usage, hr = isHourMeter(c.it), Y = c.el == null ? '' : fmtNum(c.el, 1), X = fmtM(c.it, u);
+  if (u < 0) { c.kind = 'chk'; c.why = 'negative'; return c; }
+  const st = meterRateStats(id, W, key), elH = c.el != null ? c.el : c.inf.days != null ? c.inf.days * 24 : null;
+  const dup = c.el != null && c.el < DUP_HRS && c.el >= 0, rate = elH && elH >= DUP_HRS ? u / (elH / 24) : null, odd = !dup && rate != null && st.med && rate > OUTLIER_X * st.med;
+  c.dup = dup; c.odd = odd; c.rate = rate;
+  if (dup) { const mins = Math.max(0, Math.round(c.el * 60)); c.kind = 'chk'; c.flag = true; c.why = `second read ${mins} min later`;
+    const base = u === 0 ? 'No use — 0' : (hr ? 'Ran ' : 'Used ') + X + (hr ? ' hrs' : ''); c.text = `⚠ ${base} · second read ${mins} min after previous, check date/time`; c.short = `⚠ ${u === 0 ? 'No use — 0' : X} · 2nd read ${mins} min later`; return c; }
+  if (odd) { const x = Math.round(rate / st.med); c.kind = 'chk'; c.flag = true; c.why = `about ${x}× usual`;
+    c.text = `⚠ ${(hr ? 'Ran ' : 'Used ') + X + (hr ? ' hrs' : '')}${Y ? ` over ${Y} hrs` : ''} · about ${x}× usual, check this read`; c.short = `⚠ ${X}${Y ? ` over ${Y} hrs` : ''} · ~${x}× usual`; return c; }
+  if (c.flag) { c.kind = 'chk'; c.why = 'check reading/time'; c.text = '⚠ ' + c.text.replace(/^! /, ''); c.short = '⚠ ' + c.short.replace(/^! /, ''); return c; }
+  if (u === 0) { c.kind = 'zero'; c.text = `○ ${hr ? 'Not run — 0 hrs' : 'No use — 0'}${Y ? ` over ${Y} hrs` : ''}`; c.short = c.text; return c; }
+  c.kind = 'used'; c.text = '▲ ' + c.text; c.short = '▲ ' + c.short; return c; };
+const _mhData333 = mhData;
+mhData = function (it, from, to, W) { W = W || getWork(); const d = _mhData333(it, from, to, W), key = meterKey(it), u = d.u;
+  d.rows.forEach(r => { const c = r.usage != null ? meterCompare(it.id, r.day, W, key) : null; r.kind = c ? c.kind : 'first'; r.chk = !!c && c.kind === 'chk'; r.why = c ? c.why || '' : ''; r.dup = !!(c && c.dup); r.odd = !!(c && c.odd);
+    r.note = ((((W[r.day] || {}).checklist) || {})[it.id] || {}).note || '';
+    if (c) r.text = c.kind === 'zero' || c.kind === 'chk' && !r.neg ? c.text : r.neg ? r.text : c.text.replace(/ between reads$/, '') + (d.hr || !u || / over /.test(c.text) ? '' : ' ' + u); });
+  const iv = d.rows.filter(r => r.usage != null && !r.neg && r.elH > 0 && !r.dup && !r.odd), rates = iv.map(r => r.usage / (r.elH / 24));
+  d.skip = d.rows.filter(r => r.usage != null && !r.neg && (r.dup || r.odd)).length;
+  d.min = rates.length ? mRound(Math.min(...rates)) : null; d.max = rates.length ? mRound(Math.max(...rates)) : null; return d; };
+function saveMeterNote(day, id, txt) { const W = getWork(), e = W[day] = W[day] || {}; e.checklist = e.checklist || {}; const r = e.checklist[id] = e.checklist[id] || {};
+  txt = String(txt || '').trim(); if (txt) r.note = txt.slice(0, 300); else delete r.note; store('nwhWork', W); scheduleSnapshot && scheduleSnapshot(); }
+function padNoChange() { if (!PAD || !PAD.meterDay) return; const st = PAD.steps[PAD.i], it = meterDefById(st.id), inf = meterInfo(st.id, PAD.meterDay, null, meterKey(it));
+  if (inf.prev == null) return toast('No earlier reading to copy'); PAD.buf = String(inf.prev); PAD.fresh = false; PAD.noteOpen = st.id; padRender();
+  const t = document.querySelector('#mpad .pad-note textarea'); if (t) { t.placeholder = 'Why no use? e.g. boiler down'; t.focus(); } }
+function padNoteToggle() { if (!PAD) return; const st = PAD.steps[PAD.i]; PAD.noteOpen = PAD.noteOpen === st.id ? null : st.id; padRender(); const t = document.querySelector('#mpad .pad-note textarea'); t && t.focus(); }
+const _padRender333 = padRender;
+padRender = function (light) { _padRender333(light); if (!PAD || !PAD.meterDay || PAD.mode !== 'pad') return; const m = document.getElementById('mpad'); if (m.querySelector('.pad-mx')) return;
+  const st = PAD.steps[PAD.i], day = PAD.meterDay, cur = ((((getWork()[day] || {}).checklist) || {})[st.id] || {}).note || '', zero = PAD.buf !== '' && (() => { const inf = meterInfo(st.id, day, null, meterKey(meterDefById(st.id))); return inf.prev != null && Number(PAD.buf) === inf.prev; })();
+  const open = PAD.noteOpen === st.id || !!cur;
+  const html = `<div class="pad-mx"><button type="button" class="pad-zero" onclick="padNoChange()">○ No change (0 use)</button><button type="button" class="pad-notebtn secondary" onclick="padNoteToggle()">📝 ${cur ? 'Edit note' : 'Add note'}</button></div>
+    ${open ? `<label class="pad-note"><span>${zero ? 'Why no use? (optional)' : 'Note for this reading (optional)'}</span><textarea rows="2" maxlength="300" placeholder="${zero ? 'Why no use? e.g. boiler down' : 'e.g. meter replaced, read late'}" aria-label="Note for ${esc(st.label)}" oninput="saveMeterNote('${day}','${st.id}',this.value)" onkeydown="event.stopPropagation()">${esc(cur)}</textarea></label>` : ''}`;
+  const k = m.querySelector('.pad-keys'); if (k) k.insertAdjacentHTML('beforebegin', html); };
 /* ---------- Startup ---------- */
 migrateData();
 cleanImportStamps();
