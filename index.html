@@ -805,12 +805,33 @@ html.dark .pad-zero { background: #5B3FC0 !important; color: #fff !important; }
 .pad-note { display: block; margin: 4px 0 8px; font-size: 15px; font-weight: 700; }
 .pad-note textarea { display: block; width: 100%; box-sizing: border-box; font-size: 17px; margin-top: 4px; border-radius: 8px; padding: 8px; }
 html.dark .pad-note textarea { background: #0f1a27; color: #f1f5fa; border: 1px solid #4b627f; }
+#mdt { position: fixed; inset: 0; z-index: 10001; background: rgba(0,0,0,.55); overflow-y: auto; padding: calc(env(safe-area-inset-top) + 10px) 10px 30px; }
+.mdt-wrap h4 { font-size: 19px; margin: 16px 0 6px; color: inherit; }
+.mdt-val { font-size: 17px; margin: 6px 0; } .mdt-val b:first-child { font-size: 30px; }
+.mdt-l { display: block; flex: 1; font-size: 17px; font-weight: 700; margin: 6px 0; }
+.mdt-l input, .mdt-l select { display: block; width: 100%; box-sizing: border-box; min-height: 54px; font-size: 22px; margin-top: 4px; border-radius: 10px; padding: 6px 10px; border: 2px solid #8fa3bd; background: #fff; color: #10233d; }
+.mdt-time { display: flex; gap: 10px; }
+.mdt-chk { display: flex; align-items: center; gap: 10px; font-size: 17px; margin: 8px 0; } .mdt-chk input { width: 26px; height: 26px; }
+.mdt-conf { border: 2px solid #A31515; border-radius: 10px; padding: 10px; margin-top: 8px; } .mdt-conf p { font-size: 17px; font-weight: 700; margin: 0 0 6px; color: #A31515; }
+.mdt-conf button { width: 100%; min-height: 52px; font-size: 18px; margin-top: 6px; }
+#mpad .pad-head .mdt-open { width: auto; min-height: 44px; margin-left: auto; white-space: nowrap; }
+#mpad .pad-head .mdt-open + .mro-open { margin-left: 6px; }
+#mpad .pad-head b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#mpad .pad-head { flex-wrap: wrap; row-gap: 6px; }
+.mh-dt { display: inline-block; margin-top: 6px; min-height: 44px; font-size: 16px; padding: 4px 12px; }
+.mh-slot { display: block; font-size: 14px; font-weight: 700; color: #6B3A00; }
+#undoBar { position: fixed; left: 8px; right: 8px; bottom: calc(env(safe-area-inset-bottom) + 84px); z-index: 10002; display: flex; align-items: center; gap: 10px; background: #10233d; color: #fff; border-radius: 12px; padding: 10px 12px; font-size: 16px; font-weight: 700; }
+#undoBar[hidden] { display: none; } #undoBar span { flex: 1; } #undoBar button { min-height: 46px; font-size: 17px; background: #F2A900 !important; color: #222 !important; width: auto; }
+html.dark .mdt-l input, html.dark .mdt-l select { background: #0f1a27; color: #f1f5fa; border-color: #4b627f; }
+html.dark .mdt-conf p { color: #FFB4B4; } html.dark .mdt-conf { border-color: #FF8A8A; }
+html.dark .mh-slot { color: #FFD08A; }
+html.dark #undoBar { background: #e8eef6; color: #10233d; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.3</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.4</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1042,7 +1063,7 @@ html.dark .pad-note textarea { background: #0f1a27; color: #f1f5fa; border: 1px 
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.3 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.4 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2893,7 +2914,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.3.3';
+const APP_VER = '3.3.4';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4533,7 +4554,7 @@ function meterHistHtml() { const W = getWork(), { from, to } = mhRange(), all = 
     ${list.map(it => { const d = mhData(it, from, to, W); return `<div class="card mh-m" data-mid="${it.id}"><h3>${esc(it.label)}${d.u ? ` <small class="muted">${esc(d.u)}</small>` : ''}</h3>
       <div class="mh-sum"><div><small>${d.hr ? 'Total ran' : 'Total used'}</small><b>${mhN(d, d.total)}</b></div><div><small>Avg per day</small><b>${mhN(d, d.avg)}</b></div><div><small>Reads</small><b>${d.n}</b></div><div><small>Daily use min / max</small><b>${d.min == null ? '—' : fmtM(it, d.min) + ' / ' + fmtM(it, d.max)}</b></div></div>
       <p class="mh-note">Avg = total ÷ ${d.hrs ? fmtNum(d.hrs / 24, 1) + ' days' : 'days'} actually elapsed between reads (from each read's date + time). Totals include the use since the read before ${mdy(from)}.${d.skip ? ` ${d.skip} flagged read${d.skip > 1 ? 's' : ''} left out of min/max.` : ''}${d.negs ? ` ! ${d.negs} negative read${d.negs > 1 ? 's' : ''} left out.` : ''}</p>
-      ${d.rows.length ? `<ol class="mh-list">${d.rows.slice().reverse().map(r => `<li class="mh-r${r.flag ? ' flag' : ''}"><div class="mh-t">${mdy(r.st.date).slice(0, 5)} <b>${esc(r.st.time || '—')}</b><small>${parseYmd(r.st.date).toLocaleDateString('en-US', { weekday: 'short' })}</small></div><div class="mh-v"><b>${fmtM(it, r.value)}</b><span class="upill u-${r.kind}">${esc(r.text)}</span>${r.note ? `<div class="mnote">📝 ${esc(r.note)}</div>` : ''}${r.chk ? `<button type="button" class="mh-fix" onclick="openMeterPad('${r.day}','${it.id}')">⚠ Check this read — tap to edit ›</button>` : ''}</div></li>`).join('')}</ol>` : '<p class="muted">No reads in this range.</p>'}</div>`; }).join('')}`; }
+      ${d.rows.length ? `<ol class="mh-list">${d.rows.slice().reverse().map(r => `<li class="mh-r${r.flag ? ' flag' : ''}"><div class="mh-t">${mdy(r.st.date).slice(0, 5)} <b>${esc(r.st.time || '—')}</b><small>${parseYmd(r.st.date).toLocaleDateString('en-US', { weekday: 'short' })}</small>${r.st.date !== r.day ? `<span class="mh-slot">log ${mdy(r.day).slice(0, 5)}</span>` : ''}</div><div class="mh-v"><b>${fmtM(it, r.value)}</b><span class="upill u-${r.kind}">${esc(r.text)}</span>${r.note ? `<div class="mnote">📝 ${esc(r.note)}</div>` : ''}${r.chk ? `<button type="button" class="mh-fix" onclick="openMeterPad('${r.day}','${it.id}')">⚠ Check this read — tap to edit ›</button>` : ''}<button type="button" class="mh-dt secondary" onclick="mdtOpen('${r.day}','${it.id}')">🕘 Date/time / move</button></div></li>`).join('')}</ol>` : '<p class="muted">No reads in this range.</p>'}</div>`; }).join('')}`; }
 function mhSetRange(k) { MH.range = k; if (k === 'custom' && !MH.from) { const r = mhRange(); MH.from = ymd(addDays(new Date(), -6)); MH.to = ymd(new Date()); } mhSave(); renderMeters(); }
 function mhSetMeter(k) { MH.meter = k; mhSave(); renderMeters(); }
 function mhSheet() { const W = getWork(), { from, to } = mhRange(), D = mhMeters(W).map(it => mhData(it, from, to, W));
@@ -4621,6 +4642,59 @@ padRender = function (light) { _padRender333(light); if (!PAD || !PAD.meterDay |
   const html = `<div class="pad-mx"><button type="button" class="pad-zero" onclick="padNoChange()">○ No change (0 use)</button><button type="button" class="pad-notebtn secondary" onclick="padNoteToggle()">📝 ${cur ? 'Edit note' : 'Add note'}</button></div>
     ${open ? `<label class="pad-note"><span>${zero ? 'Why no use? (optional)' : 'Note for this reading (optional)'}</span><textarea rows="2" maxlength="300" placeholder="${zero ? 'Why no use? e.g. boiler down' : 'e.g. meter replaced, read late'}" aria-label="Note for ${esc(st.label)}" oninput="saveMeterNote('${day}','${st.id}',this.value)" onkeydown="event.stopPropagation()">${esc(cur)}</textarea></label>` : ''}`;
   const k = m.querySelector('.pad-keys'); if (k) k.insertAdjacentHTML('beforebegin', html); };
+/* ===== v3.3.4: edit a meter read's date/time, move reads (or a whole round) to another day, undo ===== */
+let MDT = null;
+const mdtHM = t => validHM(t) ? t : '';
+function mdtRec(day, id) { return ((((getWork()[day] || {}).checklist) || {})[id]) || null; }
+function mdtHas(day, id) { const r = mdtRec(day, id); return !!(r && (r.values || {})[meterKey(meterDefById(id))] != null); }
+function mdtOpen(day, id) { if (!mdtHas(day, id)) return toast('Enter the reading first'); const r = mdtRec(day, id), st = readStamp(id, day, getWork());
+  MDT = { day, id, date: st.date, time: st.time || nowHM(), to: ymd(addDays(parseYmd(day), -1)), setDate: true, conflict: null };
+  let o = document.getElementById('mdt'); if (!o) { o = document.createElement('div'); o.id = 'mdt'; document.body.appendChild(o); } o.hidden = false; document.body.classList.add('pad-open'); mdtRender(); }
+function mdtRender() { const o = document.getElementById('mdt'), it = meterDefById(MDT.id), r = mdtRec(MDT.day, MDT.id), v = r.values[meterKey(it)];
+  const [h, m] = (MDT.time || '00:00').split(':'), opt = (n, cur) => Array.from({ length: n }, (_, i) => String(i).padStart(2, '0')).map(x => `<option${x === cur ? ' selected' : ''}>${x}</option>`).join('');
+  const others = meterItems().filter(x => mdtHas(MDT.day, x.id)).length;
+  o.innerHTML = `<div class="mro-wrap mdt-wrap"><div class="mro-head"><b>🕘 ${esc(it.label)}</b><button type="button" class="secondary" onclick="mdtClose()" aria-label="Close">✕</button></div>
+  <p class="mdt-val"><b>${fmtM(it, v)}</b><br><span>Log day: <b>${mdy(MDT.day)}</b>${(r.date && r.date !== MDT.day) ? ` · read on ${mdy(r.date)}` : ''}${r.time ? ' ' + r.time : ''}</span></p>
+  <h4>Read date &amp; time</h4>
+  <label class="mdt-l">Date<input type="date" id="mdtDate" value="${MDT.date}" onchange="MDT.date=this.value"></label>
+  <div class="mdt-time"><label class="mdt-l">Hour (24h)<select id="mdtH" onchange="MDT.time=this.value+':'+MDT.time.slice(3)">${opt(24, h)}</select></label><label class="mdt-l">Min<select id="mdtM" onchange="MDT.time=MDT.time.slice(0,2)+':'+this.value">${opt(60, m)}</select></label></div>
+  <button type="button" class="mro-save" id="mdtSave" onclick="mdtSaveStamp()">✓ Save date/time</button>
+  <h4>Move to another day</h4>
+  <label class="mdt-l">Move to log day<input type="date" id="mdtTo" value="${MDT.to}" onchange="MDT.to=this.value;MDT.conflict=null;mdtRender()"></label>
+  <label class="mdt-chk"><input type="checkbox" id="mdtSet" ${MDT.setDate ? 'checked' : ''} onchange="MDT.setDate=this.checked"> Read date = that day (keep time)</label>
+  ${MDT.conflict ? `<div class="mdt-conf"><p>⚠ ${esc(MDT.conflict.msg)}</p><button type="button" class="danger-btn" onclick="mdtDoMove('${MDT.conflict.all ? 'all' : 'one'}','overwrite')">Overwrite</button><button type="button" class="mro-save" onclick="mdtDoMove('${MDT.conflict.all ? 'all' : 'one'}','swap')">⇄ Swap the two</button><button type="button" class="secondary" onclick="MDT.conflict=null;mdtRender()">Cancel</button></div>` :
+  `<button type="button" class="mro-save" id="mdtMove" onclick="mdtMove(false)">➜ Move this reading</button><button type="button" class="secondary mro-reset" id="mdtMoveAll" onclick="mdtMove(true)">➜ Move this whole round (${others} meter${others === 1 ? '' : 's'}) to that day</button>`}
+  <p class="mro-note">A snapshot is saved first; you can Undo right after.</p></div>`; }
+function mdtClose() { const o = document.getElementById('mdt'); if (o) { o.hidden = true; o.innerHTML = ''; } MDT = null; if (!PAD) document.body.classList.remove('pad-open'); }
+function mdtBefore(label) { try { takeSnapshot(label, true); } catch (e) {} localStorage.setItem('nwhUndoWork', localStorage.getItem('nwhWork') || '{}'); }
+function mdtAfter(msg) { mdtClose(); store('nwhWork', getWork()); scheduleSnapshot && scheduleSnapshot();
+  if (PAD && PAD.meterDay) { const d = PAD.meterDay, i = PAD.i; padClose(); openMeterPad(d); if (PAD && PAD.mode === 'pad') padGo(Math.min(i, PAD.steps.length - 1)); }
+  else { const a = document.querySelector('.screen.active'); if (a) renderScreen(a.id); }
+  document.querySelectorAll('.cl[data-cl]').forEach(b => refreshMeterStep(b.dataset.cl));
+  let u = document.getElementById('undoBar'); if (!u) { u = document.createElement('div'); u.id = 'undoBar'; document.body.appendChild(u); }
+  u.innerHTML = `<span>${esc(msg)}</span><button type="button" onclick="mdtUndo()">↶ Undo</button>`; u.hidden = false; clearTimeout(u._t); u._t = setTimeout(() => { u.hidden = true; }, 20000); }
+function mdtUndo() { const s = localStorage.getItem('nwhUndoWork'); if (!s) return; localStorage.setItem('nwhWork', s); localStorage.removeItem('nwhUndoWork'); const u = document.getElementById('undoBar'); if (u) u.hidden = true;
+  if (PAD && PAD.meterDay) { const d = PAD.meterDay; padClose(); openMeterPad(d); } const a = document.querySelector('.screen.active'); if (a) renderScreen(a.id); toast('Undone'); }
+function mdtSaveStamp() { if (!MDT.date || !validHM(MDT.time)) return toast('Pick a date and time');
+  mdtBefore('before meter date/time edit'); const W = getWork(), r = W[MDT.day].checklist[MDT.id];
+  if (MDT.date === MDT.day) delete r.date; else r.date = MDT.date; r.time = MDT.time; r.at = new Date(MDT.date + 'T' + MDT.time + ':00').toISOString(); store('nwhWork', W);
+  mdtAfter(`${meterDefById(MDT.id).label}: read ${mdy(MDT.date)} ${MDT.time}`); }
+function mdtMove(all) { const to = MDT.to; if (!to) return toast('Pick a day'); if (to === MDT.day) return toast('That is the same day');
+  const ids = all ? meterItems().filter(x => mdtHas(MDT.day, x.id)).map(x => x.id) : [MDT.id], clash = ids.filter(id => mdtHas(to, id));
+  if (clash.length) { MDT.conflict = { all, msg: `${mdy(to)} already has ${clash.length === 1 ? 'a ' + meterDefById(clash[0]).label + ' reading' : clash.length + ' meter readings'} (${clash.map(id => fmtM(meterDefById(id), mdtRec(to, id).values[meterKey(meterDefById(id))])).join(', ')}).` }; return mdtRender(); }
+  mdtDoMove(all ? 'all' : 'one', 'overwrite'); }
+function mdtDoMove(which, mode) { const from = MDT.day, to = MDT.to, setDate = MDT.setDate, ids = which === 'all' ? meterItems().filter(x => mdtHas(from, x.id)).map(x => x.id) : [MDT.id];
+  mdtBefore(`before moving meter read${ids.length > 1 ? 's' : ''} ${from} → ${to}`); const W = getWork(), F = W[from] = W[from] || {}, T = W[to] = W[to] || {}; F.checklist = F.checklist || {}; T.checklist = T.checklist || {}; delete T.isExample;
+  const restamp = (r, oldSlot, newSlot) => { const d = r.date || oldSlot; if (setDate) { if (r.date && r.date !== oldSlot) {} delete r.date; } else if (d !== newSlot) r.date = d; else delete r.date; if (setDate && r.time) r.at = new Date(newSlot + 'T' + r.time + ':00').toISOString(); return r; };
+  ids.forEach(id => { const src = F.checklist[id], dst = T.checklist[id], dstHas = dst && (dst.values || {})[meterKey(meterDefById(id))] != null;
+    T.checklist[id] = restamp(src, from, to);
+    if (dstHas && mode === 'swap') F.checklist[id] = restamp(dst, to, from); else delete F.checklist[id]; });
+  store('nwhWork', W); mdtAfter(`${ids.length > 1 ? ids.length + ' meter reads' : meterDefById(ids[0]).label} moved ${mdy(from).slice(0, 5)} → ${mdy(to).slice(0, 5)}${mode === 'swap' ? ' (swapped)' : ''}`); }
+/* keypad: Date/time button in header */
+const _padRender334 = padRender;
+padRender = function (light) { _padRender334(light); if (!PAD || !PAD.meterDay || PAD.mode !== 'pad' || light) return; const h = document.querySelector('#mpad .pad-head'); if (!h || h.querySelector('.mdt-open')) return;
+  const st = PAD.steps[PAD.i], b = document.createElement('button'); b.type = 'button'; b.className = 'mdt-open secondary small'; b.textContent = '🕘 Date/time'; b.setAttribute('aria-label', 'Date, time or move this reading');
+  b.onclick = () => { const s = PAD.steps[PAD.i]; if (PAD.buf !== '' && !PAD.fresh && s.commit(Number(PAD.buf)) === false) return; PAD.fresh = true; mdtOpen(PAD.meterDay, s.id); }; h.insertBefore(b, h.querySelector('.mro-open') || h.lastElementChild); };
 /* ---------- Startup ---------- */
 migrateData();
 cleanImportStamps();
