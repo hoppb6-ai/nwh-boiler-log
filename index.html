@@ -826,12 +826,22 @@ html.dark .mdt-l input, html.dark .mdt-l select { background: #0f1a27; color: #f
 html.dark .mdt-conf p { color: #FFB4B4; } html.dark .mdt-conf { border-color: #FF8A8A; }
 html.dark .mh-slot { color: #FFD08A; }
 html.dark #undoBar { background: #e8eef6; color: #10233d; }
+#undoBar { left: 8px !important; right: 84px !important; bottom: calc(env(safe-area-inset-bottom) + 76px) !important; padding: 6px 8px !important; gap: 6px !important; font-size: 15px !important; }
+#undoBar span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+#undoBar .ub-undo { min-height: 44px; padding: 0 10px; }
+#undoBar .ub-x { min-width: 44px; width: 44px !important; min-height: 44px; padding: 0; font-size: 18px; background: transparent !important; color: inherit !important; border: 2px solid currentColor; }
+.mdt-cur { border: 3px solid #1F3A5F; border-radius: 12px; padding: 10px 12px; margin: 8px 0; background: #EEF3FA; }
+.mdt-cv { font-size: 34px; font-weight: 800; color: #10233d; }
+.mdt-cr { display: flex; justify-content: space-between; gap: 8px; font-size: 18px; margin-top: 4px; } .mdt-cr span { color: #33475f; } .mdt-cr b { color: #10233d; }
+.mdt-warn { font-size: 15px; font-weight: 700; color: #6B3A00; margin: 8px 0 0; }
+.mdt-undo { width: 100%; min-height: 50px; font-size: 17px; margin: 4px 0; }
+html.dark .mdt-cur { background: #1b2b3f; border-color: #6f9bd1; } html.dark .mdt-cv, html.dark .mdt-cr b { color: #f1f5fa; } html.dark .mdt-cr span { color: #c3cfdd; } html.dark .mdt-warn { color: #FFD08A; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.4</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.5</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1063,7 +1073,7 @@ html.dark #undoBar { background: #e8eef6; color: #10233d; }
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.4 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.5 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2914,7 +2924,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.3.4';
+const APP_VER = '3.3.5';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4654,7 +4664,8 @@ function mdtRender() { const o = document.getElementById('mdt'), it = meterDefBy
   const [h, m] = (MDT.time || '00:00').split(':'), opt = (n, cur) => Array.from({ length: n }, (_, i) => String(i).padStart(2, '0')).map(x => `<option${x === cur ? ' selected' : ''}>${x}</option>`).join('');
   const others = meterItems().filter(x => mdtHas(MDT.day, x.id)).length;
   o.innerHTML = `<div class="mro-wrap mdt-wrap"><div class="mro-head"><b>🕘 ${esc(it.label)}</b><button type="button" class="secondary" onclick="mdtClose()" aria-label="Close">✕</button></div>
-  <p class="mdt-val"><b>${fmtM(it, v)}</b><br><span>Log day: <b>${mdy(MDT.day)}</b>${(r.date && r.date !== MDT.day) ? ` · read on ${mdy(r.date)}` : ''}${r.time ? ' ' + r.time : ''}</span></p>
+  <div class="mdt-cur"><div class="mdt-cv">${fmtM(it, v)}</div><div class="mdt-cr"><span>Read at</span><b>${mdy(r.date || MDT.day)} ${r.time || '—'}</b></div><div class="mdt-cr"><span>Log day</span><b>${mdy(MDT.day)}</b></div><p class="mdt-warn">Check this is the reading you mean to change.</p></div>
+  ${undoAvail() ? `<button type="button" class="secondary mdt-undo" onclick="mdtClose();mdtUndo()">↶ Undo last meter change (${esc(localStorage.getItem('nwhUndoLabel') || '')})</button>` : ''}
   <h4>Read date &amp; time</h4>
   <label class="mdt-l">Date<input type="date" id="mdtDate" value="${MDT.date}" onchange="MDT.date=this.value"></label>
   <div class="mdt-time"><label class="mdt-l">Hour (24h)<select id="mdtH" onchange="MDT.time=this.value+':'+MDT.time.slice(3)">${opt(24, h)}</select></label><label class="mdt-l">Min<select id="mdtM" onchange="MDT.time=MDT.time.slice(0,2)+':'+this.value">${opt(60, m)}</select></label></div>
@@ -4666,16 +4677,22 @@ function mdtRender() { const o = document.getElementById('mdt'), it = meterDefBy
   `<button type="button" class="mro-save" id="mdtMove" onclick="mdtMove(false)">➜ Move this reading</button><button type="button" class="secondary mro-reset" id="mdtMoveAll" onclick="mdtMove(true)">➜ Move this whole round (${others} meter${others === 1 ? '' : 's'}) to that day</button>`}
   <p class="mro-note">A snapshot is saved first; you can Undo right after.</p></div>`; }
 function mdtClose() { const o = document.getElementById('mdt'); if (o) { o.hidden = true; o.innerHTML = ''; } MDT = null; if (!PAD) document.body.classList.remove('pad-open'); }
-function mdtBefore(label) { try { takeSnapshot(label, true); } catch (e) {} localStorage.setItem('nwhUndoWork', localStorage.getItem('nwhWork') || '{}'); }
+function mdtBefore(label) { try { takeSnapshot(label, true); } catch (e) {} localStorage.setItem('nwhUndoWork', localStorage.getItem('nwhWork') || '{}'); localStorage.setItem('nwhUndoAt', String(Date.now())); }
+const UNDO_MS = 10 * 60 * 1000;
+function undoAvail() { const t = Number(localStorage.getItem('nwhUndoAt') || 0); return !!localStorage.getItem('nwhUndoWork') && Date.now() - t < UNDO_MS; }
+function undoHide() { const u = document.getElementById('undoBar'); if (u) { u.hidden = true; clearTimeout(u._t); } }
 function mdtAfter(msg) { mdtClose(); store('nwhWork', getWork()); scheduleSnapshot && scheduleSnapshot();
   if (PAD && PAD.meterDay) { const d = PAD.meterDay, i = PAD.i; padClose(); openMeterPad(d); if (PAD && PAD.mode === 'pad') padGo(Math.min(i, PAD.steps.length - 1)); }
   else { const a = document.querySelector('.screen.active'); if (a) renderScreen(a.id); }
   document.querySelectorAll('.cl[data-cl]').forEach(b => refreshMeterStep(b.dataset.cl));
   let u = document.getElementById('undoBar'); if (!u) { u = document.createElement('div'); u.id = 'undoBar'; document.body.appendChild(u); }
-  u.innerHTML = `<span>${esc(msg)}</span><button type="button" onclick="mdtUndo()">↶ Undo</button>`; u.hidden = false; clearTimeout(u._t); u._t = setTimeout(() => { u.hidden = true; }, 20000); }
-function mdtUndo() { const s = localStorage.getItem('nwhUndoWork'); if (!s) return; localStorage.setItem('nwhWork', s); localStorage.removeItem('nwhUndoWork'); const u = document.getElementById('undoBar'); if (u) u.hidden = true;
+  localStorage.setItem('nwhUndoLabel', msg);
+  u.innerHTML = `<span>${esc(msg)}</span><button type="button" class="ub-undo" onclick="mdtUndo()">↶ Undo</button><button type="button" class="ub-x" aria-label="Dismiss" onclick="undoHide()">✕</button>`; u.hidden = false; clearTimeout(u._t); u._t = setTimeout(undoHide, 8000);
+  const a = document.querySelector('.screen.active'); if (a && a.id === 'more') renderScreen('more'); }
+function mdtUndo() { const s = localStorage.getItem('nwhUndoWork'); if (!s || !undoAvail()) { undoHide(); return toast('Nothing to undo'); } localStorage.removeItem('nwhUndoAt'); localStorage.setItem('nwhWork', s); localStorage.removeItem('nwhUndoWork'); const u = document.getElementById('undoBar'); if (u) u.hidden = true;
   if (PAD && PAD.meterDay) { const d = PAD.meterDay; padClose(); openMeterPad(d); } const a = document.querySelector('.screen.active'); if (a) renderScreen(a.id); toast('Undone'); }
 function mdtSaveStamp() { if (!MDT.date || !validHM(MDT.time)) return toast('Pick a date and time');
+  { const it = meterDefById(MDT.id), v = mdtRec(MDT.day, MDT.id).values[meterKey(it)]; if (!confirm(`Set ${fmtM(it, v)} read to ${mdy(MDT.date).slice(0, 5)} ${MDT.time}?\n\n${it.label} · log day ${mdy(MDT.day)}`)) return; }
   mdtBefore('before meter date/time edit'); const W = getWork(), r = W[MDT.day].checklist[MDT.id];
   if (MDT.date === MDT.day) delete r.date; else r.date = MDT.date; r.time = MDT.time; r.at = new Date(MDT.date + 'T' + MDT.time + ':00').toISOString(); store('nwhWork', W);
   mdtAfter(`${meterDefById(MDT.id).label}: read ${mdy(MDT.date)} ${MDT.time}`); }
@@ -4695,6 +4712,15 @@ const _padRender334 = padRender;
 padRender = function (light) { _padRender334(light); if (!PAD || !PAD.meterDay || PAD.mode !== 'pad' || light) return; const h = document.querySelector('#mpad .pad-head'); if (!h || h.querySelector('.mdt-open')) return;
   const st = PAD.steps[PAD.i], b = document.createElement('button'); b.type = 'button'; b.className = 'mdt-open secondary small'; b.textContent = '🕘 Date/time'; b.setAttribute('aria-label', 'Date, time or move this reading');
   b.onclick = () => { const s = PAD.steps[PAD.i]; if (PAD.buf !== '' && !PAD.fresh && s.commit(Number(PAD.buf)) === false) return; PAD.fresh = true; mdtOpen(PAD.meterDay, s.id); }; h.insertBefore(b, h.querySelector('.mro-open') || h.lastElementChild); };
+
+/* v3.3.5: undo bar dismisses on navigation; Undo entry in More for 10 min */
+const _showScreen335 = showScreen;
+showScreen = function (...a) { undoHide(); return _showScreen335.apply(this, a); };
+const _renderScreen335 = renderScreen;
+renderScreen = function (id) { _renderScreen335(id); if (id !== 'more') return; const old = document.getElementById('undoCard'); if (old) old.remove();
+  if (!undoAvail()) return; const v = document.getElementById('updCard') || document.getElementById('appVer'); if (!v) return;
+  const mins = Math.max(1, Math.ceil((UNDO_MS - (Date.now() - Number(localStorage.getItem('nwhUndoAt')))) / 60000));
+  v.insertAdjacentHTML('beforebegin', `<div class="card" id="undoCard"><h3>↶ Undo last meter change</h3><p>${esc(localStorage.getItem('nwhUndoLabel') || '')}</p><p class="muted">Available ${mins} more min, or until the next change.</p><button type="button" id="undoMoreBtn" onclick="mdtUndo();renderScreen('more')">↶ Undo last meter change</button></div>`); };
 /* ---------- Startup ---------- */
 migrateData();
 cleanImportStamps();
