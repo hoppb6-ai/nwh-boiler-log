@@ -960,12 +960,13 @@ html.dark #roundProg .progress { background: #2C3A4E !important; }
 .round-done:not(.on) small { color: inherit !important; }
 html.dark .round-done:not(.on) small, .round-done:not(.on) small { color: #1F3A5F !important; }
 html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on) small { color: #1F3A5F !important; } html.dark #roundBody .round-done.on small { color: #fff !important; }
+.sh-style { display: flex; flex-direction: column; gap: 8px; } .sh-style button { min-height: 52px; font-size: 18px; } .sh-style .muted { margin: 0; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.1</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.2</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1197,7 +1198,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.1 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.2 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3048,7 +3049,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.1';
+const APP_VER = '3.4.2';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -5025,6 +5026,58 @@ function v341RoundFix() {
 const _renderRound341 = renderRound; renderRound = function () { _renderRound341(); try { v341RoundFix(); } catch (e) { console.error(e); } };
 const _renderRoundMu341 = renderRoundMu; renderRoundMu = function () { _renderRoundMu341(); try { v341RoundFix(); } catch (e) {} };
 (function () { const d = document.createElement('div'); d.id = 'rotLock'; d.setAttribute('role', 'alert'); d.innerHTML = '<div><div class="rl-i">📱↻</div><b>Turn your phone upright</b><span>NWH Log works in portrait. Nothing is lost — your entries and timers keep running.</span></div>'; document.body.appendChild(d); })();
+
+/* ===== v3.4.2: Sheet-style PNG (handwritten log-book layout) ===== */
+function shRaw(v) { if (v == null || v === '') return ''; return String(v).trim(); }
+function sheetStyleData(from, to, W) {
+  W = W || getWork(); const ms = meterItems(), days = [];
+  for (let d = from; d <= to; d = addDayKey(d, 1)) {
+    const cl = (W[d] && W[d].checklist) || {}; const vals = ms.map(it => shRaw(((cl[it.id] || {}).values || {})[meterKey(it)]));
+    if (vals.some(Boolean)) days.push({ day: d, vals });
+  }
+  return { ms, days };
+}
+function sheetStyleCanvas(from, to, opt) {
+  opt = Object.assign({ legend: localStorage.getItem('nwhSheetLegend') !== '0' }, opt || {});
+  const { ms, days } = sheetStyleData(from, to, opt.W), S = 2, Wd = 1080, LH = 58, M = 96, COLS = 3, colW = (Wd - M - 24) / COLS;
+  const blockLines = ms.length + 2; // oval line + readings + spacer
+  const F = "'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif";
+  const legendLines = opt.legend ? Math.ceil(ms.length / 2) + 1 : 0;
+  const rows = Math.max(1, Math.ceil(days.length / COLS)), top = LH * (1.5 + legendLines);
+  const H = Math.max(1600, Math.ceil(top + rows * blockLines * LH + LH * 1.5));
+  const cv = document.createElement('canvas'); cv.width = Wd * S; cv.height = H * S; const c = cv.getContext('2d'); c.scale(S, S);
+  c.fillStyle = '#FBFAF5'; c.fillRect(0, 0, Wd, H);
+  c.strokeStyle = '#B9D3EE'; c.lineWidth = 1.5; for (let y = LH * 1.5; y < H; y += LH) { c.beginPath(); c.moveTo(0, y); c.lineTo(Wd, y); c.stroke(); }
+  c.strokeStyle = '#E57373'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(M - 16, 0); c.lineTo(M - 16, H); c.stroke();
+  c.fillStyle = '#5A6472'; c.font = `600 20px ${F}`; c.textBaseline = 'alphabetic';
+  c.fillText(`NWH meter reads · ${mdy(from)} – ${mdy(to)}`, M, LH * 1.5 - 14);
+  if (opt.legend) { c.font = `500 19px ${F}`; c.fillStyle = '#4F5966';
+    c.fillText('Order (top to bottom):', M, LH * 2.5 - 16);
+    ms.forEach((it, i) => { const x = M + (i % 2) * ((Wd - M) / 2), y = LH * (3.5 + Math.floor(i / 2)) - 16; c.fillText(`${i + 1}. ${it.label}${it.unit ? ' (' + it.unit + ')' : ''}`.slice(0, 48), x, y); }); }
+  days.forEach((d, n) => {
+    const col = n % COLS, row = Math.floor(n / COLS), x0 = M + col * colW, y0 = top + row * blockLines * LH;
+    const lbl = d.day.slice(5, 7) + '-' + d.day.slice(8, 10);
+    c.font = `700 30px ${F}`; const tw = c.measureText(lbl).width, cx = x0 + 18 + tw / 2 + 16, cy = y0 + LH - 18;
+    c.fillStyle = '#14213D'; c.fillText(lbl, cx - tw / 2, cy + 10);
+    c.strokeStyle = '#14213D'; c.lineWidth = 3; c.beginPath(); c.ellipse(cx, cy, tw / 2 + 22, 24, -0.04, 0, Math.PI * 2); c.stroke();
+    c.font = `600 40px ${F}`; c.fillStyle = '#14213D';
+    d.vals.forEach((v, i) => { c.fillStyle = v ? '#14213D' : '#8A93A0'; c.fillText(v || '—', x0 + 8, y0 + LH * (i + 2) - 12, colW - 20); });
+  });
+  if (!days.length) { c.font = `600 30px ${F}`; c.fillStyle = '#5A6472'; c.fillText('No meter readings in this range', M, top + LH - 12); }
+  return cv;
+}
+async function sheetStyleExport(range) {
+  const { from, to } = range || mhRange();
+  try { const cv = sheetStyleCanvas(from, to); const r = await shareCanvases([cv], `NWH-meter-reads-${from}_to_${to}`, 'png'); toast(r === 'cancelled' ? 'Cancelled' : 'Sheet-style PNG ready'); return cv; }
+  catch (e) { toast('Export failed: ' + e.message); }
+}
+function sheetLegendToggle(on) { localStorage.setItem('nwhSheetLegend', on ? '1' : '0'); }
+const _renderMeters342 = renderMeters;
+renderMeters = function () { _renderMeters342(); if (mtScope !== 'history') return; const ex = document.querySelector('#meters .mh-exp');
+  if (ex && !document.getElementById('shStyle')) ex.insertAdjacentHTML('afterend', `<div id="shStyle" class="card sh-style"><button type="button" onclick="sheetStyleExport()">📝 Sheet-style PNG</button><label class="check"><input type="checkbox" ${localStorage.getItem('nwhSheetLegend') !== '0' ? 'checked' : ''} onchange="sheetLegendToggle(this.checked)"> Include meter key</label><p class="muted">Log-book layout: days 3 across, readings in sheet order. Uses the range above.</p></div>`); };
+const _renderShift342 = renderShift;
+renderShift = function () { _renderShift342(); const b = document.querySelector('#shift button[onclick*="shiftShare"]');
+  if (b && !document.getElementById('shSheetStyle')) b.parentElement.insertAdjacentHTML('beforeend', `<button type="button" id="shSheetStyle" class="secondary" onclick="sheetStyleExport()">📝 Sheet-style PNG</button>`); };
 
 /* ---------- Startup ---------- */
 migrateData();
