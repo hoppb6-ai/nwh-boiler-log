@@ -967,7 +967,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.3</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.4</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1199,7 +1199,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.3 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.4 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3050,7 +3050,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.3';
+const APP_VER = '3.4.4';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -5134,6 +5134,56 @@ renderMeters = function () { _renderMeters342(); if (mtScope !== 'history') retu
     <p class="muted">The 9 most recent days with readings up to that date, 3 per row, sheet order.</p></div>`); };
 renderShift = function () { _renderShift342(); const b = document.querySelector('#shift button[onclick*="shiftShare"]');
   if (b && !document.getElementById('shSheetStyle')) b.parentElement.insertAdjacentHTML('beforeend', `<button type="button" id="shSheetStyle" class="secondary" onclick="sheetStyleExport(ymd(new Date()))">📝 Meter readings PNG</button>`); };
+
+/* ===== v3.4.4: used value beside each reading ===== */
+function mrUsed(it, day, W) {
+  if (!it) return { t: '', col: '#5F6977' }; W = W || getWork(); const k = meterKey(it), inf = meterInfo(it.id, day, W, k);
+  if (inf.today == null) return { t: '', col: '#5F6977' };
+  if (inf.usage == null) return { t: '—', col: '#5F6977' };
+  let flag = inf.usage < 0; try { const c = meterCompare(it.id, day, W, k); if (c && c.flag) flag = true; } catch (e) {}
+  const X = fmtM(it, Math.abs(inf.usage));
+  if (flag) return { t: '! ' + (inf.usage < 0 ? '−' : '+') + X, col: '#B71C1C' };
+  if (inf.usage === 0) return { t: '○ 0', col: '#4A2BAE' };
+  return { t: '▲ +' + X, col: '#00796B' };
+}
+function sheetStyleCanvas(end, _unused, opt) {
+  opt = Object.assign({ legend: localStorage.getItem('nwhSheetLegend') !== '0' }, opt || {});
+  const { ms, days } = mrDays(end, opt.W), S = 2, Wd = 1080, F = "'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif";
+  const NAVY = '#1F3A5F', INK = '#14213D', MUT = '#4F5966', LINE = '#D5DCE5';
+  const PAD = 26, HDR = 168, GAP = 12, cw = (Wd - PAD * 2 - GAP * 2) / 3, LH = 46, ch = 84 + ms.length * LH + 18;
+  const gridTop = HDR + 28, legTop = gridTop + 3 * ch + 2 * GAP + 28, legRows = opt.legend ? Math.ceil(ms.length / 2) + 1 : 0;
+  const H = legTop + (opt.legend ? 56 + legRows * 38 : 0) + 56;
+  const cv = document.createElement('canvas'); cv.width = Wd * S; cv.height = H * S; const c = cv.getContext('2d'); c.scale(S, S);
+  const rr = (x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+  c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, Wd, H);
+  c.fillStyle = NAVY; c.fillRect(0, 0, Wd, HDR);
+  const st = load('nwhSettings', {}) || {}, op = st.operator || '', emp = st.employer || 'Northwest Hardwoods';
+  c.textBaseline = 'alphabetic'; c.fillStyle = '#fff'; c.font = `800 46px ${F}`; c.fillText('NWH Meter Readings', PAD, 70);
+  c.font = `500 24px ${F}`; c.fillStyle = '#DCE6F2';
+  c.fillText(days.length ? `${mdy(days[0].day)} – ${mdy(days[days.length - 1].day)} · ${days.length} of 9 days` : 'No meter readings yet', PAD, 112);
+  c.fillText(`Operator: ${op || '—'}`, PAD, 146); c.textAlign = 'right'; c.fillText(emp, Wd - PAD, 146); c.fillText(`Generated ${mdy(ymd(new Date()))} ${nowHM()}`, Wd - PAD, 112); c.textAlign = 'left';
+  for (let n = 0; n < 9; n++) {
+    const col = n % 3, row = Math.floor(n / 3), x = PAD + col * (cw + GAP), y = gridTop + row * (ch + GAP), d = days[n];
+    rr(x, y, cw, ch, 12); c.fillStyle = d ? '#FFFFFF' : '#F7F9FB'; c.fill(); c.strokeStyle = LINE; c.lineWidth = 1.5; c.stroke();
+    if (!d) continue;
+    const lbl = d.day.slice(5, 7) + '-' + d.day.slice(8, 10); c.font = `700 28px ${F}`; const tw = c.measureText(lbl).width, cx = x + 20 + tw / 2 + 18, cy = y + 42;
+    c.strokeStyle = NAVY; c.lineWidth = 3; c.beginPath(); c.ellipse(cx, cy, tw / 2 + 20, 23, 0, 0, Math.PI * 2); c.stroke(); c.fillStyle = NAVY; c.fillText(lbl, cx - tw / 2, cy + 10);
+    c.strokeStyle = '#EEF1F5'; c.lineWidth = 1;
+    d.vals.forEach((v, i) => { const by = y + 84 + i * LH + 34;
+      if (i) { c.beginPath(); c.moveTo(x + 14, by - 34); c.lineTo(x + cw - 14, by - 34); c.stroke(); }
+      c.font = `600 30px ${F}`; c.fillStyle = v ? INK : '#8A93A0'; c.fillText(v || '—', x + 14, by, cw * 0.6); const u = mrUsed(ms[i], d.day, opt.W);
+      c.font = `700 22px ${F}`; c.fillStyle = u.col; c.textAlign = 'right'; c.fillText(u.t, x + cw - 12, by - 2, cw * 0.38); c.textAlign = 'left'; });
+  }
+  if (opt.legend) {
+    c.strokeStyle = LINE; c.lineWidth = 1.5; c.beginPath(); c.moveTo(PAD, legTop); c.lineTo(Wd - PAD, legTop); c.stroke();
+    c.font = `700 22px ${F}`; c.fillStyle = NAVY; c.fillText('KEY · readings top to bottom in each day', PAD, legTop + 38);
+    c.font = `500 22px ${F}`; c.fillStyle = MUT;
+    ms.forEach((it, i) => c.fillText(`${i + 1}. ${it.label}${it.unit ? ' (' + it.unit + ')' : ''}`.slice(0, 44), PAD + (i % 2) * ((Wd - 2 * PAD) / 2), legTop + 80 + Math.floor(i / 2) * 38));
+    const ly = legTop + 80 + Math.ceil(ms.length / 2) * 38 + 6; let lx = PAD; c.font = `700 22px ${F}`;
+    [['▲ +n','#00796B',' used since previous read   '],['○ 0','#4A2BAE',' no use   '],['! ','#B71C1C',' check (negative / too high)   '],['—','#5F6977',' no previous read']].forEach(([k, col, t]) => { c.fillStyle = col; c.font = `700 22px ${F}`; c.fillText(k, lx, ly); lx += c.measureText(k).width; c.fillStyle = MUT; c.font = `500 20px ${F}`; c.fillText(t, lx, ly); lx += c.measureText(t).width; });
+  }
+  return cv;
+}
 
 /* ---------- Startup ---------- */
 migrateData();

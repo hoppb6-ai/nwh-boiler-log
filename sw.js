@@ -1,4 +1,4 @@
-const CACHE = 'nwh-log-v40';
+const CACHE = 'nwh-log-v41';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS.map(u => new Request(u, { cache: 'reload' }))))); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('nwh-log-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
