@@ -1,0 +1,13 @@
+{
+  "name": "NWH Log v3.3.5 (previous)",
+  "short_name": "NWH v3.3.5",
+  "description": "Northwest Hardwoods boiler operator log: shifts, daily checklist, meters, boiler log and AOCs. All data stays on the device.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1F3A5F",
+  "theme_color": "#1F3A5F",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

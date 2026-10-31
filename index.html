@@ -836,12 +836,68 @@ html.dark #undoBar { background: #e8eef6; color: #10233d; }
 .mdt-warn { font-size: 15px; font-weight: 700; color: #6B3A00; margin: 8px 0 0; }
 .mdt-undo { width: 100%; min-height: 50px; font-size: 17px; margin: 4px 0; }
 html.dark .mdt-cur { background: #1b2b3f; border-color: #6f9bd1; } html.dark .mdt-cv, html.dark .mdt-cr b { color: #f1f5fa; } html.dark .mdt-cr span { color: #c3cfdd; } html.dark .mdt-warn { color: #FFD08A; }
+/* ===== v3.4 ===== */
+:root { --tz: 1.08; }
+.screen { zoom: var(--tz); }
+.rd-btn, .rd-wrap { display: none !important; }
+button, .btn-like { min-height: 46px; border-radius: 10px; }
+button.small, .btn-like.small { min-height: 42px; }
+.chip { min-height: 40px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #F2A900; outline-offset: 2px; }
+input, select, textarea { font-size: 17px; min-height: 44px; }
+.linkish { min-height: 0; background: none !important; border: 0; color: var(--head); text-decoration: underline; padding: 0 2px; font: inherit; font-weight: 700; cursor: pointer; }
+.big-go { display: block; width: 100%; min-height: 60px; font-size: 20px; font-weight: 800; margin: 10px 0 6px; background: #1F3A5F; color: #fff; border: 0; border-radius: 14px; box-shadow: 0 2px 0 rgba(0,0,0,.15); }
+.big-go.done { background: #1B5E20; }
+.home-shift { border: 2px solid #1F3A5F; }
+.hs-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; } .hs-h b { font-size: 18px; flex: 1 1 auto; } .hs-h small { color: var(--text2); font-weight: 700; }
+.sh-bar { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 0; margin: 10px 0 0; }
+.sh-bar li { text-align: center; font-size: 12px; font-weight: 700; color: var(--text2); line-height: 1.2; min-width: 0; overflow-wrap: anywhere; }
+.sh-bar i { display: flex; align-items: center; justify-content: center; margin: 0 auto 3px; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); font-style: normal; background: var(--surface); color: var(--text); }
+.sh-bar li.done i { background: #1B5E20; border-color: #1B5E20; color: #fff; } .sh-bar li.cur i { border-color: #1F3A5F; background: #1F3A5F; color: #fff; } .sh-bar li.cur, .sh-bar li.done { color: var(--text); }
+.hs-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.hs-t { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; margin: 0; min-height: 58px; background: var(--surface2) !important; color: var(--text) !important; border: 2px solid var(--border); border-radius: 12px; }
+.hs-t b { font-size: 20px; } .hs-t span { font-size: 13px; font-weight: 600; }
+.hs-t.warn { border-color: #B26A00; background: var(--warnbg) !important; color: var(--flagtx) !important; } .hs-t.alarm { border-color: #B71C1C; color: var(--bad) !important; } .hs-t.ok b { color: var(--good); }
+.hs-flags { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; } .hs-flags span { background: var(--flagbg); color: var(--flagtx); border-radius: 6px; padding: 4px 8px; font-weight: 700; font-size: 15px; }
+.sh-day { font-weight: 800; font-size: 18px; margin: 0 0 4px; color: var(--text); }
+.sh-step h3 { display: flex; align-items: center; gap: 8px; } .sh-step h3 i { font-style: normal; display: inline-flex; width: 30px; height: 30px; border-radius: 50%; align-items: center; justify-content: center; border: 2px solid var(--border); font-size: 15px; }
+.sh-step.done h3 i { background: #1B5E20; border-color: #1B5E20; color: #fff; } .sh-step.cur { border: 2px solid #1F3A5F !important; } .sh-step.cur h3 i { background: #1F3A5F; color: #fff; border-color: #1F3A5F; }
+.sh-list { display: flex; flex-direction: column; gap: 4px; } .sh-flag { text-align: left; background: var(--flagbg) !important; color: var(--flagtx) !important; border: 1px solid #B26A00; font-weight: 700; margin: 0; }
+.sh-step .ok { color: var(--good); font-weight: 700; }
+.mh-tools { margin-top: 8px; } .mh-ssx { margin-top: 8px; } .mh-ssx summary { font-weight: 700; min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--text); }
+.mh-cwrap { margin: 6px 0; } .mh-chart { width: 100%; height: auto; display: block; background: var(--surface2); border-radius: 8px; }
+.mh-chart .cb-u { fill: #00594F; } .mh-chart .cb-z { fill: #4527A0; } .mh-chart .cb-f { fill: #B26A00; } .mh-chart .cb-ax { stroke: var(--border); stroke-width: 1; } .mh-chart .cb-t { font-size: 10px; fill: var(--text2); font-weight: 700; }
+html.dark .mh-chart .cb-u { fill: #4DB6AC; } html.dark .mh-chart .cb-z { fill: #B39DDB; } html.dark .mh-chart .cb-f { fill: #F2C14E; }
+.cz-seg { display: flex; } .cz-seg button { flex: 1 1 0; }
+.cz-m, .cz-add { border: 1px solid var(--border); border-radius: 10px; padding: 8px; margin: 8px 0; background: var(--surface2); }
+.cz-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) auto; gap: 6px; align-items: center; margin-top: 6px; } .cz-row > * { margin: 0 !important; min-width: 0; }
+.cz-m > input, .cz-add > input { width: 100%; margin: 0; font-weight: 700; box-sizing: border-box; } .cz-add > b { display: block; margin-bottom: 6px; }
+.cz-ret { display: flex; align-items: center; gap: 8px; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); } .cz-ret span { min-width: 0; overflow-wrap: anywhere; }
+.cz-list { display: flex; flex-direction: column; gap: 6px; } .cz-list button { text-align: left; margin: 0; } .cz-list small { opacity: .85; }
+#prevVer .btn-like { display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; }
+html.dark .home-shift, html.dark .sh-step.cur { border-color: #9DBCE6 !important; }
+html.dark .big-go { background: #2F4A70; color: #fff; } html.dark .big-go.done { background: #1E5A2A; }
+html.dark .sh-bar li.cur i { background: #2F4A70; border-color: #9DBCE6; } html.dark .sh-step.cur h3 i { background: #2F4A70; border-color: #9DBCE6; }
+html.dark .hs-t.warn { border-color: #F2C14E; } html.dark .hs-t.alarm { border-color: #FF8A80; }
+html.dark .linkish { color: #9DBCE6 !important; }
+html.dark .sh-flag { border-color: #F2C14E; }
+/* v3.4 review fixes: tap targets + contrast */
+.cz-list button small { color: inherit !important; opacity: .9; }
+html.dark #roundProg span { color: var(--text2) !important; } html.dark .round-step { color: #9DBCE6 !important; }
+.seg button { min-height: 44px; }
+.bs-st { min-height: 40px !important; min-width: 64px; padding-top: 6px !important; padding-bottom: 6px !important; }
+.round-miss { min-height: 44px !important; display: flex !important; align-items: center; width: 100%; text-align: left; }
+#dailyNav button, .ed-nav button { min-width: 44px; }
+.info-btn, button[aria-label*="info" i], .ib { min-width: 40px !important; min-height: 40px !important; }
+.mstep-open { min-height: 44px !important; }
+.seg.mini button, .seg button { min-height: 44px; } #daily .link-btn, #dayEditor .link-btn, .ws-row .link-btn, .round-card .link-btn { min-height: 40px; display: inline-flex; align-items: center; }
+#daily .link-btn{min-width:44px;justify-content:center}
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.3.5</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1073,7 +1129,7 @@ html.dark .mdt-cur { background: #1b2b3f; border-color: #6f9bd1; } html.dark .md
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.3.5 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.0 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2924,7 +2980,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.3.5';
+const APP_VER = '3.4.0';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3140,7 +3196,7 @@ function homeDashHtml() {
   return `<div class="dash"><div class="dash-ring" onclick="edDay='${day}';showScreen('daily')">${ringSvg(p.done, p.total, 76)}<div><b>Today</b><span class="muted">${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span><button class="small" onclick="event.stopPropagation();startRound()">▶ Start round</button></div></div>
     <div class="dash-tiles">${tile(fl.length ? 'warn' : 'ok', (fl.length ? '! ' : '✓ ') + fl.length, 'flags today', `edDay='${day}';showScreen('daily')`)}${tile(od.length ? 'alarm' : over.length ? 'warn' : 'ok', (od.length ? '! ' : '') + over.length, od.length ? `PM due (${od.length} overdue)` : 'PM due', "showScreen('pm')")}${tile(hiOpen.length ? 'alarm' : open.length ? 'warn' : 'ok', (hiOpen.length ? '! ' : '') + open.length, 'open AOCs', "showScreen('aocs')")}${tile(age == null || age >= 3 ? 'warn' : 'ok', age == null ? '!' : age + 'd', age == null ? 'no backup yet' : 'since backup', 'saveFile()')}</div>
     ${fl.length ? `<div class="dash-flags">${fl.slice(0, 4).map(f => `<span>! ${esc(f)}</span>`).join('')}</div>` : ''}
-    <div class="btn-row"><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button><button class="small secondary" onclick="showScreen('trends')">📈 Trends</button></div></div>`;
+    <div class="btn-row"><button class="small secondary" onclick="openReport(ymd(new Date()))">📄 Daily status</button></div></div>`;
 }
 
 /* ---------- 5. Round mode ---------- */
@@ -4721,6 +4777,163 @@ renderScreen = function (id) { _renderScreen335(id); if (id !== 'more') return; 
   if (!undoAvail()) return; const v = document.getElementById('updCard') || document.getElementById('appVer'); if (!v) return;
   const mins = Math.max(1, Math.ceil((UNDO_MS - (Date.now() - Number(localStorage.getItem('nwhUndoAt')))) / 60000));
   v.insertAdjacentHTML('beforebegin', `<div class="card" id="undoCard"><h3>↶ Undo last meter change</h3><p>${esc(localStorage.getItem('nwhUndoLabel') || '')}</p><p class="muted">Available ${mins} more min, or until the next change.</p><button type="button" id="undoMoreBtn" onclick="mdtUndo();renderScreen('more')">↶ Undo last meter change</button></div>`); };
+/* ===================== v3.4: streamline + polish =====================
+   Shift flow (clock in → Round → review flags → share), Home shift card, Settings & Customize (meters add/rename/retire,
+   round items, water tests, procedures, troubleshooting, PM), text size S/M/L (Readable is the default), weekly backup
+   reminder, History Chart toggle, meter Spreadsheet folded into History exports, previous-version (v3.3.5) link.
+   Data rules: only NEW keys/fields are added (nwhClock, nwhSettings.retiredItems) so v3.3.5 keeps reading everything. */
+KEYS.push('nwhClock');
+const V34_LEGACY_BASE = LEGACY_CHECKLIST.length;
+function v34SyncRetired() { LEGACY_CHECKLIST.splice(V34_LEGACY_BASE); const r = load('nwhSettings', {}).retiredItems;
+  if (Array.isArray(r)) r.forEach(it => { if (it && it.id && Array.isArray(it.fields) && !LEGACY_CHECKLIST.some(l => l.id === it.id)) LEGACY_CHECKLIST.push(Object.assign({}, it, { retired: true, label: it.label.replace(/ \(retired\)$/, '') + ' (retired)' })); }); }
+const _store340 = store;
+store = function (k, v) { _store340(k, v); if (k === 'nwhSettings') v34SyncRetired(); };
+v34SyncRetired();
+// a restore of an older backup (no nwhClock) keeps this phone's clock-in records
+const _applyData340 = applyData;
+applyData = function (data) { const keep = !(data && 'nwhClock' in data) ? localStorage.getItem('nwhClock') : null; _applyData340(data); if (keep !== null && localStorage.getItem('nwhClock') === null) localStorage.setItem('nwhClock', keep); v34SyncRetired(); };
+
+/* ---- text size (Readable is the default size) ---- */
+const TZ = { S: 1, M: 1.08, L: 1.2 };
+const v34Tz = () => TZ[localStorage.getItem('nwhTextSize')] ? localStorage.getItem('nwhTextSize') : 'M';
+function v34ApplyTz() { const z = v34Tz(); document.documentElement.style.setProperty('--tz', TZ[z]); document.documentElement.dataset.tz = z; }
+function setTextSize(z) { localStorage.setItem('nwhTextSize', z); v34ApplyTz(); if (document.getElementById('custom').classList.contains('active')) renderCustom(); toast('Text size ' + ({ S: 'Small', M: 'Medium (Readable)', L: 'Large' })[z]); }
+v34ApplyTz();
+
+/* ---- shift flow: nwhClock[day] = { in, out, reviewed, exported } (24-hour HH:MM) ---- */
+const getClock = () => { const c = load('nwhClock', {}); return c && typeof c === 'object' && !Array.isArray(c) ? c : {}; };
+function shiftDay() { const now = new Date(), t = ymd(now), y = ymd(addDays(now, -1)), c = getClock();
+  if (!(c[t] && c[t].in) && c[y] && c[y].in && !c[y].out && now.getHours() < 12) return y; return t; }
+function clockSet(day, k, v) { const c = getClock(); c[day] = Object.assign({}, c[day], { [k]: v }); if (!v) delete c[day][k]; store('nwhClock', c); }
+const v34HM = v => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+function shiftState(day) { const c = getClock()[day] || {}, p = checklistProgress(day), fl = todayFlags(day), W = getWork();
+  const pm = pmActive().map(t => ({ t, st: pmStatus(t, day, W), r: ((W[day] || {}).pm || {})[t.id] })).filter(x => !(x.r && x.r.done) && !x.st.done);
+  const aocs = getAocs().filter(a => a.status !== 'Resolved');
+  const steps = [!!c.in, p.total > 0 && p.done >= p.total, !!c.reviewed, !!c.exported];
+  return { c, p, fl, pm, od: pm.filter(x => x.st.overdue), aocs, steps, n: steps.filter(Boolean).length, next: steps.indexOf(false) }; }
+const SH_N = ['Clock in', 'Round', 'Review flags', 'Share sheet'];
+function shiftBar(s) { return `<ol class="sh-bar" aria-label="Shift progress ${s.n} of 4">${SH_N.map((n, i) => `<li class="${s.steps[i] ? 'done' : i === s.next ? 'cur' : ''}"><i>${s.steps[i] ? '✓' : i + 1}</i><span>${n}</span></li>`).join('')}</ol>`; }
+function shiftMainBtn(day, s) { const p = s.p;
+  if (s.next === 0) return `<button type="button" class="big-go" onclick="shiftClockIn('${day}')">▶ Start shift · clock in</button>`;
+  if (s.next === 1) return `<button type="button" class="big-go" onclick="startRound('${day}')">▶ ${p.done ? 'Continue' : 'Start'} round · ${p.done}/${p.total}</button>`;
+  if (s.next === 2) return `<button type="button" class="big-go" onclick="showScreen('shift')">⚑ Review flags (${s.fl.length + s.od.length + s.aocs.length})</button>`;
+  if (s.next === 3) return `<button type="button" class="big-go" onclick="shiftShare('${day}','png')">📤 Share daily status</button>`;
+  return `<button type="button" class="big-go done" onclick="showScreen('shift')">✓ Shift wrapped${s.c.out ? ' · out ' + esc(s.c.out) : ' · clock out'}</button>`; }
+function shiftClockIn(day) { clockSet(day, 'in', nowHM()); toast('Clocked in ' + nowHM()); startRound(day); }
+function shiftEditTime(day, k) { const cur = (getClock()[day] || {})[k] || nowHM(); const v = prompt(`${({ in: 'Clock-in', out: 'Clock-out' })[k] || 'Time'} (24-hour HH:MM, blank to clear)`, cur); if (v === null) return;
+  const t = v.trim().replace(/^(\d)(?=:)/, '0$1').replace(/^(\d\d)(\d\d)$/, '$1:$2'); if (t && !v34HM(t)) return toast('Use 24-hour time like 06:30');
+  clockSet(day, k, t); renderShift(); }
+async function shiftShare(day, kind) { reportDay = day; try { await readoutExport(kind); } catch (e) { toast('Export failed: ' + e.message); return; } clockSet(day, 'exported', nowHM()); if (document.getElementById('shift').classList.contains('active')) renderShift(); else if (document.getElementById('home').classList.contains('active')) renderHome(); }
+function renderShift() { const day = shiftDay(), s = shiftState(day), c = s.c, b = document.getElementById('shiftBody');
+  const step = (i, body) => `<div class="card sh-step${s.steps[i] ? ' done' : i === s.next ? ' cur' : ''}"><h3><i>${s.steps[i] ? '✓' : i + 1}</i> ${SH_N[i]}</h3>${body}</div>`;
+  b.innerHTML = `<p class="sh-day">${parseYmd(day).toLocaleDateString('en-US', { weekday: 'long' })} ${mdy(day)}</p>${shiftBar(s)}
+  ${step(0, c.in ? `<p>Clocked in <b>${esc(c.in)}</b> <button type="button" class="small secondary" onclick="shiftEditTime('${day}','in')">✎ Edit</button></p>` : `<button type="button" class="big-go" onclick="clockSet('${day}','in',nowHM());renderShift()">🕒 Clock in now (${nowHM()})</button>`)}
+  ${step(1, `<p><b>${s.p.done}/${s.p.total}</b> round items done${s.fl.length ? ` · <b class="neg">${s.fl.length} flag${s.fl.length > 1 ? 's' : ''}</b>` : ''}</p><button type="button" class="${s.steps[1] ? 'secondary' : ''}" onclick="startRound('${day}')">${s.steps[1] ? '↺ Review round' : s.p.done ? '▶ Continue round' : '▶ Start round'}</button>`)}
+  ${step(2, `${s.fl.length ? `<div class="sh-list">${s.fl.map(f => `<button type="button" class="sh-flag" onclick="edDay='${day}';showScreen('daily')">! ${esc(f)}</button>`).join('')}</div>` : '<p class="ok">✓ No reading flags.</p>'}
+    ${s.pm.length ? `<p><b class="${s.od.length ? 'neg' : ''}">${s.pm.length} PM due${s.od.length ? ` (${s.od.length} overdue)` : ''}</b> · <button type="button" class="linkish" onclick="showScreen('pm')">Open PM ›</button></p>` : ''}
+    ${s.aocs.length ? `<p><b>${s.aocs.length} open AOC${s.aocs.length > 1 ? 's' : ''}</b>: ${s.aocs.slice(0, 3).map(a => esc(a.title || 'AOC')).join(', ')} · <button type="button" class="linkish" onclick="showScreen('aocs');setAocMode('library')">Open ›</button></p>` : ''}
+    ${c.reviewed ? `<p>Reviewed <b>${esc(c.reviewed)}</b> <button type="button" class="small secondary" onclick="clockSet('${day}','reviewed','');renderShift()">Undo</button></p>` : `<button type="button" onclick="clockSet('${day}','reviewed',nowHM());renderShift()">✓ Flags reviewed</button>`}`)}
+  ${step(3, `<div class="btn-row"><button type="button" onclick="shiftShare('${day}','png')">📱 Phone PNG</button><button type="button" class="secondary" onclick="shiftShare('${day}','pdf')">🖨️ Landscape PDF</button><button type="button" class="secondary" onclick="openReport('${day}')">Preview</button></div>${c.exported ? `<p class="muted">Shared ${esc(c.exported)}</p>` : ''}`)}
+  <div class="card"><h3>🕒 Clock out</h3>${c.out ? `<p>Clocked out <b>${esc(c.out)}</b> <button type="button" class="small secondary" onclick="shiftEditTime('${day}','out')">✎ Edit</button></p>` : `<button type="button" class="secondary" ${c.in ? '' : 'disabled'} onclick="clockSet('${day}','out',nowHM());renderShift()">Clock out now</button>`}</div>`; }
+
+/* ---- Home: shift card + compact today strip, calendar below plant status ---- */
+function homeShiftHtml() { const day = shiftDay(), s = shiftState(day);
+  const t = (cls, big, lbl, on) => `<button type="button" class="hs-t ${cls}" onclick="${on}"><b>${big}</b><span>${lbl}</span></button>`;
+  return `<div class="card home-shift"><div class="hs-h"><b>${day === ymd(new Date()) ? 'Today' : 'Shift'} · ${parseYmd(day).toLocaleDateString('en-US', { weekday: 'short' })} ${mdy(day)}</b>${s.c.in ? `<small>in ${esc(s.c.in)}</small>` : ''}<button type="button" class="small secondary" onclick="showScreen('shift')">Shift ›</button></div>
+    ${shiftBar(s)}${shiftMainBtn(day, s)}
+    <div class="hs-tiles">${t(s.fl.length ? 'warn' : 'ok', (s.fl.length ? '! ' : '✓ ') + s.fl.length, 'flags', `edDay='${day}';showScreen('daily')`)}${t(s.od.length ? 'alarm' : s.pm.length ? 'warn' : 'ok', (s.od.length ? '! ' : '') + s.pm.length, s.od.length ? s.od.length + ' PM overdue' : 'PM due', "showScreen('pm')")}${t(s.aocs.some(a => a.severity === 'High') ? 'alarm' : s.aocs.length ? 'warn' : 'ok', s.aocs.length, 'open AOCs', "showScreen('aocs');setAocMode('library')")}</div>
+    ${s.fl.length ? `<div class="hs-flags">${s.fl.slice(0, 3).map(f => `<span>! ${esc(f)}</span>`).join('')}${s.fl.length > 3 ? `<span>+${s.fl.length - 3} more</span>` : ''}</div>` : ''}</div>`; }
+const _renderHome340 = renderHome;
+renderHome = function () { _renderHome340(); const h = document.getElementById('home'); let el = document.getElementById('homeShift');
+  if (!el) { el = document.createElement('div'); el.id = 'homeShift'; const cal = document.getElementById('calGrid').closest('.card'); h.insertBefore(el, cal); const hb = document.getElementById('homeBoilers'); if (hb && hb.nextSibling) h.insertBefore(cal, hb.nextSibling); else h.appendChild(cal); }
+  el.innerHTML = homeShiftHtml(); };
+
+/* ---- weekly backup reminder ---- */
+const _updateSaveUI340 = updateSaveUI;
+updateSaveUI = function () { _updateSaveUI340(); const banner = document.getElementById('saveReminder'); if (!banner) return;
+  const last = localStorage.getItem('nwhLastFileSave'), days = t => t ? (Date.now() - new Date(t)) / 86400000 : Infinity;
+  const show = !document.body.classList.contains('locked') && days(last) >= 7 && days(localStorage.getItem('nwhBackupRemindDismissed')) >= 7 && hasAnyData(buildBackup().data);
+  banner.classList.toggle('show', show);
+  if (show) { banner.querySelector('span').textContent = last ? `💾 Weekly backup: last saved ${Math.floor(days(last))} days ago` : '💾 Weekly backup: no backup file saved yet'; const b = banner.querySelector('button:not(.secondary)'); if (b) b.textContent = 'Back up now'; } };
+dismissSaveReminder = function () { const n = new Date().toISOString(); localStorage.setItem('nwhSaveReminderDismissed', n); localStorage.setItem('nwhBackupRemindDismissed', n); updateSaveUI(); toast('Reminder hidden for a week'); };
+
+/* ---- Meters History: Chart toggle + Spreadsheet export (the old separate Spreadsheet view) ---- */
+function mhChartSvg(d) { const iv = d.rows.filter(r => r.usage != null && !r.neg); if (!iv.length) return '<p class="muted mh-cnone">No use between reads to chart in this range.</p>';
+  const W = 300, H = 96, mx = Math.max(...iv.map(r => r.usage), 0) || 1, bw = Math.max(3, Math.min(28, (W - 8) / iv.length - 3));
+  const bars = iv.map((r, i) => { const h = r.usage ? Math.max(3, (r.usage / mx) * (H - 22)) : 3, x = 4 + i * ((W - 8) / iv.length); return `<rect class="${r.flag ? 'cb-f' : r.usage === 0 ? 'cb-z' : 'cb-u'}" x="${x.toFixed(1)}" y="${(H - 14 - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2"><title>${mdy(r.st.date).slice(0, 5)} ${r.st.time || ''}: ${esc(r.text)}</title></rect>`; }).join('');
+  return `<svg class="mh-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(d.it.label)} use per read chart"><line x1="0" y1="${H - 14}" x2="${W}" y2="${H - 14}" class="cb-ax"/>${bars}<text x="2" y="10" class="cb-t">max ${fmtM(d.it, mx)}${d.hr ? ' hrs' : d.u ? ' ' + esc(d.u) : ''}</text><text x="2" y="${H - 2}" class="cb-t">${mdy(iv[0].st.date).slice(0, 5)}</text><text x="${W - 2}" y="${H - 2}" text-anchor="end" class="cb-t">${mdy(iv[iv.length - 1].st.date).slice(0, 5)}</text></svg>`; }
+function mhChartToggle() { MH.chart = !MH.chart; mhSave(); renderMeters(); }
+function mhSheetExport(kind) { const { from, to } = mhRange(), st = ssSt('meters'); Object.assign(st, { range: 'custom', from, to, desc: false }); return exportSheet('meters', kind); }
+function mhSheetPreview() { const { from, to } = mhRange(), st = ssSt('meters'); Object.assign(st, { range: 'custom', from, to, desc: false }); setView('meters', 'sheet'); }
+const _renderMeters340 = renderMeters;
+renderMeters = function () { if (viewOf('meters') === 'sheet' && !document.getElementById('meters').classList.contains('active')) { views.meters = 'editor'; }
+  _renderMeters340(); if (mtScope !== 'history') return;
+  const ctl = document.querySelector('#meters .mh-ctl'); if (!ctl) return;
+  const ex = ctl.querySelector('.mh-exp'); if (ex && !ctl.querySelector('.mh-tools')) ex.insertAdjacentHTML('afterend', `<div class="mh-tools"><button type="button" class="chip${MH.chart ? ' on' : ''}" aria-pressed="${!!MH.chart}" onclick="mhChartToggle()">📈 Chart</button></div>
+    <details class="mh-ssx"><summary>📊 Spreadsheet export · print</summary><p class="muted">The full meters spreadsheet for this range (all meters, sheet order). PDF prints landscape on one page.</p>
+    <div class="btn-row"><button type="button" class="small" onclick="mhSheetExport('pdf')">🖨️ Landscape PDF</button><button type="button" class="small secondary" onclick="mhSheetExport('png')">PNG</button><button type="button" class="small secondary" onclick="mhSheetExport('csv')">CSV</button><button type="button" class="small secondary" onclick="mhSheetPreview()">Preview…</button></div></details>`);
+  if (MH.chart) { const W = getWork(), { from, to } = mhRange(); document.querySelectorAll('#meters .mh-m[data-mid]').forEach(card => { const it = meterDefById(card.dataset.mid); if (!it || !it.fields.length) return; const s = card.querySelector('.mh-sum'); if (s) s.insertAdjacentHTML('afterend', `<div class="mh-cwrap">${mhChartSvg(mhData(it, from, to, W))}</div>`); });
+    ctl.insertAdjacentHTML('beforeend', `<p class="muted mh-cnote">Bars = use between reads (amber = check read, purple = no use). <button type="button" class="linkish" onclick="showScreen('trends')">Water-test charts ›</button></p>`); } };
+(function () { if (views.meters === 'sheet') { views.meters = 'editor'; localStorage.setItem('nwhViews', JSON.stringify(views)); } })();
+
+/* ---- Settings & Customize ---- */
+function v34Settings() { const s = load('nwhSettings', {}); if (!Array.isArray(s.checklist)) s.checklist = getChecklist(); return s; }
+const cmHour = it => isHourMeter(it);
+function cmSave(s, msg) { store('nwhSettings', s); clDraft = null; renderCustom(); if (msg) toast(msg); }
+function cmSet(id, prop, v) { const s = v34Settings(), it = s.checklist.find(x => x.id === id); if (!it) return; const f = it.fields.find(x => x.type === 'meter'); v = String(v).trim();
+  if (prop === 'label') { if (!v) return toast('Name can’t be blank'); it.label = v; }
+  if (prop === 'unit' && f) f.unit = v;
+  if (prop === 'type' && f) { f.dec = v === 'hour'; if (v === 'hour' && !f.unit) f.unit = 'hrs'; if (v !== 'hour' && /^(hrs?|hours?)$/i.test(f.unit || '')) f.unit = ''; }
+  cmSave(s, 'Meter saved'); }
+function cmRetire(id) { const s = v34Settings(), i = s.checklist.findIndex(x => x.id === id); if (i < 0) return; const it = s.checklist[i];
+  if (!confirm(`Retire “${it.label}”? It leaves the round, but every reading it has stays in History and exports. You can restore it any time.`)) return;
+  s.checklist.splice(i, 1); s.retiredItems = (Array.isArray(s.retiredItems) ? s.retiredItems : []).filter(x => x.id !== id).concat([Object.assign({}, it, { retiredAt: new Date().toISOString(), retiredPos: i })]); cmSave(s, 'Retired · history kept'); }
+function cmRestore(id) { const s = v34Settings(), r = (s.retiredItems || []).find(x => x.id === id); if (!r) return; s.retiredItems = s.retiredItems.filter(x => x.id !== id);
+  const it = Object.assign({}, r); delete it.retiredAt; const pos = Math.min(it.retiredPos != null ? it.retiredPos : s.checklist.length, s.checklist.length); delete it.retiredPos; s.checklist.splice(pos, 0, it); cmSave(s, 'Restored to the round'); }
+function cmAdd() { const n = document.getElementById('cmName').value.trim(), u = document.getElementById('cmUnit').value.trim(), hr = document.getElementById('cmType').value === 'hour';
+  if (!n) return toast('Type a meter name'); const s = v34Settings(); if (s.checklist.some(x => x.label.toLowerCase() === n.toLowerCase())) return toast('A meter with that name exists');
+  const it = meterItem('m' + Date.now().toString(36), n, hr); it.fields[0].unit = u || (hr ? 'hrs' : ''); let last = -1; s.checklist.forEach((x, i) => { if (isMeter(x)) last = i; }); s.checklist.splice(last + 1, 0, it); cmSave(s, 'Meter added'); }
+function renderCustom() { const b = document.getElementById('customBody'), s = v34Settings(), ms = s.checklist.filter(isMeter), ret = Array.isArray(s.retiredItems) ? s.retiredItems : [], z = v34Tz(), th = localStorage.getItem('nwhTheme') || 'auto';
+  const seg = (arr, cur, fn) => `<div class="seg cz-seg">${arr.map(([k, l]) => `<button type="button" class="${cur === k ? 'on' : ''}" aria-pressed="${cur === k}" onclick="${fn}('${k}')">${l}</button>`).join('')}</div>`;
+  b.querySelector('#czDisplay').innerHTML = `<h3>🔠 Text size &amp; display</h3>${seg([['S', 'S'], ['M', 'M · Readable'], ['L', 'L']], z, 'setTextSize')}<p class="muted">Medium is the Readable size used everywhere. Exports always print the same size.</p>${seg([['auto', 'Auto'], ['light', '☀️ Light'], ['dark', '🌙 Dark']], th, 'v34Theme')}<p class="muted">Auto follows the phone. Exports are always light.</p>`;
+  b.querySelector('#czMeters').innerHTML = `<h3>📟 Meters</h3><p class="muted">Rename, set units and type. Retire takes a meter off the round but keeps all its history. Order of reading is set from the meter keypad (⇅ Read order); sheets keep this order.</p>
+    ${ms.map(it => { const f = it.fields.find(x => x.type === 'meter') || {}; return `<div class="cz-m"><input aria-label="Meter name" value="${esc(it.label)}" onchange="cmSet('${it.id}','label',this.value)"><div class="cz-row"><input aria-label="Unit" placeholder="unit" value="${esc(f.unit || '')}" onchange="cmSet('${it.id}','unit',this.value)"><select aria-label="Meter type" onchange="cmSet('${it.id}','type',this.value)"><option value="res"${cmHour(it) ? '' : ' selected'}>Usage meter</option><option value="hour"${cmHour(it) ? ' selected' : ''}>Hour meter</option></select><button type="button" class="small secondary" onclick="cmRetire('${it.id}')">Retire</button></div></div>`; }).join('')}
+    <div class="cz-add"><b>＋ Add meter</b><input id="cmName" placeholder="Meter name" aria-label="New meter name"><div class="cz-row"><input id="cmUnit" placeholder="unit (optional)" aria-label="New meter unit"><select id="cmType" aria-label="New meter type"><option value="res">Usage meter</option><option value="hour">Hour meter</option></select><button type="button" class="small" onclick="cmAdd()">Add</button></div></div>
+    ${ret.length ? `<h4>Retired (history kept)</h4>${ret.map(r => `<div class="cz-ret"><span>${esc(r.label)}<small> · retired ${r.retiredAt ? mdy(ymd(new Date(r.retiredAt))) : ''}</small></span><button type="button" class="small secondary" onclick="cmRestore('${r.id}')">Restore</button></div>`).join('')}` : ''}`;
+  b.querySelector('#czProcs').innerHTML = `<h3>⏻ Procedures</h3><p class="muted">Edit the steps of each startup / shutdown. Reset brings back the defaults.</p><div class="cz-list">${eqProcs().map(p => `<button type="button" class="secondary" onclick="eqEditOpen('${p.id}')">✎ ${esc((EQ_LIST.find(e => e.id === p.eq) || {}).name || p.eq)} ${esc(EQ_KIND[p.kind] || p.kind)} <small>${p.steps.length} steps</small></button>`).join('')}<button type="button" class="secondary" onclick="showScreen('sops')">📋 Operating procedures (SOPs) ›</button></div>`;
+  b.querySelector('#czTrouble').innerHTML = `<h3>🛠 Troubleshooting</h3><p class="muted">${trList().length} entries. Add, edit or delete entries; “Log this” still works from each one.</p><div class="btn-row"><button type="button" class="secondary" onclick="showScreen('trouble')">Open guide ›</button><button type="button" class="secondary" onclick="trEdit(null)">＋ New entry</button></div>
+    <h3 style="margin-top:14px">🛠️ PM tasks</h3><div class="btn-row"><button type="button" class="secondary" onclick="showScreen('pmTasks')">Manage PM tasks ›</button></div>`;
+  fillSettings(); clDraft = null; clEdRender(); }
+function v34Theme(m) { setTheme(m); renderCustom(); }
+const _renderScreen340 = renderScreen;
+renderScreen = function (id) { _renderScreen340(id);
+  if (id === 'custom') renderCustom();
+  if (id === 'shift') renderShift();
+  if (id === 'round' && roundI >= getChecklist().length) { const c = document.querySelector('#roundBody .round-card .btn-row'); if (c && !c.querySelector('.sh-next')) c.insertAdjacentHTML('afterbegin', `<button type="button" class="sh-next" onclick="showScreen('shift')">Next: review flags ›</button>`); }
+  if (id === 'more') v34More();
+  const tab = { shift: 'home', custom: 'more' }[id]; if (tab) document.querySelectorAll('#tabBar button').forEach(x => x.classList.toggle('on', x.dataset.tab === tab)); };
+const _renderRound340 = renderRound;
+renderRound = function () { _renderRound340(); if (roundI >= getChecklist().length) { const c = document.querySelector('#roundBody .round-card .btn-row'); if (c && !c.querySelector('.sh-next')) c.insertAdjacentHTML('afterbegin', `<button type="button" class="sh-next" onclick="showScreen('shift')">Next: review flags ›</button>`); } };
+function v34More() { const m = document.getElementById('more'); if (!m || document.getElementById('czLink')) return;
+  const bk = m.querySelector('.bk-card'); if (bk) bk.insertAdjacentHTML('afterend', `<div class="card more-grp" id="czLink"><h3>⚙️ Settings &amp; Customize</h3><p class="muted">Meters, round items, water tests &amp; ranges, procedures, troubleshooting, PM, job, boilers, text size, theme.</p><button type="button" onclick="showScreen('custom')">Open Settings &amp; Customize ›</button></div>
+    <div class="card more-grp"><h3>🧭 Shift</h3><p class="muted">Clock in → Round → review flags → share the daily status.</p><button type="button" class="secondary" onclick="showScreen('shift')">Open shift ›</button></div>`);
+  const ver = document.getElementById('appVer'); if (ver && !document.getElementById('prevVer')) ver.insertAdjacentHTML('beforebegin', `<div class="card" id="prevVer"><h3>↩ Previous version (v3.3.5)</h3><p class="muted">The last v3.3.5 build, kept unchanged. It reads the same data on this phone, so you can switch back and forth without losing anything.</p><a class="btn-like secondary" href="./v335/">Open v3.3.5 ›</a></div>`); }
+(function v34Dom() {
+  const nav = document.getElementById('tabBar');
+  nav.insertAdjacentHTML('beforebegin', `<div id="shift" class="screen"><div class="scr-head"><h2>🧭 Shift</h2><button type="button" class="small secondary" onclick="showScreen('home')">Home</button></div><div id="shiftBody"></div></div>
+  <div id="custom" class="screen"><div class="scr-head"><h2>⚙️ Settings &amp; Customize</h2><button type="button" class="small secondary" onclick="showScreen('more')">‹ More</button></div><div id="customBody">
+    <div class="card" id="czDisplay"></div><div class="card" id="czMeters"></div><div id="czRound"></div><div class="card" id="czProcs"></div><div class="card" id="czTrouble"></div><div id="czJob"></div></div></div>`);
+  const g = document.getElementById('setupGrp'), cr = document.getElementById('czRound'), cj = document.getElementById('czJob');
+  if (g) { const cl = document.getElementById('clEditor').closest('.card'); const h = cl.querySelector('h3'); if (h) h.textContent = '✅ Round items & water tests'; const p = cl.querySelector('p.muted'); if (p) p.textContent = 'Reorder, rename, add or remove round items. Water tests: add/rename tests, units, how often, and the normal range (min/max) — out-of-range readings are flagged.'; cr.appendChild(cl);
+    [...g.children].forEach(ch => { if (ch.tagName !== 'SUMMARY') cj.appendChild(ch); }); g.remove(); }
+  const ts = document.getElementById('themeSeg'); if (ts) { const c = ts.closest('.card'); if (c) c.remove(); }
+  document.querySelectorAll('#more button').forEach(x => { if (/Trends/.test(x.textContent)) x.remove(); });
+  document.querySelectorAll('#meters .scr-head .vt').forEach(x => x.remove());
+})();
+// home dashboard (v2) still references Trends; keep it reachable only from History → Chart
+// fix: the example-data banner toggle used to hide the backup reminder too (both share .ex-banner)
+updateExampleUI = function () { const show = hasExamples(); document.querySelectorAll('.ex-banner:not(.save-banner)').forEach(b => b.classList.toggle('show', show)); };
+
 /* ---------- Startup ---------- */
 migrateData();
 cleanImportStamps();
@@ -4738,7 +4951,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     reg.addEventListener('updatefound', () => { const n = reg.installing; n && n.addEventListener('statechange', () => { if (n.state === 'installed' && reg.waiting) reg.waiting.postMessage('skipWaiting'); }); }); }).catch(() => {});
 }
 async function checkForUpdates() { toast('Checking for updates…'); /* keeps localStorage + IndexedDB; only clears the offline app-file cache */
-  try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (e) {}
+  try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) if (r.scope === new URL('./', location.href).href) await r.unregister(); } catch (e) {}
   try { if (window.caches) for (const k of await caches.keys()) if (k.startsWith('nwh-log')) await caches.delete(k); } catch (e) {}
   location.replace(location.pathname + '?v=' + Date.now()); }
 function mtTab() { views.meters = 'editor'; localStorage.setItem('nwhViews', JSON.stringify(views)); showScreen('meters'); }
@@ -4746,7 +4959,7 @@ function mtTab() { views.meters = 'editor'; localStorage.setItem('nwhViews', JSO
 const _renderScreen331 = renderScreen;
 renderScreen = function (id) { _renderScreen331(id);
   if (id === 'more' && !document.getElementById('updBtn')) { const v = document.getElementById('appVer'); if (v) v.insertAdjacentHTML('beforebegin', `<div class="card" id="updCard"><h3>⟳ App version</h3><p>Running <b>v${APP_VER}</b>. If something looks out of date, check for updates — your data stays on this phone.</p><button type="button" id="updBtn" onclick="checkForUpdates()">⟳ Check for updates</button></div>`); }
-  if (id === 'meters' && viewOf('meters') === 'sheet') { const p = document.querySelector('#meters .ss-pane'); if (p && !p.querySelector('.mh-back')) p.insertAdjacentHTML('afterbegin', `<button type="button" class="mh-back secondary" onclick="setView('meters','editor');mtSet('history')">📈 Readings history (Day | History) ›</button>`); } };
+  if (id === 'meters' && viewOf('meters') === 'sheet') { const p = document.querySelector('#meters .ss-pane'); if (p && !p.querySelector('.mh-back')) p.insertAdjacentHTML('afterbegin', `<button type="button" class="mh-back secondary" onclick="setView('meters','editor');mtSet('history')">‹ Back to Meters History</button>`); } };
 
 document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#boilerBox') && e.target.id !== 'bTime') { const t = document.getElementById('bTime'); if (!t.value && e.target.value.trim()) t.value = nowHM(); } });
 </script>
