@@ -20,9 +20,9 @@ const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m); if(!c) process.exitCode=1;}
  // offline: SW cache
  {const {ctx,pg,errs,E}=await mk();await pg.goto(BASE);await pg.waitForTimeout(2500);await pg.reload();await pg.waitForTimeout(1500);
   await pg.goto(BASE+'v335/');await pg.waitForTimeout(2500);await pg.reload();await pg.waitForTimeout(1500);
-  const keys=await E(()=>caches.keys());ok(keys.includes('nwh-log-v37')&&keys.some(k=>k.startsWith('nwh-v335')),'both caches present: '+keys.join(','));
+  const keys=await E(()=>caches.keys());ok(keys.includes('nwh-log-v38')&&keys.some(k=>k.startsWith('nwh-v335')),'both caches present: '+keys.join(','));
   const regs=await E(async()=>(await navigator.serviceWorker.getRegistrations()).map(r=>r.scope));ok(regs.length===2,'two SW scopes: '+regs.join(','));
-  await ctx.setOffline(true);await pg.goto(BASE);await unlock(pg);ok(await E(()=>APP_VER==='3.4.0'),'main app loads offline');
+  await ctx.setOffline(true);await pg.goto(BASE);await unlock(pg);ok(await E(()=>APP_VER==='3.4.1'),'main app loads offline');
   await pg.goto(BASE+'v335/');ok(await E(()=>APP_VER==='3.3.5'),'v335 loads offline');await ctx.close();}
  // mid-procedure reload
  {const {ctx,pg,errs,E}=await mk();await pg.goto(BASE);await unlock(pg);

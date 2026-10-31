@@ -14,7 +14,7 @@ const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m); if(!c) process.exitCode=1;}
  const before=await E(()=>({w:localStorage.nwhWork,a:localStorage.nwhAocs,s:localStorage.nwhSettings}));
  // 2. open v3.4 on same origin
  await pg.goto(BASE+'index.html');await pg.fill('#pinInput','5295');await pg.click('text=Unlock');
- ok(await E(()=>APP_VER==='3.4.0'),'v3.4 loads');
+ ok(await E(()=>APP_VER==='3.4.1'),'v3.4 loads');
  const after=await E(()=>({w:localStorage.nwhWork,a:localStorage.nwhAocs,s:JSON.parse(localStorage.nwhSettings)}));
  ok(after.w===before.w,'upgrade: nwhWork untouched by v3.4 load');ok(after.a===before.a,'upgrade: AOCs untouched');
  const bs=JSON.parse(before.s);ok(Object.keys(bs).every(k=>k in after.s),'upgrade: no settings key removed');
