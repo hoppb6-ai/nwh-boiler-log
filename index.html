@@ -962,12 +962,13 @@ html.dark .round-done:not(.on) small, .round-done:not(.on) small { color: #1F3A5
 html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on) small { color: #1F3A5F !important; } html.dark #roundBody .round-done.on small { color: #fff !important; }
 .sh-style { display: flex; flex-direction: column; gap: 8px; } .sh-style button { min-height: 52px; font-size: 18px; } .sh-style .muted { margin: 0; }
 .mr-end { display: flex; align-items: center; gap: 10px; font-weight: 700; } .mr-end input { width: auto; margin: 0; min-height: 44px; font-size: 17px; }
+.cz-dec { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; } .cz-dec select { width: auto; margin: 0; min-height: 44px; font-size: 16px; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.5</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.6</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1199,7 +1200,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.5 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.6 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3050,7 +3051,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.5';
+const APP_VER = '3.4.6';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -3356,7 +3357,7 @@ function meterCompare(id, day, W, key) {
   W = W || getWork(); const it = meterDefById(id), inf = meterInfo(id, day, W, key || meterKey(it)); if (inf.usage == null) return null;
   const a = readStamp(id, inf.prevDay, W), b = readStamp(id, day, W), hr = isHourMeter(it);
   const el = a.ms != null && b.ms != null ? Math.round((b.ms - a.ms) / 36e5 * 100) / 100 : null, Y = el == null ? '' : fmtNum(el, 1), X = fmtM(it, inf.usage);
-  const flag = hr && el != null && inf.usage > el + 0.1;
+  const flag = hr && el != null && inf.usage > el + Math.max(0.25, el * 0.01);
   const since = inf.days > 1 ? ` since ${mdy(inf.prevDay)}` : '';
   const text = hr ? (el == null ? `Ran ${X} hrs${since} (add read time to compare)` : flag ? `! Ran ${X} hrs in ${Y} hrs elapsed, check reading/time` : `Ran ${X} hrs over ${Y} hrs between reads`)
     : el == null ? `Used ${X}${since}` : `Used ${X} over ${Y} hrs between reads`;
@@ -5227,10 +5228,34 @@ function sheetStyleCanvas(end, _unused, opt) {
     ms.forEach((it, i) => c.fillText(`${i + 1}. ${it.label}${it.unit ? ' (' + it.unit + ')' : ''}`.slice(0, 44), PAD + (i % 2) * ((Wd - 2 * PAD) / 2), legTop + 80 + Math.floor(i / 2) * 38));
     const ly = legTop + 80 + Math.ceil(ms.length / 2) * 38 + 6; let lx = PAD; c.font = `700 22px ${F}`;
     [['▲ +n','#00796B',' used   '],['○ 0','#4A2BAE',' no use   '],['! ','#B71C1C',' check (negative / too high)   '],['—','#5F6977',' no previous read / time']].forEach(([k, col, t]) => { c.fillStyle = col; c.font = `700 22px ${F}`; c.fillText(k, lx, ly); lx += c.measureText(k).width; c.fillStyle = MUT; c.font = `500 20px ${F}`; c.fillText(t, lx, ly); lx += c.measureText(t).width; });
-    c.font = `500 20px ${F}`; c.fillStyle = MUT; c.fillText('Hour meters: “in 28h 30m” = real time between that read and the previous one (from read times). Red if ran > elapsed.', PAD, ly + 36, Wd - 2 * PAD);
+    c.font = `500 20px ${F}`; c.fillStyle = MUT; c.fillText('Hour meters: “in 28h 30m” = real time between that read and the previous one (from read times). Red if ran > elapsed + 0.25 h (or 1%).', PAD, ly + 36, Wd - 2 * PAD);
   }
   return cv;
 }
+
+/* ===== v3.4.6: fixed decimals per meter (display only) + looser hour-meter tolerance ===== */
+let _mpCache = { k: -1, m: {} };
+function mpInferred(it) { const W = localStorage.getItem('nwhWork') || ''; if (_mpCache.k !== W.length) _mpCache = { k: W.length, m: {} };
+  if (_mpCache.m[it.id] != null) return _mpCache.m[it.id]; let mx = 0; try { const Wd = JSON.parse(W || '{}'), key = meterKey(it);
+    for (const d in Wd) { const v = (((Wd[d] || {}).checklist || {})[it.id] || {}).values; const x = v && v[key]; if (x != null && x !== '') { const m = String(x).match(/\.(\d+)/); if (m) mx = Math.max(mx, m[1].length); } } } catch (e) {}
+  return (_mpCache.m[it.id] = Math.min(2, mx)); }
+const _meterPlaces346 = meterPlaces;
+meterPlaces = function (it) { const f = (it && it.fields || []).find(x => x.type === 'meter') || {};
+  if (f.places != null && f.places !== '') return _meterPlaces346(it);
+  const d = _meterPlaces346(it); return it ? Math.max(d, mpInferred(it)) : d; };
+function mrFmt(it, v) { if (v == null || v === '' || isNaN(Number(v))) return shRaw(v); return Number(v).toFixed(meterPlaces(it)); }
+mrDays = function (end, W) {
+  W = W || getWork(); const ms = meterItems(); end = end || ymd(new Date());
+  const days = Object.keys(W).filter(d => /^\d{4}-\d\d-\d\d$/.test(d) && d <= end).sort().map(d => { const cl = (W[d] && W[d].checklist) || {}; return { day: d, vals: ms.map(it => mrFmt(it, ((cl[it.id] || {}).values || {})[meterKey(it)])) }; }).filter(x => x.vals.some(Boolean));
+  return { ms, days: days.slice(-9) };
+};
+const _cmSet346 = cmSet;
+cmSet = function (id, prop, v) { if (prop !== 'places') return _cmSet346(id, prop, v); const s = v34Settings(), it = s.checklist.find(x => x.id === id); if (!it) return; const f = it.fields.find(x => x.type === 'meter'); if (!f) return;
+  if (v === '') delete f.places; else f.places = Math.max(0, Math.min(2, Number(v))); store('nwhSettings', s); toast('Decimals saved'); try { renderCustom(); } catch (e) {} };
+const _renderCustom346 = renderCustom;
+renderCustom = function () { _renderCustom346(); document.querySelectorAll('#custom .cz-m').forEach(row => { if (row.querySelector('.cz-dec')) return; const inp = row.querySelector('input[aria-label="Meter name"]'); const m = inp && /cmSet\('([^']+)'/.exec(inp.getAttribute('onchange')); if (!m) return; const it = meterDefById(m[1]); if (!it) return;
+  const f = it.fields.find(x => x.type === 'meter') || {}, cur = f.places != null && f.places !== '' ? String(f.places) : '', p = meterPlaces(it);
+  const r = row.querySelector('.cz-row'); (r || row).insertAdjacentHTML('beforeend', `<label class="cz-dec">Decimals <select aria-label="Decimals" onchange="cmSet('${it.id}','places',this.value)"><option value=""${cur === '' ? ' selected' : ''}>Auto (${p})</option>${[0, 1, 2].map(n => `<option value="${n}"${cur === String(n) ? ' selected' : ''}>${n} · ${(12345).toFixed(n)}</option>`).join('')}</select></label>`); }); };
 
 /* ---------- Startup ---------- */
 migrateData();
