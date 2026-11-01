@@ -965,12 +965,13 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 .cz-dec { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; } .cz-dec select { width: auto; margin: 0; min-height: 44px; font-size: 16px; }
 .rd-newer { border: 2px solid #00796B !important; } .rd-tag { display: inline-block; background: #D3F1EA; color: #00473F; font-weight: 800; border-radius: 8px; padding: 1px 8px; font-size: 14px; } html.dark .rd-tag { background: #0D4A42; color: #C4FBEE; }
 .rd-now { border-left: 6px solid var(--head, #1F3A5F); }
+.rs-add { margin: 12px 0; } .rs-merge { width: 100%; min-height: 52px; font-size: 18px; font-weight: 800; background: #00796B; color: #fff; border: 0; border-radius: 12px; } html.dark .rs-merge { background: #26A69A; color: #00201C; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.7</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.8</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1202,7 +1203,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.7 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.8 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3053,7 +3054,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.7';
+const APP_VER = '3.4.8';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -5274,13 +5275,29 @@ function mergeWork(cur, add) { const W = JSON.parse(JSON.stringify(cur || {})); 
       else if (Array.isArray(a[k])) { const ids = new Set((e[k] || []).map(x => x && x.id).filter(Boolean)); const extra = a[k].filter(x => x && x.id && !ids.has(x.id)); if (extra.length) { e[k] = (e[k] || []).concat(JSON.parse(JSON.stringify(extra))); vals += extra.length; } }
       else if (e[k] == null) e[k] = JSON.parse(JSON.stringify(a[k])); } }
   return { W, days, vals }; }
+async function mergeData(data, label) { data = data || {};
+  const cur = load('nwhWork', {}) || {}, m = mergeWork(cur, data.nwhWork || {});
+  const ca = load('nwhAocs', []) || [], sa = data.nwhAocs || []; let ex = [];
+  if (Array.isArray(ca) && Array.isArray(sa)) { const ids = new Set(ca.map(x => x && x.id)); ex = sa.filter(x => x && x.id && !ids.has(x.id)); }
+  if (!m.days && !m.vals && !ex.length) { toast('Nothing missing — this device already has everything in ' + label); return false; }
+  if (!confirm(`Add ${m.days} missing day(s) and ${m.vals} missing reading(s)${ex.length ? ` and ${ex.length} AOC(s)` : ''} from ${label}?\nNothing you have now is changed or removed.`)) return false;
+  await takeSnapshot('pre-merge', true);
+  localStorage.setItem('nwhWork', JSON.stringify(m.W)); if (ex.length) localStorage.setItem('nwhAocs', JSON.stringify(ca.concat(ex)));
+  lastSnapHash = null; await takeSnapshot('after-merge', true);
+  toast(`Added ${m.days} day(s), ${m.vals} reading(s)`); return true; }
 async function mergeSnapshot(id) { const s = (await listSnapshots()).find(x => x.id === id); if (!s || !s.data) return;
-  const cur = load('nwhWork', {}) || {}, m = mergeWork(cur, s.data.nwhWork || {});
-  let aocAdd = 0; const ca = load('nwhAocs', []) || [], sa = s.data.nwhAocs || []; if (Array.isArray(ca) && Array.isArray(sa)) { const ids = new Set(ca.map(x => x && x.id)); const ex = sa.filter(x => x && x.id && !ids.has(x.id)); aocAdd = ex.length; if (ex.length) { await takeSnapshot('pre-merge', true); localStorage.setItem('nwhAocs', JSON.stringify(ca.concat(ex))); } }
-  if (!m.days && !m.vals && !aocAdd) { toast('Nothing missing — your current data already has everything in that snapshot'); return; }
-  if (!confirm(`Add ${m.days} missing day(s) and ${m.vals} missing reading(s)${aocAdd ? ` and ${aocAdd} AOC(s)` : ''} from the ${new Date(s.ts).toLocaleString('en-US', { hourCycle: 'h23' })} snapshot?\nNothing you have now is changed or removed.`)) return;
-  await takeSnapshot('pre-merge', true); localStorage.setItem('nwhWork', JSON.stringify(m.W)); lastSnapHash = null; await takeSnapshot('after-merge', true);
-  toast(`Added ${m.days} day(s), ${m.vals} reading(s)`); try { renderRestore(); } catch (e) {} }
+  if (await mergeData(s.data, 'the ' + new Date(s.ts).toLocaleString('en-US', { hourCycle: 'h23' }) + ' snapshot')) { const c = document.getElementById('recoveryCard'); if (c) c.style.display = 'none'; try { renderRestore(); } catch (e) {} } }
+// Backup file / pasted text: offer a safe "Add missing readings" next to Replace.
+async function restoreMergePending() { const p = restorePending; if (!p) return; if (await mergeData(p.data, 'this file')) { restorePending = null; padClose(); const t = document.getElementById('pasteText'); if (t) t.value = ''; if (!document.body.classList.contains('locked')) showScreen('home'); } }
+const _rps347 = restorePreviewShow;
+restorePreviewShow = function (res, name) { _rps347(res, name);
+  const nav = document.querySelector('#mpad .pad-nav'), warn = [...document.querySelectorAll('#mpad .rs-warn')].pop(); if (!nav) return;
+  const fd = rdDays((res.data || {}).nwhWork).length, cd = rdDays(load('nwhWork', {})).length;
+  const add = document.createElement('div'); add.className = 'rs-add';
+  add.innerHTML = `<button type="button" class="rs-merge" onclick="restoreMergePending()">➕ Add missing readings (safe)</button><p class="muted">Adds only days/readings this device doesn't have. Nothing existing is changed.</p>`;
+  nav.parentNode.insertBefore(add, warn || nav);
+  if (warn) warn.innerHTML = `! <b>Replace</b> erases ALL data on this device and keeps only what is in this file${fd < cd ? ` (<b>${fd}</b> day(s) of readings vs <b>${cd}</b> on this device)` : ''}. A snapshot is saved first.`;
+  const rb = nav.querySelector('.pad-next'); if (rb) { rb.textContent = 'Replace all'; if (fd < cd) rb.setAttribute('onclick', `if(confirm('This file has fewer reading days (${fd}) than this device (${cd}). Replace ALL data anyway?\\nUse “Add missing readings” instead to keep your data.'))restoreConfirm()`); } };
 // Shrink guard: any write that would drop reading days snapshots the current data first.
 const _store347 = store;
 store = function (key, val) { if (key === 'nwhWork') { try { const before = rdDays(load('nwhWork', {})).length, after = rdDays(val).length; if (after < before) { takeSnapshot('pre-shrink', true); } } catch (e) {} } return _store347(key, val); };
