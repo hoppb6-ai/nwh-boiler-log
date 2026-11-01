@@ -963,12 +963,14 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 .sh-style { display: flex; flex-direction: column; gap: 8px; } .sh-style button { min-height: 52px; font-size: 18px; } .sh-style .muted { margin: 0; }
 .mr-end { display: flex; align-items: center; gap: 10px; font-weight: 700; } .mr-end input { width: auto; margin: 0; min-height: 44px; font-size: 17px; }
 .cz-dec { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; } .cz-dec select { width: auto; margin: 0; min-height: 44px; font-size: 16px; }
+.rd-newer { border: 2px solid #00796B !important; } .rd-tag { display: inline-block; background: #D3F1EA; color: #00473F; font-weight: 800; border-radius: 8px; padding: 1px 8px; font-size: 14px; } html.dark .rd-tag { background: #0D4A42; color: #C4FBEE; }
+.rd-now { border-left: 6px solid var(--head, #1F3A5F); }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.6</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.7</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1200,7 +1202,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.6 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.7 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -2391,7 +2393,7 @@ function dayAocHtml(day, ret) {
 
 
 /* ---------- Data safety: snapshots, save, restore, recovery ---------- */
-const SNAP_AUTO_MAX = 10, SNAP_DAILY_MAX = 7, SNAP_FALLBACK_MAX = 5;
+const SNAP_AUTO_MAX = 20, SNAP_DAILY_MAX = 30, SNAP_FALLBACK_MAX = 5;
 let lastSnapHash = null, snapTimer = null, fileHandle = null;
 function buildBackup() {
   const data = {}; let ok = true;
@@ -3051,7 +3053,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.6';
+const APP_VER = '3.4.7';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -5256,6 +5258,46 @@ const _renderCustom346 = renderCustom;
 renderCustom = function () { _renderCustom346(); document.querySelectorAll('#custom .cz-m').forEach(row => { if (row.querySelector('.cz-dec')) return; const inp = row.querySelector('input[aria-label="Meter name"]'); const m = inp && /cmSet\('([^']+)'/.exec(inp.getAttribute('onchange')); if (!m) return; const it = meterDefById(m[1]); if (!it) return;
   const f = it.fields.find(x => x.type === 'meter') || {}, cur = f.places != null && f.places !== '' ? String(f.places) : '', p = meterPlaces(it);
   const r = row.querySelector('.cz-row'); (r || row).insertAdjacentHTML('beforeend', `<label class="cz-dec">Decimals <select aria-label="Decimals" onchange="cmSet('${it.id}','places',this.value)"><option value=""${cur === '' ? ' selected' : ''}>Auto (${p})</option>${[0, 1, 2].map(n => `<option value="${n}"${cur === String(n) ? ' selected' : ''}>${n} · ${(12345).toFixed(n)}</option>`).join('')}</select></label>`); }); };
+
+/* ===== v3.4.7: data-safety — find & merge readings from snapshots (never overwrite), shrink guard, more snapshots ===== */
+function rdDays(work) { const W = work || {}; return Object.keys(W).filter(d => /^\d{4}-\d\d-\d\d$/.test(d) && W[d] && W[d].checklist && Object.values(W[d].checklist).some(r => r && r.values && Object.values(r.values).some(v => v !== '' && v != null))).sort(); }
+function rdSummary(work) { const ds = rdDays(work); return { n: ds.length, first: ds[0] || null, last: ds[ds.length - 1] || null }; }
+// Merge: add only what's missing in current data; existing values are never changed.
+function mergeWork(cur, add) { const W = JSON.parse(JSON.stringify(cur || {})); let days = 0, vals = 0;
+  for (const d of Object.keys(add || {})) { const a = add[d]; if (!a || typeof a !== 'object') continue;
+    if (!W[d]) { W[d] = JSON.parse(JSON.stringify(a)); days++; vals += Object.keys(a.checklist || {}).length; continue; }
+    const e = W[d]; for (const k of Object.keys(a)) {
+      if (k === 'checklist') { e.checklist = e.checklist || {}; for (const id of Object.keys(a.checklist || {})) { const ra = a.checklist[id], rc = e.checklist[id];
+          if (!rc) { e.checklist[id] = JSON.parse(JSON.stringify(ra)); vals++; continue; }
+          if (ra && ra.values) { rc.values = rc.values || {}; for (const f of Object.keys(ra.values)) { const cv = rc.values[f]; if ((cv === '' || cv == null) && ra.values[f] !== '' && ra.values[f] != null) { rc.values[f] = ra.values[f]; vals++; if (!rc.time && ra.time) rc.time = ra.time; if (!rc.date && ra.date) rc.date = ra.date; } } }
+          for (const p of ['done', 'time', 'date', 'at', 'note']) if (rc[p] == null && ra[p] != null) rc[p] = ra[p]; } }
+      else if (Array.isArray(a[k])) { const ids = new Set((e[k] || []).map(x => x && x.id).filter(Boolean)); const extra = a[k].filter(x => x && x.id && !ids.has(x.id)); if (extra.length) { e[k] = (e[k] || []).concat(JSON.parse(JSON.stringify(extra))); vals += extra.length; } }
+      else if (e[k] == null) e[k] = JSON.parse(JSON.stringify(a[k])); } }
+  return { W, days, vals }; }
+async function mergeSnapshot(id) { const s = (await listSnapshots()).find(x => x.id === id); if (!s || !s.data) return;
+  const cur = load('nwhWork', {}) || {}, m = mergeWork(cur, s.data.nwhWork || {});
+  let aocAdd = 0; const ca = load('nwhAocs', []) || [], sa = s.data.nwhAocs || []; if (Array.isArray(ca) && Array.isArray(sa)) { const ids = new Set(ca.map(x => x && x.id)); const ex = sa.filter(x => x && x.id && !ids.has(x.id)); aocAdd = ex.length; if (ex.length) { await takeSnapshot('pre-merge', true); localStorage.setItem('nwhAocs', JSON.stringify(ca.concat(ex))); } }
+  if (!m.days && !m.vals && !aocAdd) { toast('Nothing missing — your current data already has everything in that snapshot'); return; }
+  if (!confirm(`Add ${m.days} missing day(s) and ${m.vals} missing reading(s)${aocAdd ? ` and ${aocAdd} AOC(s)` : ''} from the ${new Date(s.ts).toLocaleString('en-US', { hourCycle: 'h23' })} snapshot?\nNothing you have now is changed or removed.`)) return;
+  await takeSnapshot('pre-merge', true); localStorage.setItem('nwhWork', JSON.stringify(m.W)); lastSnapHash = null; await takeSnapshot('after-merge', true);
+  toast(`Added ${m.days} day(s), ${m.vals} reading(s)`); try { renderRestore(); } catch (e) {} }
+// Shrink guard: any write that would drop reading days snapshots the current data first.
+const _store347 = store;
+store = function (key, val) { if (key === 'nwhWork') { try { const before = rdDays(load('nwhWork', {})).length, after = rdDays(val).length; if (after < before) { takeSnapshot('pre-shrink', true); } } catch (e) {} } return _store347(key, val); };
+// Snapshot list: show readings range + Merge button; keep 30 daily snapshots.
+renderRestore = async function () { const list = await listSnapshots(), cur = rdSummary(load('nwhWork', {}));
+  document.getElementById('snapList').innerHTML = `<div class="card rd-now"><b>On this device now:</b> ${cur.n} day(s) of meter readings${cur.last ? `, latest <b>${mdy(cur.last)}</b>` : ''}.</div>` + (list.length ? list.map(s => { const r = rdSummary((s.data || {}).nwhWork), newer = r.last && (!cur.last || r.last > cur.last) || r.n > cur.n;
+    return `<div class="card snap${newer ? ' rd-newer' : ''}"><div class="top"><b>${new Date(s.ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}</b>
+      <span class="badge" style="background:${s.kind === 'daily' ? 'var(--olive)' : s.kind === 'pre-restore' ? '#F2A900' : '#5F6977'}">${s.kind === 'daily' ? 'DAILY' : s.kind === 'pre-restore' ? 'BEFORE RESTORE' : 'AUTO'}</span>${s.fallback ? ' <span class="badge ex">fallback</span>' : ''}</div>
+      <div><b>${r.n}</b> day(s) of readings${r.last ? `, latest <b>${mdy(r.last)}</b>` : ''}${newer ? ' <span class="rd-tag">has readings you don’t</span>' : ''}</div><div class="muted">${countsText(s.counts)}</div>
+      <div class="btn-row"><button class="small" onclick="mergeSnapshot('${s.id}')">➕ Add missing readings</button><button class="small secondary" onclick="restoreSnapshot('${s.id}')">Replace all with this</button></div></div>`; }).join('') : '<p class="muted">No snapshots yet. They are taken automatically while you use the app.</p>'); };
+// Startup: snapshot current data right away; and alert if a snapshot has readings newer than current.
+async function rdStartupCheck() { try { await takeSnapshot('startup'); const cur = rdSummary(load('nwhWork', {})), list = await listSnapshots();
+  const best = list.map(s => ({ s, r: rdSummary((s.data || {}).nwhWork) })).filter(x => x.r.last && (!cur.last || x.r.last > cur.last)).sort((a, b) => b.r.last.localeCompare(a.r.last))[0];
+  if (!best) return; const card = document.getElementById('recoveryCard'); if (!card || card.style.display === 'block') return;
+  card.innerHTML = `<h3>⚠️ Newer readings found in a snapshot</h3><p>This device's latest reading is ${cur.last ? mdy(cur.last) : 'none'}, but a snapshot from <b>${new Date(best.s.ts).toLocaleString('en-US', { hourCycle: 'h23' })}</b> has readings through <b>${mdy(best.r.last)}</b>.</p>
+    <button onclick="mergeSnapshot('${best.s.id}')">➕ Add the missing readings</button><button class="secondary" onclick="showScreen('restore')">See all snapshots</button><button class="secondary" onclick="this.closest('#recoveryCard').style.display='none'">Not now</button>`; card.style.display = 'block'; } catch (e) {} }
+setTimeout(rdStartupCheck, 1500);
 
 /* ---------- Startup ---------- */
 migrateData();
