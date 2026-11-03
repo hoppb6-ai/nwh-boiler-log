@@ -966,12 +966,17 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 .rd-newer { border: 2px solid #00796B !important; } .rd-tag { display: inline-block; background: #D3F1EA; color: #00473F; font-weight: 800; border-radius: 8px; padding: 1px 8px; font-size: 14px; } html.dark .rd-tag { background: #0D4A42; color: #C4FBEE; }
 .rd-now { border-left: 6px solid var(--head, #1F3A5F); }
 .rs-add { margin: 12px 0; } .rs-merge { width: 100%; min-height: 52px; font-size: 18px; font-weight: 800; background: #00796B; color: #fff; border: 0; border-radius: 12px; } html.dark .rs-merge { background: #26A69A; color: #00201C; }
+.fan2 { display: flex; flex-direction: column; gap: 8px; } .fan2-cap { font-weight: 800; font-size: 16px; color: var(--text, #222); }
+.fan2-h { font-weight: 800; font-size: 16px !important; color: var(--text, #222) !important; } .fan2-n { font-style: italic; }
+.fan2-last { font-size: 18px; margin: 4px 0 8px; } .fan2-last span { color: var(--muted, #555); font-size: 16px; }
+.fan2-nl { display: block; text-align: left; font-weight: 700; margin-top: 6px; } .fan2-nl input { width: 100%; margin-top: 4px; font-size: 18px; }
+.fan-ed-row .fan-step { flex: 0 0 76px !important; min-width: 0 !important; padding: 0 !important; } .fan-ed-row .fan-in { width: 140px !important; flex: 0 0 140px !important; padding: 4px !important; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.8</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.9</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1203,7 +1208,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.8 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.9 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3054,7 +3059,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.8';
+const APP_VER = '3.4.9';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -4334,15 +4339,15 @@ readoutEvents = function (day) { const ev = _readoutEvents34(day), L = lim(), B 
   ev.forEach(e => { if (e.cat !== 'Boiler') return; const r = (q[e.what] || []).shift(); if (!r) return;
     if ((r.press != null && pLvl(r.press) !== 'g') || (r.temp != null && tLvl(r.temp) !== 'g')) { e.flag = true; e.det += [r.press != null && pLvl(r.press) === 'r' ? ' · ! pressure out of range' : r.press != null && pLvl(r.press) === 'a' ? ' · ! pressure approaching high' : '', r.temp != null && Number(r.temp) >= L.tMax ? ` · ! Temp at/over ${L.tMax} limit` : r.temp != null && tLvl(r.temp) === 'a' ? ' · ! temp high' : ''].join(''); } });
   sysLog('steam').filter(r => (r.date || r.day) === day).forEach(r => ev.push({ t: r.time || '', cat: 'Steamer', what: r.on ? '♨ Steamer ON' : 'Steamer OFF', det: '', flag: false }));
-  sysLog('fan').filter(r => (r.date || r.day) === day).forEach(r => ev.push({ t: r.time || '', cat: 'Fan', what: `Fan speed ${hz(r.hz)} Hz`, det: r.note || '', flag: false }));
+  sysLog('fan').filter(r => (r.date || r.day) === day).forEach(r => ev.push({ t: r.time || '', cat: 'Fan', what: `Full operating speed ${hz(r.hz)} Hz`, det: r.note || '', flag: false })); sysLog('fanIgn').filter(r => (r.date || r.day) === day).forEach(r => ev.push({ t: r.time || '', cat: 'Fan', what: `Ignition speed ${hz(r.hz)} Hz`, det: r.note || '', flag: false }));
   return ev.sort((x, y) => (x.t ? 0 : 1) - (y.t ? 0 : 1) || x.t.localeCompare(y.t)); };
 const _readoutSections34 = readoutSections;
-readoutSections = function (day) { const S = _readoutSections34(day), rows = [...sysLog('fan').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Fan speed', hz(r.hz) + ' Hz' + (r.note ? ' · ' + r.note : '')] })), ...sysLog('steam').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Steamer', r.on ? 'ON' : 'OFF'] }))].sort((a, b) => String(a.k).localeCompare(String(b.k)));
+readoutSections = function (day) { const S = _readoutSections34(day), rows = [...sysLog('fan').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Full operating speed', hz(r.hz) + ' Hz' + (r.note ? ' · ' + r.note : '')] })), ...sysLog('fanIgn').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Ignition speed', hz(r.hz) + ' Hz' + (r.note ? ' · ' + r.note : '')] })), ...sysLog('steam').filter(r => (r.date || r.day) === day).map(r => ({ k: r.time, cells: [r.time || '', 'Steamer', r.on ? 'ON' : 'OFF'] }))].sort((a, b) => String(a.k).localeCompare(String(b.k)));
   const cur = sysLog('fan').filter(r => (r.date || r.day) <= day).pop();
   const i = S.findIndex(s => /^Blow-off/.test(s.title)); S.splice(i < 0 ? S.length : i + 1, 0, { title: 'Fan speed / steamer', col: 1, cols: [{ h: 'Time', w: .2 }, { h: 'Item', w: .3 }, { h: 'Value', w: .5 }], rows: rows.length ? rows : [{ cells: ['—', 'Fan speed', cur ? `No change (${hz(cur.hz)} Hz)` : 'Not set'] }] }); return S; };
 const _tlEntries34 = tlEntries;
 tlEntries = function () { const sys = [...sysLog('steam').map(r => ({ a: { id: 'sys-' + r.id, kind: 'note', title: r.on ? '♨ Steamer ON' : 'Steamer OFF', equipment: 'Both', category: 'Operation note', actions: 'Steamer ' + (r.on ? 'turned on' : 'turned off'), tags: ['Steamer'] }, o: { date: r.date || r.day, time: r.time } })),
-  ...sysLog('fan').map(r => ({ a: { id: 'sys-' + r.id, kind: 'note', title: `Fan speed ${hz(r.hz)} Hz`, equipment: 'Both', category: 'Operation note', actions: r.note || 'Fan speed adjusted', tags: ['Fan speed'] }, o: { date: r.date || r.day, time: r.time } }))].map(x => Object.assign(x, { k: x.o.date + ' ' + (x.o.time || '') }));
+  ...sysLog('fan').map(r => ({ a: { id: 'sys-' + r.id, kind: 'note', title: `Full operating speed ${hz(r.hz)} Hz`, equipment: 'Both', category: 'Operation note', actions: r.note || 'Fan speed adjusted', tags: ['Fan speed'] }, o: { date: r.date || r.day, time: r.time } }))].map(x => Object.assign(x, { k: x.o.date + ' ' + (x.o.time || '') }));
   return _tlEntries34().concat(sys).sort((x, y) => y.k.localeCompare(x.k)); };
 const _openAoc34 = openAoc; openAoc = function (id, ...r) { if (typeof id === 'string' && id.startsWith('sys-')) return; return _openAoc34(id, ...r); };
 const _buildSheet34 = buildSheet;
@@ -4351,7 +4356,7 @@ buildSheet = function (scr, from, to, desc) { const sp = _buildSheet34(scr, from
   sp.cols.push({ h: 'Fan (Hz)', kind: 'num', g: '' }); sp.rows.forEach(r => r.cells.push(C('')));
   const n = sp.cols.length, mk = (r, what, st, fanv) => { const c = Array.from({ length: n }, () => C('')); c[0] = C(sDate(r.date || r.day)); c[1] = C(r.time || ''); c[2] = C(what, { bold: true }); c[3] = C(st); if (fanv != null) c[n - 1] = C(hz(fanv), { raw: String(fanv) }); return { day: r.date || r.day, cells: c }; };
   const inR = r => (r.date || r.day) >= from && (r.date || r.day) <= to;
-  sysLog('fan').filter(inR).forEach(r => sp.rows.push(mk(r, 'Fan speed', r.note || '', r.hz))); sysLog('steam').filter(inR).forEach(r => sp.rows.push(mk(r, 'Steamer', r.on ? 'ON' : 'OFF')));
+  sysLog('fan').filter(inR).forEach(r => sp.rows.push(mk(r, 'Full operating speed', r.note || '', r.hz))); sysLog('fanIgn').filter(inR).forEach(r => sp.rows.push(mk(r, 'Ignition speed', r.note || '', r.hz))); sysLog('steam').filter(inR).forEach(r => sp.rows.push(mk(r, 'Steamer', r.on ? 'ON' : 'OFF')));
   sp.rows.sort((a, b) => (a.day + ' ' + a.cells[1].t).localeCompare(b.day + ' ' + b.cells[1].t)); if (desc) sp.rows.reverse();
   const pi = sp.cols.findIndex(c => /^Pressure/.test(c.h)), ti = sp.cols.findIndex(c => /^Temp/.test(c.h));
   sp.rows.forEach(r => { [[pi, pLvl], [ti, tLvl]].forEach(([i, f]) => { const c = r.cells[i]; if (!c || c.t === '') return; const l = f(Number(String(c.raw != null ? c.raw : c.t).replace(/,/g, ''))); if (l && l !== 'g') { c.t = '! ' + c.t; c.bg = AMBER_BG; c.bold = true; } }); });
@@ -5315,6 +5320,27 @@ async function rdStartupCheck() { try { await takeSnapshot('startup'); const cur
   card.innerHTML = `<h3>⚠️ Newer readings found in a snapshot</h3><p>This device's latest reading is ${cur.last ? mdy(cur.last) : 'none'}, but a snapshot from <b>${new Date(best.s.ts).toLocaleString('en-US', { hourCycle: 'h23' })}</b> has readings through <b>${mdy(best.r.last)}</b>.</p>
     <button onclick="mergeSnapshot('${best.s.id}')">➕ Add the missing readings</button><button class="secondary" onclick="showScreen('restore')">See all snapshots</button><button class="secondary" onclick="this.closest('#recoveryCard').style.display='none'">Not now</button>`; card.style.display = 'block'; } catch (e) {} }
 setTimeout(rdStartupCheck, 1500);
+
+/* ===== v3.4.9: fan speed = two reference readouts (Full operating speed = 'fan', Ignition speed = 'fanIgn'), no time display ===== */
+const FAN_KINDS = { full: { key: 'fan', title: 'Full operating speed' }, ign: { key: 'fanIgn', title: 'Ignition speed' } };
+const fanLast = k => { const l = sysLog(FAN_KINDS[k].key); return l[l.length - 1] || null; };
+let fanKind = 'full';
+fanCardHtml = function () { const tileH = k => { const c = fanLast(k), t = FAN_KINDS[k].title;
+    return `<button type="button" class="fan-main fan2-t" onclick="fanEdit('${k}')" aria-label="${t}: ${c ? hz(c.hz) + ' Hz' : 'not set'}. Tap to change">${fanGauge(c ? c.hz : 0, 70)}<span class="fan-t"><small class="fan2-h">${t}</small><b>${c ? hz(c.hz) : '—'}<span class="u"> Hz</span></b>${c && c.note ? `<small class="fan2-n">${esc(c.note)}</small>` : (c ? '' : '<small>Tap to set</small>')}</span><span class="pc-chev">›</span></button>`; };
+  const hist = k => sysLog(FAN_KINDS[k].key).slice(-5).reverse().map(r => `<div class="bs-row"><span class="bs-t">${FAN_KINDS[k].title.split(' ')[0]}</span><span><b>${hz(r.hz)} Hz</b>${r.note ? ' · ' + esc(r.note) : ''}</span></div>`).join('');
+  const h = hist('full') + hist('ign');
+  return `<div class="fan-card fan2"><div class="fan2-cap">Fan speed — last settings</div>${tileH('full')}${tileH('ign')}${h ? `<details class="bs-hist"><summary>Earlier settings</summary><div class="bs-rows">${h}</div></details>` : ''}</div>`; };
+fanEdit = function (k) { fanKind = FAN_KINDS[k] ? k : 'full'; const c = fanLast(fanKind); fanDraft = c ? Number(c.hz) : null; const m = document.getElementById('mpad'); m.hidden = false; document.body.classList.add('pad-open'); fanRender(); };
+fanRender = function () { const K = FAN_KINDS[fanKind], c = fanLast(fanKind), o = fanLast(fanKind === 'full' ? 'ign' : 'full');
+  document.getElementById('mpad').innerHTML = `<div class="pad-wrap"><div class="pad-head"><b>${K.title}</b><button class="small secondary" aria-label="Close" onclick="fanDraft=null;padClose()">✕</button></div>
+  <div class="fan-ed"><p class="fan2-last">Last ${K.title.toLowerCase()}: <b>${c ? hz(c.hz) + ' Hz' : '—'}</b>${c && c.note ? `<br><span>${esc(c.note)}</span>` : ''}</p>${fanGauge(fanDraft || 0, 150)}<div class="fan-ed-row"><button type="button" class="secondary fan-step" onclick="fanStep(-0.5)">−0.5</button>
+  <input id="fanIn" class="fan-in" inputmode="decimal" enterkeyhint="done" aria-label="${K.title} Hz" value="${fanDraft == null ? '' : hz(fanDraft)}" placeholder="0.00" oninput="this.value=this.value.replace(/[^0-9.]/g,'');const v=parseFloat(this.value);if(!isNaN(v)&&v<=60){fanDraft=v;document.querySelector('#mpad .fan-ed svg').outerHTML=fanGauge(v,150)}"><span class="u">Hz</span>
+  <button type="button" class="secondary fan-step" onclick="fanStep(0.5)">+0.5</button></div><p id="fanErr" class="oor" hidden><b>Max is 60.00 Hz</b></p>
+  <label class="fan2-nl">Conditions / notes (optional)<input id="fanNote" placeholder="e.g. cold day, wet fuel, 2 boilers on" aria-label="Conditions note" value="${c && c.note ? esc(c.note) : ''}"></label></div>
+  <p class="muted" style="text-align:center">${o ? `${FAN_KINDS[fanKind === 'full' ? 'ign' : 'full'].title}: ${hz(o.hz)} Hz. ` : ''}0–60.00 Hz.</p>
+  <div class="pad-nav"><button type="button" class="secondary" onclick="fanDraft=null;padClose()">Cancel</button><button type="button" class="pad-next" onclick="fanSave()">✓ Save</button></div></div>`; };
+fanSave = function () { const v = parseFloat(document.getElementById('fanIn').value); if (isNaN(v)) { toast('Enter Hz'); return; } if (v > FAN_CAP) { document.getElementById('fanErr').hidden = false; toast('Max is 60.00 Hz'); return; }
+  const K = FAN_KINDS[fanKind]; sysAdd(K.key, { hz: Math.round(v * 100) / 100, note: document.getElementById('fanNote').value.trim() }); fanDraft = null; padClose(); toast(K.title + ' saved'); bsRefresh(); actRefresh(); };
 
 /* ---------- Startup ---------- */
 migrateData();
