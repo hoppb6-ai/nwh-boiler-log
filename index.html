@@ -971,12 +971,32 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 .fan2-last { font-size: 18px; margin: 4px 0 8px; } .fan2-last span { color: var(--muted, #555); font-size: 16px; }
 .fan2-nl { display: block; text-align: left; font-weight: 700; margin-top: 6px; } .fan2-nl input { width: 100%; margin-top: 4px; font-size: 18px; }
 .fan-ed-row .fan-step { flex: 0 0 76px !important; min-width: 0 !important; padding: 0 !important; } .fan-ed-row .fan-in { width: 140px !important; flex: 0 0 140px !important; padding: 4px !important; }
+.home-rd .rd-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.rd-oval { border: 3px solid var(--navy, #1F3A5F); color: var(--navy, #1F3A5F); border-radius: 999px; padding: 2px 14px; font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; }
+.rd-time { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; } .rd-dow { color: var(--muted, #4F5966); font-size: 16px; }
+.rd-note { background: #FFF4D6; color: #5A4300; border-radius: 10px; padding: 8px 10px; font-weight: 700; margin: 6px 0; }
+.rd-rows { display: flex; flex-direction: column; } .rd-row { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "l l" "v u" "e e"; padding: 8px 0; border-top: 1px solid var(--border, #E3E7ED); }
+.rd-row:first-child { border-top: 0; } .rd-l { grid-area: l; font-size: 15px; color: var(--muted, #4F5966); font-weight: 600; }
+.rd-v { grid-area: v; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text, #14213D); overflow-wrap: anywhere; } .rd-u { grid-area: u; align-self: center; font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.rd-el { grid-area: e; text-align: right; font-size: 15px; font-weight: 700; color: var(--muted, #4F5966); }
+.rd-t { color: #00796B; } .rd-p { color: #4A2BAE; } .rd-r { color: #B71C1C !important; } .rd-g { color: #5F6977; }
+.rd-key { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; font-weight: 700; margin: 8px 0; }
+html.dark .rd-oval { border-color: #9EC2F0; color: #CFE2FA; } html.dark .rd-t { color: #4FD1BE; } html.dark .rd-p { color: #B9A6FF; } html.dark .rd-r { color: #FF8A80 !important; } html.dark .rd-g { color: #A9B3C0; }
+html.dark .rd-note { background: #4A3B10; color: #FFE7A6; }
+#calGrid .cal-day.rd { box-shadow: inset 0 -4px 0 #00796B; font-weight: 800; } html.dark #calGrid .cal-day.rd { box-shadow: inset 0 -4px 0 #4FD1BE; }
+#calGrid .cal-day.sel { outline: 3px solid var(--navy, #1F3A5F); outline-offset: -3px; } html.dark #calGrid .cal-day.sel { outline-color: #9EC2F0; }
+.cal-hint { font-size: 14px; color: var(--muted, #4F5966); align-self: center; }
+#homeBoilers .fan-card { display: none; }
+.rd-l, .rd-el, .rd-dow, .cal-hint { color: #4F5966; } .rd-v, .rd-time { color: #14213D; }
+html.dark .rd-l, html.dark .rd-el, html.dark .rd-dow, html.dark .cal-hint { color: #C3CCD8; } html.dark .rd-v, html.dark .rd-time { color: #F1F5FA; }
+.rd-note { white-space: normal; overflow-wrap: anywhere; }
+#home #homeBoilers .live-row[data-boiler]:not([data-boiler="b1"]) { display: none; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.4.9</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.5.0</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1208,7 +1228,7 @@ html.dark #roundBody .round-done:not(.on) small, #roundBody .round-done:not(.on)
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.4.9 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.5.0 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3059,7 +3079,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.4.9';
+const APP_VER = '3.5.0';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -5341,6 +5361,55 @@ fanRender = function () { const K = FAN_KINDS[fanKind], c = fanLast(fanKind), o 
   <div class="pad-nav"><button type="button" class="secondary" onclick="fanDraft=null;padClose()">Cancel</button><button type="button" class="pad-next" onclick="fanSave()">✓ Save</button></div></div>`; };
 fanSave = function () { const v = parseFloat(document.getElementById('fanIn').value); if (isNaN(v)) { toast('Enter Hz'); return; } if (v > FAN_CAP) { document.getElementById('fanErr').hidden = false; toast('Max is 60.00 Hz'); return; }
   const K = FAN_KINDS[fanKind]; sysAdd(K.key, { hz: Math.round(v * 100) / 100, note: document.getElementById('fanNote').value.trim() }); fanDraft = null; padClose(); toast(K.title + ' saved'); bsRefresh(); actRefresh(); };
+
+/* ===== v3.5.0: Home = calendar → day readings readout → fan speeds → Boiler 1 pressure/temp → today's boiler log; no shift framing ===== */
+let HSEL = null;
+const rdHas = (day, W) => { const cl = ((W || getWork())[day] || {}).checklist || {}; return meterItems().some(it => { const v = ((cl[it.id] || {}).values || {})[meterKey(it)]; return v !== '' && v != null; }); };
+const RD_COL = { '#00796B': 't', '#4A2BAE': 'p', '#B71C1C': 'r' };
+function homeRdHtml() { const W = getWork(), today = ymd(new Date()), ms = meterItems(); let day = HSEL || today, note = '';
+  if (!rdHas(day, W) && day === today) { const prev = Object.keys(W).filter(d => /^\d{4}-\d\d-\d\d$/.test(d) && d < today && rdHas(d, W)).sort().pop(); if (prev) { note = `Today isn't logged yet — showing the latest readings (${mdy(prev).slice(0, 5)}).`; day = prev; } }
+  const has = rdHas(day, W), dt = parseYmd(day), rt = has ? mrDayTime(day, ms, W) : '';
+  const rows = has ? ms.map(it => { const v = mrFmt(it, ((((W[day] || {}).checklist || {})[it.id] || {}).values || {})[meterKey(it)]); const u = v ? mrUsed(it, day, W) : { t: '' };
+      return `<div class="rd-row"><span class="rd-l">${esc(it.label)}</span><span class="rd-v">${v || '—'}</span><span class="rd-u rd-${RD_COL[u.col] || 'g'}">${esc(u.t || '')}</span>${isHourMeter(it) && v && u.el ? `<span class="rd-el${u.flag ? ' rd-r' : ''}">${esc(u.el)}</span>` : ''}</div>`; }).join('')
+    : `<p class="muted">No meter readings on ${mdy(day)}.</p>`;
+  const isT = (HSEL || today) === today;
+  return `<div class="card home-rd"><div class="rd-head"><span class="rd-oval">${day.slice(5, 7)}-${day.slice(8, 10)}</span><span class="rd-time">${rt || '—'}</span><span class="rd-dow">${dt.toLocaleDateString('en-US', { weekday: 'long' })}${day === today ? ' · today' : ''}</span></div>
+    ${note ? `<p class="rd-note">${note}</p>` : ''}<div class="rd-rows">${rows}</div>
+    <div class="rd-key"><span class="rd-t">▲ used</span><span class="rd-p">○ no use</span><span class="rd-r">! check</span><span class="rd-g">— no previous</span></div>
+    <div class="btn-row">${isT ? `<button type="button" onclick="startRound('${today}')">▶ ${rdHas(today, W) ? 'Continue' : 'Log'} today's readings</button>` : `<button type="button" class="secondary" onclick="HSEL=null;renderHome()">Back to today</button>`}<button type="button" class="secondary" onclick="openStatus('${HSEL || today}')">Open day log ›</button></div></div>`; }
+function homePick(d) { if (d === (HSEL || ymd(new Date()))) { openStatus(d); return; } HSEL = d === ymd(new Date()) ? null : d; homeRdPaint(); }
+function homeRdPaint() { const el = document.getElementById('homeRd'); if (el) el.innerHTML = homeRdHtml(); const sel = HSEL || ymd(new Date());
+  document.querySelectorAll('#calGrid .cal-day[data-day]').forEach(c => c.classList.toggle('sel', c.dataset.day === sel)); }
+function homeLogHtml() { const day = ymd(new Date()), s = shiftState(day), p = s.p;
+  const t = (cls, big, lbl, on) => `<button type="button" class="hs-t ${cls}" onclick="${on}"><b>${big}</b><span>${lbl}</span></button>`;
+  return `<div class="card home-shift"><div class="hs-h"><b>Today's boiler log · ${parseYmd(day).toLocaleDateString('en-US', { weekday: 'short' })} ${mdy(day)}</b><button type="button" class="small secondary" onclick="showScreen('shift')">Daily log ›</button></div>
+    <button type="button" class="big-go${p.total && p.done >= p.total ? ' done' : ''}" onclick="startRound('${day}')">${p.total && p.done >= p.total ? '✓ Round complete · review' : `▶ ${p.done ? 'Continue' : 'Start'} round · ${p.done}/${p.total}`}</button>
+    <div class="hs-tiles">${t(s.fl.length ? 'warn' : 'ok', (s.fl.length ? '! ' : '✓ ') + s.fl.length, 'flags', `edDay='${day}';showScreen('daily')`)}${t(s.od.length ? 'alarm' : s.pm.length ? 'warn' : 'ok', (s.od.length ? '! ' : '') + s.pm.length, s.od.length ? s.od.length + ' PM overdue' : 'PM due', "showScreen('pm')")}${t(s.aocs.length ? 'warn' : 'ok', s.aocs.length, 'open AOCs', "showScreen('aocs')")}</div></div>`; }
+const _renderHome350 = renderHome;
+renderHome = function () { _renderHome350(); const h = document.getElementById('home'), W = getWork(), sel = HSEL || ymd(new Date());
+  const old = document.getElementById('homeShift'); if (old) old.remove();
+  document.querySelectorAll('#calGrid .cal-day[data-day]').forEach(c => { const d = c.dataset.day; c.setAttribute('onclick', `homePick('${d}')`); c.classList.toggle('rd', rdHas(d, W)); c.classList.toggle('sel', d === sel); });
+  const cal = document.getElementById('calGrid').closest('.card');
+  const mk = id => { let e = document.getElementById(id); if (!e) { e = document.createElement('div'); e.id = id; } return e; };
+  const rd = mk('homeRd'), fan = mk('homeFan'), lg = mk('homeLog'), hb = document.getElementById('homeBoilers');
+  const tools = cal.querySelector('.cal-tools'); if (tools) tools.innerHTML = `<button class="small secondary" onclick="HSEL=null;calToday()">Today</button><span class="cal-hint">Tap a day to see its readings · tap again to open it</span>`;
+  const anchor = cal.nextSibling; [rd, fan, hb, lg].forEach(e => e && h.insertBefore(e, anchor));
+  rd.innerHTML = homeRdHtml(); fan.innerHTML = `<div class="card">${fanCardHtml()}</div>`; lg.innerHTML = homeLogHtml(); };
+// keep the fan tiles on Home fresh after saving (bsRefresh re-renders the boiler panel only)
+const _bsRefresh350 = bsRefresh; bsRefresh = function () { _bsRefresh350(); const f = document.getElementById('homeFan'); if (f) f.innerHTML = `<div class="card">${fanCardHtml()}</div>`; };
+// Daily log screen (was "Shift"): Round → review flags → share. No clock in/out.
+renderShift = function () { const day = ymd(new Date()), s = shiftState(day), c = s.c, b = document.getElementById('shiftBody');
+  const done = [s.steps[1], s.steps[2], s.steps[3]], N = ['Round', 'Review flags', 'Share daily sheet'], nx = done.indexOf(false);
+  const step = (i, body) => `<div class="card sh-step${done[i] ? ' done' : i === nx ? ' cur' : ''}"><h3><i>${done[i] ? '✓' : i + 1}</i> ${N[i]}</h3>${body}</div>`;
+  b.innerHTML = `<p class="sh-day">${parseYmd(day).toLocaleDateString('en-US', { weekday: 'long' })} ${mdy(day)}</p>
+  ${step(0, `<p><b>${s.p.done}/${s.p.total}</b> round items done${s.fl.length ? ` · <b class="neg">${s.fl.length} flag${s.fl.length > 1 ? 's' : ''}</b>` : ''}</p><button type="button" class="${done[0] ? 'secondary' : ''}" onclick="startRound('${day}')">${done[0] ? '↺ Review round' : s.p.done ? '▶ Continue round' : '▶ Start round'}</button>`)}
+  ${step(1, `${s.fl.length ? `<div class="sh-list">${s.fl.map(f => `<button type="button" class="sh-flag" onclick="edDay='${day}';showScreen('daily')">! ${esc(f)}</button>`).join('')}</div>` : '<p class="ok">✓ No reading flags.</p>'}
+    ${s.pm.length ? `<p><b class="${s.od.length ? 'neg' : ''}">${s.pm.length} PM due${s.od.length ? ` (${s.od.length} overdue)` : ''}</b> · <button type="button" class="linkish" onclick="showScreen('pm')">Open PM ›</button></p>` : ''}
+    ${s.aocs.length ? `<p><b>${s.aocs.length} open AOC${s.aocs.length > 1 ? 's' : ''}</b> · <button type="button" class="linkish" onclick="showScreen('aocs');setAocMode('library')">Open ›</button></p>` : ''}
+    ${c.reviewed ? `<p>Reviewed <b>${esc(c.reviewed)}</b> <button type="button" class="small secondary" onclick="clockSet('${day}','reviewed','');renderShift()">Undo</button></p>` : `<button type="button" onclick="clockSet('${day}','reviewed',nowHM());renderShift()">✓ Flags reviewed</button>`}`)}
+  ${step(2, `<div class="btn-row"><button type="button" onclick="shiftShare('${day}','png')">📱 Phone PNG</button><button type="button" class="secondary" onclick="shiftShare('${day}','pdf')">🖨️ Landscape PDF</button><button type="button" class="secondary" onclick="openReport('${day}')">Preview</button></div>${c.exported ? `<p class="muted">Shared ${esc(c.exported)}</p>` : ''}`)}`; };
+(function () { const h = document.querySelector('#shift .scr-head h2'); if (h) h.textContent = "📋 Today's boiler log"; })();
+const _v34More350 = v34More; v34More = function () { _v34More350(); document.querySelectorAll('#more .more-grp').forEach(g => { const h = g.querySelector('h3'); if (h && /Shift/.test(h.textContent)) { h.textContent = "📋 Today's boiler log"; const p = g.querySelector('p'); if (p) p.textContent = 'Round → review flags → share the daily sheet.'; const bt = g.querySelector('button'); if (bt) bt.textContent = 'Open daily log ›'; } }); };
 
 /* ---------- Startup ---------- */
 migrateData();
