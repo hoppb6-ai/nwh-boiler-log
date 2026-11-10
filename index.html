@@ -991,12 +991,44 @@ html.dark .rd-note { background: #4A3B10; color: #FFE7A6; }
 html.dark .rd-l, html.dark .rd-el, html.dark .rd-dow, html.dark .cal-hint { color: #C3CCD8; } html.dark .rd-v, html.dark .rd-time { color: #F1F5FA; }
 .rd-note { white-space: normal; overflow-wrap: anywhere; }
 #home #homeBoilers .live-row[data-boiler]:not([data-boiler="b1"]) { display: none; }
+#b1man { padding-bottom: 24px; }
+#b1man #manQ { width: 100%; font-size: 18px; min-height: 48px; margin: 8px 0 12px; box-sizing: border-box; }
+.man-src { overflow-wrap: anywhere; }
+.man-sec { margin: 8px 0; border: 1px solid var(--border, #C9CED6); border-radius: 12px; background: var(--surface, #fff); padding: 0; }
+.man-sec > summary { list-style: none; cursor: pointer; padding: 14px 16px; font-size: 18px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; overflow-wrap: anywhere; }
+.man-sec > summary::-webkit-details-marker { display: none; } .man-sec > summary::after { content: '▸'; color: var(--muted, #5F6977); flex: 0 0 auto; } .man-sec[open] > summary::after { content: '▾'; }
+.man-sec > summary b { font-size: 18px; } .man-pg { color: var(--muted, #5F6977); font-weight: 700; white-space: nowrap; }
+.man-body { padding: 0 16px 14px; font-size: 17px; line-height: 1.45; overflow-wrap: anywhere; }
+.man-body p, .man-ln, .man-list li, .man-item span, .man-toc, dt, dd { overflow-wrap: anywhere; }
+.man-toc { font-weight: 700; margin: 0 0 10px; color: var(--text, #14213D); }
+.man-list { margin: 0 0 10px; padding-left: 1.2em; } .man-list li { margin: 4px 0; }
+.man-gh { font-weight: 800; margin: 10px 0 4px; }
+.man-steps { list-style: none; margin: 0; padding: 0; } .man-steps > li { display: flex; gap: 8px; margin: 10px 0; } .man-n { flex: 0 0 auto; }
+.man-ck { display: flex; flex-direction: column; gap: 6px; }
+.man-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 8px; border-radius: 10px; background: var(--surface2, #F2F4F7); font-size: 17px; line-height: 1.35; }
+.man-item input { width: 22px; height: 22px; flex: 0 0 22px; margin-top: 2px; }
+.man-item.on { background: #D3F1EA; } .man-item.on span { text-decoration: line-through; opacity: .85; }
+.man-gas { border: 2px solid #1F3A5F; }
+.man-ckn { align-self: center; }
+.man-dl { margin: 0; } .man-term { margin: 0 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border, #E3E7ED); }
+.man-term dt { font-weight: 800; color: var(--navy-ink, #1F3A5F); margin-bottom: 4px; } .man-term dd { margin: 0; }
+#b1man mark { background: #FFE08A; color: inherit; border-radius: 3px; padding: 0 2px; }
+.man-eq-link { width: 100%; margin-top: 8px; }
+html.dark .man-sec { background: var(--surface, #1A2433); border-color: #3A4658; }
+html.dark .man-toc, html.dark .man-body, html.dark .rd-v { color: #F1F5FA; }
+html.dark .man-pg, html.dark .man-src { color: #C3CCD8; }
+html.dark .man-item { background: #243044; color: #F1F5FA; }
+html.dark .man-item.on { background: #0D4A42; color: #C4FBEE; }
+html.dark .man-gas { border-color: #9EC2F0; }
+html.dark .man-term dt { color: #CFE2FA; }
+html.dark #b1man mark { background: #6B4E00; color: #FFE7A6; }
+html.dark .man-term { border-bottom-color: #3A4658; }
 </style>
 </head>
 <body class="locked">
 <div id="app">
 <header id="appHeader">
-  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.5.0</small></h1>
+  <h1 id="appTitle">NWH Log <small id="hdrVer">v3.5.1</small></h1>
   <button onclick="calFocus=new Date();showScreen('home')" aria-label="Today">Today</button>
   <button onclick="saveSheet()" aria-label="Save or restore backup" id="hdrSave">💾 Save</button>
   <button onclick="lockApp()" aria-label="Lock">🔒</button>
@@ -1228,7 +1260,7 @@ html.dark .rd-l, html.dark .rd-el, html.dark .rd-dow, html.dark .cal-hint { colo
 </div>
   <button class="danger" onclick="lockApp()">Lock App</button>
   <p style="text-align:center"><span id="offlineBadge" class="badge wait">…</span></p>
-  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.5.0 · all data stays on this device</p>
+  <p class="muted" style="text-align:center" id="appVer">NWH Log v3.5.1 · all data stays on this device</p>
 </div>
 
 <!-- Restore -->
@@ -3079,7 +3111,7 @@ async function exportSheet(scr, kind) {
 
 /* ===================== Polish & power features (v2) =====================
    Trends · Daily report · Smart entry · Home dashboard · Round mode · Dark mode · Feedback/offline badge */
-const APP_VER = '3.5.0';
+const APP_VER = '3.5.1';
 const haptic = el => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} if (el && el.classList) { el.classList.remove('tap-ok'); void el.offsetWidth; el.classList.add('tap-ok'); } };
 const addDayKey = (k, n) => { const d = parseYmd(k); d.setDate(d.getDate() + n); return ymd(d); };
 const wsItem = () => getChecklist().find(i => i.sections);
@@ -5410,6 +5442,418 @@ renderShift = function () { const day = ymd(new Date()), s = shiftState(day), c 
   ${step(2, `<div class="btn-row"><button type="button" onclick="shiftShare('${day}','png')">📱 Phone PNG</button><button type="button" class="secondary" onclick="shiftShare('${day}','pdf')">🖨️ Landscape PDF</button><button type="button" class="secondary" onclick="openReport('${day}')">Preview</button></div>${c.exported ? `<p class="muted">Shared ${esc(c.exported)}</p>` : ''}`)}`; };
 (function () { const h = document.querySelector('#shift .scr-head h2'); if (h) h.textContent = "📋 Today's boiler log"; })();
 const _v34More350 = v34More; v34More = function () { _v34More350(); document.querySelectorAll('#more .more-grp').forEach(g => { const h = g.querySelector('h3'); if (h && /Shift/.test(h.textContent)) { h.textContent = "📋 Today's boiler log"; const p = g.querySelector('p'); if (p) p.textContent = 'Round → review flags → share the daily sheet.'; const bt = g.querySelector('button'); if (bt) bt.textContent = 'Open daily log ›'; } }); };
+
+/* ===== v3.5.1: Boiler 1 Manual (verbatim from operation manual pp. 16–19, 28–32) ===== */
+const B1_MAN = [
+ {
+  "id": "iv",
+  "title": "IV. STARTUP AND OPERATION",
+  "pages": "p.16",
+  "toc": [
+   "A. GENERAL",
+   "B. PRESTART CHECK LIST WOOD AND GAS",
+   "C. STARTUP, OPERATION AND SHUTDOWN",
+   "D. RESTART AFTER FLAME FAILURE"
+  ],
+  "kids": [
+   {
+    "id": "iva",
+    "title": "A. GENERAL",
+    "pages": "p.16",
+    "paras": [
+     "The following instructions assume installation is complete and all electric, fuel, water and boiler connections are made. Prior to startup, the operator should familiarize himself with the burner, controls and components, adjustment procedures, programming sequence and have studied this manual. Details of the wood and gas sequence are presented in the last chapter."
+    ]
+   },
+   {
+    "id": "ivb",
+    "title": "B. PRESTART CHECKLIST; WOOD AND GAS",
+    "pages": "p.16–17",
+    "check": "pre",
+    "intro": "Check the following for proper power supply, adjustment, etc. for both wood and gas.",
+    "items": [
+     "1. Proper boiler water level and control settings (refer to your boiler manual). Note: If not boiler, other limit controls.",
+     "2. Electrical power supply and circuit.",
+     "3. Programmer.",
+     "4. Gasifier assembly closed and gasketed.",
+     "5. Secondary air fan - rotation.",
+     "6. Primary air fan - rotation.",
+     "7. Hammermill - rotation corresponding to stripper setting (refer to manual). Proper screens.",
+     "8. Wood feed table - rotation, lubrication.",
+     "9. Proper linkage adjustment.",
+     "10. Pilot gas and air supply.",
+     "11. Ring gas supply.",
+     "12. Bin indicator switches working.",
+     "13. Adequate wood fuel supply."
+    ],
+    "noteHead": "PRESTART CHECKLIST, WOOD & GAS (Cont'd.) (p.17)",
+    "note": "In addition, preparation for firing gas must include cleaning the reactor and nozzle prior to system start. This is required due to the higher temperatures generated by firing the unit on gas."
+   },
+   {
+    "id": "ivc",
+    "title": "C. STARTUP, OPERATION AND SHUTDOWN",
+    "pages": "p.17",
+    "paras": [
+     "After going through the prestart checklist, operation may be initiated. The type of fuel (gas or wood) selected determines the sequence of operation. See Chapter IV for sequence details. Startup, operation and shutdown for wood and gas are presented below."
+    ],
+    "kids": [
+     {
+      "id": "ivcw",
+      "title": "Wood Fuel Operation",
+      "pages": "p.17–18",
+      "steps": [
+       {
+        "n": "1",
+        "lines": [
+         "Control Panel - On",
+         "Selector Switch - Wood",
+         "Hammermill - On",
+         "Primary Air Fan - On (Auto)",
+         "Secondary Air Fan - On (Auto)",
+         "Automatic Control - On"
+        ]
+       },
+       {
+        "n": "2",
+        "lines": [
+         "The pre-purge of the control cycle lasts 58 seconds. The air dampers drive fully open making a high fire switch. After the high fire switch is made, the damper motor drives to low fire position and makes the low fire switch. The system is now ready for pilot ignition."
+        ]
+       },
+       {
+        "n": "3",
+        "lines": [
+         "Pilot flame established for 10 second duration and at this time ring gas valve opens and flame is established."
+        ]
+       },
+       {
+        "n": "4",
+        "lines": [
+         "Ring gas burns until reactor temperature reaches the pre-set low limit temperature. This temperature setting dictates when wood fuel is introduced in combination with the ring gas. On cold starts, the reactor temperature may be increased beyond the low limit setting by increasing the time on TD-2. This gives the system additional warm-up time prior to wood introduction. When TD-2 time setting expires, TD-1 is energized allowing wood fuel to be introduced in combination with ring gas. On hot starts, the TD-2 timer can be set to a minimum time setting enabling immediate TD-1 energization and wood fuel introduction in combination with ring gas. This occurs when the low limit control temperature is reached. TD-2 should be reset to cold start setting for cold starts."
+        ]
+       },
+       {
+        "n": "5",
+        "lines": [
+         "Ring gas and wood fuel will burn in combination for the pre-set time on TD-1. When preset time expires, TD-1 de-energizes, ring gas valve closes, and the system is released to modulation, firing on wood only. The operator should monitor the system for at least 15 minutes after startup to ensure proper functioning of complete system."
+        ]
+       },
+       {
+        "n": "6",
+        "lines": [
+         "Shutdown is accomplished through: (p.18)",
+         "A. (1) Wood feed switch - off. Ring gas fuel valve opens and unit resumes ring gas firing. (Allow time for hammermill and primary fan to become clear of wood feed.)",
+         "(2) Fuel selector switch - off. Ring gas fuel valve closes and post purge cycle commences.",
+         "B. (1) Fuel selector switch - off. All fuel input is terminated and post-purge cycle commences."
+        ]
+       }
+      ]
+     },
+     {
+      "id": "ivcg",
+      "title": "Gas Operation",
+      "pages": "p.18",
+      "steps": [
+       {
+        "n": "1",
+        "lines": [
+         "Control Panel - On.",
+         "Selector Switch - Gas",
+         "Primary Air Fan - On (Auto)",
+         "Secondary Air Fan - On (Auto)",
+         "Auto Control - On",
+         "(Note: Hammer mill not energized)"
+        ]
+       },
+       {
+        "n": "2",
+        "lines": [
+         "Electrical power supply and circuit."
+        ]
+       },
+       {
+        "n": "3",
+        "lines": [
+         "Pilot flame established for 10 seconds duration and main gas. Main gas fuel valves open with butterfly valve in low fire position."
+        ]
+       },
+       {
+        "n": "4",
+        "lines": [
+         "The boiler is now released for modulation.",
+         "Operator should monitor the system for at least 15 minutes to ensure proper functioning of the complete system."
+        ]
+       },
+       {
+        "n": "5",
+        "lines": [
+         "Shutdown is accomplished by turning fuel selector switch off. The system post-purge cycle commences."
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "ivd",
+    "title": "D. RESTART AFTER FLAME FAILURE",
+    "pages": "p.18–19",
+    "check": "fail",
+    "intro": "The restart sequence for wood feed is straight forward. Care should be taken when considering the order of events. The following should be done in sequence upon flame failure.",
+    "items": [
+     "1. Silence alarm.",
+     "2. Turn wood/gas selector switch - off.",
+     "3. Wait for the post-purge cycle to end.",
+     "4. Push reset on control programmer (inside free standing panel).",
+     "5. Turn wood/gas selector switch to wood. Burner should restart and operate normally."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "vii",
+  "title": "VII. TROUBLE SHOOTING",
+  "pages": "p.28",
+  "toc": [
+   "A. GENERAL  B. GASIFIER WON'T START  C. PILOT FAILURE  D. RING GAS FAILURE  E. MAIN FLAME FAILURE  F. SHUTDOWN DURING FIRING  G. FEEDER ASSEMBLY FAILURE  H. DAMPER CONTROL MOTOR"
+  ],
+  "kids": [
+   {
+    "id": "viia",
+    "title": "A. GENERAL",
+    "pages": "p.28",
+    "paras": [
+     "Even with proper inspection and maintenance any mechanical system may incur unexpected problems. Troubles are most likely to occur with the wood feed handling system or the electrical/control system.",
+     "This chapter assumes the unit has been properly installed, adjusted, and has been operating properly for some time. Also, the operator should be familiar with the system by this time.",
+     "Each section contains a brief description of the problem, possible reasons for the problem with immediate corrective action possible. See other chapters for description of adjustment procedures, and for more complicated problems consult your representative."
+    ]
+   },
+   {
+    "id": "viib",
+    "title": "B. GASIFIER WON'T START",
+    "pages": "p.28",
+    "items": [
+     "1. Main power off.",
+     "2. Blown fuse, tripped overload, loose electrical connection.",
+     "3. Control circuit - manual reset.",
+     "4. Defective motor.",
+     "5. Secondary air proving switch - if burner starts, but shuts down immediately.",
+     "6. Low water cutoff - manual reset.",
+     "7. High temperature - reset.",
+     "8. Interlocks open."
+    ]
+   },
+   {
+    "id": "viic",
+    "title": "C. PILOT FAILURE",
+    "pages": "p.28–29",
+    "groups": [
+     {
+      "head": "1. No spark:",
+      "items": [
+       "a) Electrode grounded or porcelain cracked.",
+       "b) Ignitor improperly positioned (gap distance preset and must be maintained).",
+       "c) Loose terminal or ignitor cable, possible short.",
+       "d) Dirty carbon tip.",
+       "e) Transformer failure.",
+       "f) Check appropriate relay contacts."
+      ]
+     },
+     {
+      "head": "2. Spark, but no flame:",
+      "items": [
+       "a) Gas adjusting screw or air shutter incorrectly set.",
+       "b) Inoperative pilot solenoid, or solenoid power supply problem.",
+       "c) Secondary air pressure too great."
+      ]
+     }
+    ]
+   },
+   {
+    "id": "viid",
+    "title": "D. PILOT ON, RING GAS FAILURE",
+    "pages": "p.29",
+    "items": [
+     "1. Insufficient gas flow, check manual valves, adequate pressure.",
+     "2. Inoperative ring gas solenoid or power supply.",
+     "3. Possible manifold obstruction interfering with gas flow.",
+     "4. Secondary air pressure too great."
+    ]
+   },
+   {
+    "id": "viie",
+    "title": "E. RING GAS ON, WOOD FUEL FLAME FAILURE",
+    "pages": "p.29",
+    "items": [
+     "1. Failure due to wood feed system - check surge bin, feed assembly rotation, hammermill blockage, primary fan rotation, fuel tube obstruction.",
+     "2. Fuel tube diffuser assembly.",
+     "3. Check flame scanner for obstruction (can check scanner by using false flame signal).",
+     "4. Increase startup wood feed rate (see adjustment description in that chapter), reset wood/air ratio, linkages.",
+     "5. Ring gas fuel valve closes and unit experiences flame failure on wood only, allow more ring gas warm up time by increasing ring gas burn time on Time Delay No. 1."
+    ]
+   },
+   {
+    "id": "viif",
+    "title": "F. SHUTDOWN DURING FIRING",
+    "pages": "p.29–30",
+    "groups": [
+     {
+      "head": "1. Shut down on high fire rate:",
+      "items": [
+       "a) Adjust high pressure control.",
+       "b) Adjust modulating pressure control.",
+       "c) Normal shut down - operating limit.",
+       "d) High reactor temperature - manual reset temperature controller, adjust air/fuel ratio (see adjustments)."
+      ]
+     },
+     {
+      "head": "2. Shut down on low fire rate:",
+      "items": [
+       "a) High reactor temperature - adjust air/fuel ratio.",
+       "b) Flame failure - readjust air/fuel ratio.",
+       "c) Flame scanner - swirl pattern may affect signal - readjust secondary and tertiary air flow to stabilize flame."
+      ]
+     },
+     {
+      "head": "3. General shut down:",
+      "items": [
+       "a) Low fuel feed or stoppage.",
+       "b) Flame scanner obstruction or inoperative."
+      ]
+     }
+    ]
+   },
+   {
+    "id": "viig",
+    "title": "G. FEEDER ASSEMBLY FAILURE",
+    "pages": "p.30",
+    "items": [
+     "1. Input power voltage to variable speed drive control must be within manufacturer's specifications. Specs of 230V, single phase, plus 10% minus 5%, 50 or 60 Hz.",
+     "2. Check for drive control electronic shear pin and blown fuses.",
+     "3. Low output voltage.",
+     "4. Check for power to control circuit.",
+     "5. Refer to variable speed drive manual or contact local representative.",
+     "6. Wood feed acceleration rate too high (electric failure).",
+     "7. Check augers for free rotation."
+    ]
+   },
+   {
+    "id": "viih",
+    "title": "H. DAMPER ACTUATOR",
+    "pages": "p.30",
+    "items": [
+     "1. Manual/automatic switch in wrong position.",
+     "2. Linkage loose or jammed.",
+     "3. Electrical connections, inoperative transformer.",
+     "4. High and low fire limit switch contacts not closing."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "viii",
+  "title": "VIII. SYSTEM COMPONENTS GLOSSARY",
+  "pages": "p.31–32",
+  "terms": [
+   [
+    "COMBUSTION AIR FAN (SECONDARY AIR FAN)",
+    "Provides three stages of regulated combustion air supplementary to primary air"
+   ],
+   [
+    "DRY OVEN",
+    "Refractorized transition zone where initial devolitization and pyroysis reactions occur. Hinge mounted for inspection and service."
+   ],
+   [
+    "FIRING HEAD",
+    "Terminal device for wood/gas fuel-air mixture. Includes primary diffuser and secondary diffuser. Has internal tube for fuel oil gun when used. External mounting sight tube for flame scanner."
+   ],
+   [
+    "FUEL METER",
+    "Variable speed fuel meter regulates the rate of wood fuel flow to reactor vessel."
+   ],
+   [
+    "FLAME NOZZLE",
+    "Creates high velocity and flame temperature required for firing Scotch boilers. Quadernary air ports inject preheated air for final stage of combustion. Refractory ring located at end of reactor. Concentrates combustible gases in a turbulent, high velocity zone for final air supply exposure."
+   ],
+   [
+    "HAMMER MILL",
+    "Reduces fuel particles to size required for burning."
+   ],
+   [
+    "GAS BURNERS",
+    "Warm up burner (ring gas) and optional alternate main fuel burner use same gas ports but separate gas rate control trains."
+   ],
+   [
+    "IGNITOR ASSEMBLY",
+    "Includes blast pilot gas and air regulators with manual and solenoid valves. Gas/air mixer adjustable for air rate and gas rate. Flame retention tip with internal ignition electrode. High voltage ignition transformer. Pilot is externally mounted."
+   ],
+   [
+    "PRIMARY AIR FAN",
+    "Conveys fuel from hammer mill to reactor. Operates at fixed flow rate for constant conveying velocity."
+   ],
+   [
+    "REACTOR",
+    "Refractory pre-combustion chamber further improves fuel-air mixing and maintains regulated temperature for complete gasification of solid fuel particulates. Tertiary air generates high turbulence."
+   ],
+   [
+    "SURGE BIN",
+    "Maintains constant fuel supply to fuel meter. Usually equipped with high and low level sensors. The surge bin is usually provided by the installer or purchaser."
+   ],
+   [
+    "SYSTEM REGULATION",
+    "Very simple controls may be used for wood firing. The system is selected to meet the individual boiler requirements. Basic systems provide modulation of fuel and secondary air to boiler demand. Highly reliable parallel positioning controls regulate combustion air and fuel in synchronization in response to one boiler pressure transducer. Microprocessor controls are available where state of the art systems are desired."
+   ]
+  ]
+ }
+];
+let manCk = { pre: {}, fail: {} }, manBack = 'more';
+function manHi(s, q) { s = esc(s); if (!q) return s; const bits = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); try { return s.replace(new RegExp('(' + bits + ')', 'ig'), '<mark>$1</mark>'); } catch (e) { return s; } }
+function manHit(sec, q) { if (!q) return true; return JSON.stringify(sec).toLowerCase().includes(q); }
+function manCkHtml(kind, items, noteHead, note, q) { const st = manCk[kind] || {};
+  const row = (key, label, extra) => `<label class="man-item${st[key] ? ' on' : ''}${extra || ''}"><input type="checkbox" ${st[key] ? 'checked' : ''} onchange="manToggle('${kind}','${key}',this.checked)"><span>${manHi(label, q)}</span></label>`;
+  return `<div class="man-ck" data-ck="${kind}">${items.map((t, i) => row('i' + i, t)).join('')}${note ? row('note', (noteHead ? noteHead + ' ' : '') + note, ' man-gas') : ''}<div class="btn-row"><button type="button" class="small secondary" onclick="manReset('${kind}')">Reset checks</button><span class="muted man-ckn">${Object.values(st).filter(Boolean).length} checked</span></div></div>`; }
+function manToggle(kind, key, on) { manCk[kind] = manCk[kind] || {}; manCk[kind][key] = !!on; }
+function manReset(kind) { manCk[kind] = {}; manRender(); }
+function manSteps(steps, q) { return `<ol class="man-steps">${steps.map(st => `<li><b class="man-n">${esc(st.n)}.</b><div>${st.lines.map(l => `<div class="man-ln">${manHi(l, q)}</div>`).join('')}</div></li>`).join('')}</ol>`; }
+function manSecHtml(sec, q, open) { const show = manHit(sec, q), kids = (sec.kids || []).filter(k => !q || manHit(k, q) || (k.kids || []).some(c => manHit(c, q)));
+  if (q && !show && !kids.length && !(sec.terms && manHit(sec, q))) return '';
+  let body = '';
+  if (sec.toc) body += `<div class="man-toc">${sec.toc.map(t => `<div>${manHi(t, q)}</div>`).join('')}</div>`;
+  (sec.paras || []).forEach(p => { body += `<p>${manHi(p, q)}</p>`; });
+  if (sec.intro) body += `<p>${manHi(sec.intro, q)}</p>`;
+  if (sec.check) body += manCkHtml(sec.check, sec.items, sec.noteHead, sec.note, q);
+  else if (sec.items) body += `<ul class="man-list">${sec.items.map(t => `<li>${manHi(t, q)}</li>`).join('')}</ul>`;
+  if (sec.groups) sec.groups.forEach(g => { body += `<p class="man-gh">${manHi(g.head, q)}</p><ul class="man-list">${g.items.map(t => `<li>${manHi(t, q)}</li>`).join('')}</ul>`; });
+  if (sec.steps) body += manSteps(sec.steps, q);
+  if (sec.terms) body += `<dl class="man-dl">${sec.terms.map(([k, v]) => `<div class="man-term"><dt>${manHi(k, q)}</dt><dd>${manHi(v, q)}</dd></div>`).join('')}</dl>`;
+  (sec.kids || []).forEach(k => { body += manSecHtml(k, q, !!q); });
+  return `<details class="man-sec" data-id="${sec.id}" ${open || !q ? 'open' : ''}><summary><b>${manHi(sec.title, q)}</b> <small class="man-pg">${esc(sec.pages || '')}</small></summary><div class="man-body">${body}</div></details>`; }
+function manRender() { const el = document.getElementById('manBody'); if (!el) return; const q = (document.getElementById('manQ').value || '').trim().toLowerCase();
+  const html = B1_MAN.map(s => manSecHtml(s, q, true)).join('') || '<p class="muted">No matching sections.</p>';
+  el.innerHTML = html; }
+function manOpen(from) { manBack = from || 'more'; showScreen('b1man'); }
+function manEnsure() { if (document.getElementById('b1man')) return;
+  document.getElementById('tabBar').insertAdjacentHTML('beforebegin', `<div id="b1man" class="screen"><div class="scr-head"><h2>📖 Boiler 1 Manual</h2><button type="button" class="small secondary" onclick="showScreen(manBack||'more')">Back</button></div>
+    <p class="muted man-src">Transcribed from the Boiler 1 (wood/gas gasifier burner) operation manual, pages 16–19 and 28–32. Wording is as printed.</p>
+    <input id="manQ" type="search" placeholder="Search the manual…" aria-label="Search the manual" oninput="manRender()">
+    <div id="manBody"></div></div>`); }
+const _showScreen351 = showScreen;
+showScreen = function (id) { manEnsure(); if (id === 'b1man') { manRender(); document.querySelectorAll('#tabBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === 'more')); } return _showScreen351(id); };
+const _renderEqHome351 = renderEqHome;
+renderEqHome = function () { _renderEqHome351(); const card = [...document.querySelectorAll('#eqBody .eq-card')].find(c => /^Boiler 1/.test((c.querySelector('h3') || {}).textContent || ''));
+  if (card && !card.querySelector('.man-eq-link')) card.insertAdjacentHTML('beforeend', `<button type="button" class="secondary man-eq-link" onclick="manOpen('eqHome')">📖 Boiler 1 Manual ›</button><p class="muted">The printed operation manual (startup, prestart, flame-failure restart, troubleshooting). Your startup steps above are unchanged.</p>`); };
+const MAN_BTN = `<button type="button" class="secondary" onclick="manOpen('more')">📖 Boiler 1 Manual ›</button>`;
+const _showMore351 = showScreen;
+// Link from More: Equipment group + Procedures group, once each
+const _v34More351 = typeof v34More === 'function' ? v34More : function () {};
+v34More = function () { _v34More351(); manEnsure();
+  const eq = document.getElementById('eqGrp'); if (eq && !eq.querySelector('.man-more-btn')) eq.insertAdjacentHTML('beforeend', MAN_BTN);
+  const pr = [...document.querySelectorAll('#more .more-grp')].find(g => { const h = g.querySelector('h3'); return h && /Procedures/.test(h.textContent) && !/Equipment/.test(h.textContent); });
+  if (pr && !pr.querySelector('.man-more-btn')) { const b = pr.querySelector('.grp-btns'); (b || pr).insertAdjacentHTML(b ? 'beforeend' : 'beforeend', `<button type="button" class="secondary man-more-btn" onclick="manOpen('more')">Boiler 1 Manual</button>`); }
+  if (!document.getElementById('b1manCard')) { const host = eq || document.querySelector('#more .more-grp'); if (host) host.insertAdjacentHTML('afterend', `<div class="card more-grp" id="b1manCard"><h3>📖 Boiler 1 Manual</h3><p class="muted">Startup &amp; operation, prestart checklist, flame-failure restart, troubleshooting and glossary (pages 16–19, 28–32).</p><button type="button" onclick="manOpen('more')">Open Boiler 1 Manual ›</button></div>`); } };
+// Home plant panel: a Manual button next to startup/shutdown, without changing those procedures
+const _boilerPanelHtml351 = boilerPanelHtml;
+boilerPanelHtml = function (compact) { const h = _boilerPanelHtml351(compact); if (!compact) return h;
+  if (/manOpen\('home'\)/.test(h)) return h;
+  return h.replace(/<\/div>\s*$/, `<button type="button" class="pc-eq secondary" onclick="manOpen('home')">📖 Boiler 1 Manual<span class="pc-chev">›</span></button></div>`); };
 
 /* ---------- Startup ---------- */
 migrateData();
